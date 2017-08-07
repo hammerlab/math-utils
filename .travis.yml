@@ -6,7 +6,7 @@ jdk:
 scala:
   - 2.11.8
 
-script: sbt ++$TRAVIS_SCALA_VERSION clean test
+script: sbt ++$TRAVIS_SCALA_VERSION clean test coverageReport coverageAggregate
 
 cache:
   directories:
@@ -14,7 +14,7 @@ cache:
   - $HOME/.sbt/boot/
   - $HOME/.zinc
 
-after_success: sbt ++$TRAVIS_SCALA_VERSION travis-report
+after_success: sbt ++$TRAVIS_SCALA_VERSION coveralls
 
 before_cache:
   # Tricks to avoid unnecessary cache updates
