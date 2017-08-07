@@ -7,7 +7,7 @@ lazy val base =
       test := {},
       publishArtifact := false
     )
-    .aggregate(math)
+    .aggregate(math, stats)
 
 lazy val math = project.settings(
   name := "math",
@@ -21,4 +21,16 @@ lazy val math = project.settings(
     spire
   ),
   testDeps += kryo
+)
+
+lazy val stats = project.settings(
+  name := "stats",
+  version := "1.0.0",
+  deps ++= Seq(
+    cats,
+    io % "1.0.0",
+    iterators % "1.3.0",
+    hammerlab("math") % "1.0.0",
+    spire
+  )
 )
