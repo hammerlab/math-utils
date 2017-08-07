@@ -1,4 +1,6 @@
 
+addScala212
+
 lazy val base =
   project
     .in(file("."))
