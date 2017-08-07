@@ -1,18 +1,9 @@
 
-lazy val base =
-  project
-    .in(file("."))
-    .settings(
-      publish := {},
-      test := {},
-      publishArtifact := false
-    )
-    .aggregate(math)
+lazy val base = rootProject(math)
 
 lazy val math = project.settings(
   name := "math",
   version := "1.0.0",
-  testUtilsVersion := "1.3.0",
   deps ++= Seq(
     cats,
     commons_math,
@@ -22,3 +13,5 @@ lazy val math = project.settings(
   ),
   testDeps += kryo
 )
+
+addScala212
