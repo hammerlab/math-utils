@@ -1,18 +1,9 @@
 
-lazy val base =
-  project
-    .in(file("."))
-    .settings(
-      publish := {},
-      test := {},
-      publishArtifact := false
-    )
-    .aggregate(math, stats)
+lazy val base = rootProject(math, stats)
 
 lazy val math = project.settings(
   name := "math",
   version := "1.0.0",
-  testUtilsVersion := "1.3.0",
   deps ++= Seq(
     cats,
     commons_math,
@@ -34,3 +25,5 @@ lazy val stats = project.settings(
     spire
   )
 )
+
+addScala212
