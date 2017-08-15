@@ -16,10 +16,10 @@ lazy val math = project.settings(
 
 lazy val stats = project.settings(
   name := "stats",
-  version := "1.0.0",
+  version := "1.0.1",
   deps ++= Seq(
     cats,
-    io % "1.0.0",
+    io % "1.1.0",
     iterators % "1.3.0",
     hammerlab("math") % "1.0.0",
     spire
