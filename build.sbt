@@ -3,7 +3,7 @@ lazy val base = rootProject(math, stats)
 
 lazy val math = project.settings(
   name := "math",
-  version := "2.0.0-SNAPSHOT",
+  version := "2.0.0",
   deps ++= Seq(
     cats,
     commons_math,
