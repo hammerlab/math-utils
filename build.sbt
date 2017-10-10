@@ -16,14 +16,15 @@ lazy val math = project.settings(
 
 lazy val stats = project.settings(
   name := "stats",
-  version := "1.0.1",
+  version := "1.1.0",
   deps ++= Seq(
     cats,
-    io % "1.1.0",
+    io % "2.0.0",
     iterators % "1.3.0",
-    hammerlab("math") % "1.0.0",
     spire
   )
+).dependsOn(
+  math
 )
 
 addScala212

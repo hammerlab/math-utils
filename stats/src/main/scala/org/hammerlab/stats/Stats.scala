@@ -490,6 +490,17 @@ object Stats {
             r.toDouble.toString
         )
     )
+
+  implicit def showRational(implicit showDouble: Show[Double], showLong: Show[Long]): Show[Rational] =
+    show(
+      r ⇒
+        "%4s".format(
+          if (r.isWhole())
+            r.toLong.show
+          else
+            r.toDouble.show
+        )
+    )
 }
 
 case class Empty[K: Numeric, V: Integral]() extends Stats[K, V] {
