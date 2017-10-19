@@ -13,7 +13,6 @@ import org.hammerlab.types._
 import spire.math.{ Integral, Numeric, Rational }
 import spire.syntax.all._
 
-import scala.Double.NaN
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.math.{ abs, ceil, floor, sqrt }
@@ -27,13 +26,6 @@ import scala.math.{ abs, ceil, floor, sqrt }
  * @tparam V [[Integral]] value type.
  */
 sealed abstract class Stats[K: Numeric, V: Integral] {
-  def n: V
-  def sum: Double
-  def showStatsAsElems(implicit
-                       showElem: Show[K],
-                       showCount: Show[V],
-                       percentileShow: Show[Rational] = showPercentile): String
-
   def show(implicit
            showElem: Show[K],
            showCount: Show[V],
@@ -378,9 +370,7 @@ object Stats {
 
   private def getMedian[T: Numeric](sorted: Vector[T]): Double = {
     val n = sorted.length
-    if (n == 0)
-      NaN
-    else if (n % 2 == 0)
+    if (n % 2 == 0)
       (sorted(n / 2 - 1) + sorted(n / 2)).toDouble() / 2.0
     else
       sorted(n / 2).toDouble()
@@ -420,7 +410,7 @@ object Stats {
     delimiter: Delimiter = space
   ): Show[Stats[K, V]] =
     show {
-      case Empty() ⇒ "(empty)"
+      case e @ Empty() ⇒ e.show
       case NonEmpty(n, _, mean, stddev, median, mad, samplesOpt, sortedSamplesOpt, percentiles) ⇒
         def pair[L: Show, R: Show](l: L,
                                    r: R,
@@ -490,17 +480,21 @@ object Stats {
             r.toDouble.toString
         )
     )
+
+  implicit def showRational(implicit showDouble: Show[Double], showLong: Show[Long]): Show[Rational] =
+    show(
+      r ⇒
+        "%4s".format(
+          if (r.isWhole())
+            r.toLong.show
+          else
+            r.toDouble.show
+        )
+    )
 }
 
-case class Empty[K: Numeric, V: Integral]() extends Stats[K, V] {
-  override def n: V = Integral[V].zero
-  override def sum: Double = 0
-  override def showStatsAsElems(implicit
-                                showElem: Show[K],
-                                showCount: Show[V],
-                                percentileShow: Show[Rational]): String =
-    "(empty)"
-
+case class Empty[K: Numeric, V: Integral]()
+  extends Stats[K, V] {
   override def show(implicit
                     showElem: Show[K],
                     showCount: Show[V],
@@ -529,20 +523,6 @@ case class NonEmpty[K: Numeric, V: Integral](n: V,
                                              sortedSamplesOpt: Option[Samples[K, V]],
                                              percentiles: Seq[(Rational, Double)])
   extends Stats[K, V] {
-
-  override def showStatsAsElems(implicit
-                                showElem: Show[K],
-                                showCount: Show[V],
-                                percentileShow: Show[Rational]): String = {
-    implicit val showStat =
-      Show.show[Double](
-        stat ⇒
-          showElem.show(Numeric[K].fromDouble(stat))
-      )
-
-    makeShow.show(this)
-  }
-
   override def show(implicit
                     showElem: Show[K],
                     showCount: Show[V],
