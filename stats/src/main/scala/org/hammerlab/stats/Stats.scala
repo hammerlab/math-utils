@@ -1,9 +1,6 @@
 package org.hammerlab.stats
 
-import cats.Show
-import cats.Show.show
-import cats.instances.all.catsStdShowForString
-import cats.syntax.all._
+import hammerlab.show._
 import org.hammerlab.io.Delimiter
 import org.hammerlab.io.Delimiter.{ space, tab }
 import org.hammerlab.iterator.RunLengthIterator._

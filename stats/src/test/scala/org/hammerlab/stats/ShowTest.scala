@@ -1,15 +1,13 @@
 package org.hammerlab.stats
 
-import cats.Show
-import cats.instances.all.{ catsStdShowForInt, catsStdShowForLong }
-import cats.syntax.all._
+import hammerlab.show._
 import org.hammerlab.test.Suite
 import spire.math.Numeric
 
 import scala.util.Random.{ nextInt, setSeed, shuffle }
 
 /**
- * Test the default [[Show.show]] method of [[Stats]] instances.
+ * Test the default [[cats.Show.show show]] method of [[Stats]] instances.
  */
 class ShowTest extends Suite {
 

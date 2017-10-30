@@ -1,11 +1,8 @@
 package org.hammerlab.stats
 
-import cats.Show
-import cats.implicits.{ catsStdShowForInt, catsStdShowForLong }
-import cats.syntax.all._
+import hammerlab.show._
 import org.hammerlab.stats.Stats.fromHist
 import org.hammerlab.test.Suite
-import spire.implicits._
 import spire.math.Integral
 
 import scala.util.Random
