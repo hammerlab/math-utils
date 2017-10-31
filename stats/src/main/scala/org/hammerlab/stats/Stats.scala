@@ -1,12 +1,12 @@
 package org.hammerlab.stats
 
+import hammerlab.bool._
 import hammerlab.show._
 import org.hammerlab.io.Delimiter
 import org.hammerlab.io.Delimiter.{ space, tab }
 import org.hammerlab.iterator.RunLengthIterator._
 import org.hammerlab.math.interpolate
 import org.hammerlab.stats.Stats.{ makeShow, showDouble, showPercentile }
-import org.hammerlab.types._
 import spire.math.{ Integral, Numeric, Rational }
 import spire.syntax.all._
 
@@ -467,18 +467,9 @@ object Stats {
           "%.1f".format(d)
     )
 
-  def showPercentile: Show[Rational] =
-    show(
-      r ⇒
-        "%4s".format(
-          if (r.isWhole())
-            r.toLong.toString
-          else
-            r.toDouble.toString
-        )
-    )
-
-  implicit def showRational(implicit showDouble: Show[Double], showLong: Show[Long]): Show[Rational] =
+  def showPercentile(implicit
+                     showDouble: Show[Double] = cats.instances.double.catsStdShowForDouble,
+                     showLong: Show[Long] = showLong): Show[Rational] =
     show(
       r ⇒
         "%4s".format(

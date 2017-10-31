@@ -1,7 +1,7 @@
 
 lazy val math = project.settings(
   name := "math",
-  version := "2.1.0-SNAPSHOT",
+  version := "2.0.0",
   deps ++= Seq(
     cats,
     commons_math,
@@ -12,8 +12,22 @@ lazy val math = project.settings(
   testDeps += kryo
 )
 
-lazy val monoids = project.settings(
-  name := "monoids",
+lazy val stats = project.settings(
+  name := "stats",
+  version := "1.1.1-SNAPSHOT",
+  deps ++= Seq(
+    cats,
+    io % "3.0.0",
+    iterators % "1.4.0",
+    spire
+  )
+).dependsOn(
+  math,
+  types
+)
+
+lazy val types = project.settings(
+  name := "types",
   version := "1.0.0-SNAPSHOT",
   deps ++= Seq(
     cats,
@@ -22,20 +36,6 @@ lazy val monoids = project.settings(
   )
 )
 
-lazy val stats = project.settings(
-  name := "stats",
-  version := "1.1.1-SNAPSHOT",
-  deps ++= Seq(
-    cats,
-    io % "3.0.0-SNAPSHOT",
-    iterators % "1.4.0",
-    spire
-  )
-).dependsOn(
-  math,
-  monoids
-)
-
 addScala212
 
-lazy val base = rootProject(math, monoids, stats)
+lazy val base = rootProject(math, stats, types)

@@ -5,6 +5,18 @@ import cats.syntax.MonoidSyntax
 import shapeless._
 
 /**
+ * Wildcard-import for convenient [[cats.Monoid]] things:
+ *
+ *   - auto-case-class-derivation
+ *   - default instances for [[Int]], [[Long]], [[Map]]
+ *   - `|+|` syntax
+ */
+object monoid
+  extends CaseClassMonoids
+    with MonoidInstances
+    with MonoidSyntax
+
+/**
  * Automatic [[cats.Monoid]] construction for case-classes, taken from
  * https://github.com/milessabin/shapeless/blob/shapeless-2.3.2/examples/src/main/scala/shapeless/examples/monoids.scala.
  */
@@ -37,7 +49,3 @@ trait MonoidInstances
 
 object CaseClassMonoids extends CaseClassMonoids
 
-object monoid
-  extends CaseClassMonoids
-    with MonoidInstances
-    with MonoidSyntax
