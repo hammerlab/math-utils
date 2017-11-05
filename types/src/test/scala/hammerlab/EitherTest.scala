@@ -15,7 +15,7 @@ class EitherTest
 
     val R(a) = r
     a should be("a")
-    
+
     val Both(m, s) = b
     m should be(4)
     s should be("a")
