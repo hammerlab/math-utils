@@ -1,7 +1,7 @@
 package org.hammerlab.math
 
 import cats.Show
-import cats.syntax.all._
+import cats.syntax.show._
 import org.hammerlab.test.Suite
 import spire.math._
 import Format.scientific
