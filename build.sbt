@@ -28,7 +28,7 @@ lazy val stats = project.settings(
 
 lazy val types = project.settings(
   name := "types",
-  version := "1.0.0-SNAPSHOT",
+  version := "1.0.1",
   deps ++= Seq(
     cats,
     shapeless,
