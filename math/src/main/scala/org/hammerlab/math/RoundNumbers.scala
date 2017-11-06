@@ -1,6 +1,6 @@
 package org.hammerlab.math
 
-import org.hammerlab.iterator.SimpleBufferedIterator
+import hammerlab.iterator._
 import spire.math.Integral
 import spire.implicits._
 
@@ -11,7 +11,7 @@ import spire.implicits._
 class RoundNumbers[I: Integral] private(steps: Seq[Int],
                                         base: Int = 10,
                                         limitOpt: Option[I])
-  extends SimpleBufferedIterator[I] {
+  extends SimpleIterator[I] {
 
   private var idx = 0
   private var basePow: I = Integral[I].one

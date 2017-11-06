@@ -1,11 +1,11 @@
 
 lazy val math = project.settings(
   name := "math",
-  version := "2.0.0",
+  version := "2.1.0-SNAPSHOT",
   deps ++= Seq(
     cats,
     commons_math,
-    iterators % "1.4.0",
+    iterators % "2.0.0-SNAPSHOT",
     shapeless,
     spire
   ),
@@ -18,7 +18,7 @@ lazy val stats = project.settings(
   deps ++= Seq(
     cats,
     io % "3.0.0",
-    iterators % "1.4.0",
+    iterators % "2.0.0-SNAPSHOT",
     spire
   )
 ).dependsOn(
