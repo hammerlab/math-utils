@@ -1,24 +1,14 @@
 package hammerlab
 
-import cats.data.Ior
-
-/** Syntactic sugars around [[Either]]s, [[cats.data.Ior]]s */
 trait either {
-  type Or[+A, +B] = Ior[A, B]
-
   object L {
-    def apply[A](a: A) = Ior.Left(a)
-    def unapply[A](l: Ior.Left[A]): Option[A] = Some(l.a)
+    def apply[A](a: A) = Left(a)
+    def unapply[A](l: Left[A, _]): Option[A] = Some(l.a)
   }
 
   object R {
-    def apply[B](b: B) = Ior.Right(b)
-    def unapply[B](r: Ior.Right[B]): Option[B] = Some(r.b)
-  }
-
-  object Both {
-    def apply[A, B](a: A, b: B) = Ior.Both(a, b)
-    def unapply[A, B](b: Ior.Both[A, B]): Option[(A, B)] = Some((b.a, b.b))
+    def apply[B](b: B) = Right(b)
+    def unapply[B](r: Right[_, B]): Option[B] = Some(r.b)
   }
 }
 
