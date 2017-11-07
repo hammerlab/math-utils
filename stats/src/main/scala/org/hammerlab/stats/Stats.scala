@@ -1,10 +1,10 @@
 package org.hammerlab.stats
 
 import hammerlab.bool._
+import hammerlab.iterator._
 import hammerlab.show._
 import org.hammerlab.io.Delimiter
 import org.hammerlab.io.Delimiter.{ space, tab }
-import org.hammerlab.iterator.RunLengthIterator._
 import org.hammerlab.math.interpolate
 import org.hammerlab.stats.Stats.{ makeShow, showDouble, showPercentile }
 import spire.math.{ Integral, Numeric, Rational }
@@ -52,7 +52,7 @@ object Stats {
       val vBuilder = Vector.newBuilder[(K, V)]
       var prevOpt: Option[K] = None
       for {
-        (value, num) ← reencode[K, V](v.iterator)
+        (value, num) ← v.runLengthReencode
       } {
         if (alreadySorted) {
           if (prevOpt.exists(_ > value))
