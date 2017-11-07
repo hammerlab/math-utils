@@ -1,7 +1,7 @@
 
 lazy val math = project.settings(
   name := "math",
-  version := "2.1.0-SNAPSHOT",
+  version := "2.1.0",
   deps ++= Seq(
     cats,
     commons_math,
@@ -14,7 +14,7 @@ lazy val math = project.settings(
 
 lazy val stats = project.settings(
   name := "stats",
-  version := "1.1.1-SNAPSHOT",
+  version := "1.1.1",
   deps ++= Seq(
     cats,
     io % "3.0.0",
