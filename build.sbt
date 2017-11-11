@@ -1,7 +1,6 @@
 
 lazy val math = project.settings(
-  name := "math",
-  version := "2.1.1-SNAPSHOT",
+  version := "2.1.1",
   deps ++= Seq(
     cats,
     commons_math,
@@ -13,7 +12,6 @@ lazy val math = project.settings(
 )
 
 lazy val stats = project.settings(
-  name := "stats",
   version := "1.1.1",
   deps ++= Seq(
     cats,
@@ -27,7 +25,6 @@ lazy val stats = project.settings(
 )
 
 lazy val types = project.settings(
-  name := "types",
   version := "1.0.1",
   deps ++= Seq(
     cats,
@@ -38,4 +35,4 @@ lazy val types = project.settings(
 
 addScala212
 
-lazy val base = rootProject(math, stats, types)
+lazy val base = rootProject("math-base", math, stats, types)
