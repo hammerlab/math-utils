@@ -1,7 +1,7 @@
 
 lazy val math = project.settings(
   name := "math",
-  version := "2.1.0",
+  version := "2.1.1-SNAPSHOT",
   deps ++= Seq(
     cats,
     commons_math,

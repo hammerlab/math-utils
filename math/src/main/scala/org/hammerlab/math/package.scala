@@ -22,4 +22,16 @@ package object math {
 
   def interpolate[N: Numeric](start: N, end: N, delta: Double): Double =
     start.toDouble() + delta * (end - start).toDouble()
+
+  def min(a: Int, b: Long): Int =
+    if (a.toLong <= b)
+      a
+    else
+      b.toInt
+
+  def min(a: Long, b: Int): Int =
+    if (a <= b.toLong)
+      a.toInt
+    else
+      b
 }
