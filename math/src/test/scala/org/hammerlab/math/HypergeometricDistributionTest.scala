@@ -21,10 +21,10 @@ class HypergeometricDistributionTest extends Suite {
     }
 
   implicit val approxBuffers =
-    new Equality[ArrayBuffer[Double]] {
-      override def areEqual(a: ArrayBuffer[Double], b: Any): Boolean =
+    new Equality[Array[Double]] {
+      override def areEqual(a: Array[Double], b: Any): Boolean =
         b match {
-          case s: ArrayBuffer[Double] ⇒ a.size == s.size && a.zip(s).forall(t ⇒ t._1 === t._2)
+          case s: Array[Double] ⇒ a.size == s.size && a.zip(s).forall(t ⇒ t._1 === t._2)
           case _ ⇒ false
         }
     }
@@ -37,11 +37,11 @@ class HypergeometricDistributionTest extends Suite {
     val apache = new ApacheHyperGeometricDistribution(N, K, n)
 
     hgd.pdf should ===(
-      ArrayBuffer((0 to n).map(apache.probability): _*)
+      Array((0 to n).map(apache.probability): _*)
     )
 
     hgd.cdf should ===(
-      ArrayBuffer((0 to n).map(apache.cumulativeProbability): _*)
+      Array((0 to n).map(apache.cumulativeProbability): _*)
     )
   }
 
@@ -49,7 +49,7 @@ class HypergeometricDistributionTest extends Suite {
     val hgd = HypergeometricDistribution(10, 4, 2)
 
     hgd.pdf should ===(
-      ArrayBuffer(
+      Array(
         1.0 / 3,
         8.0 / 15,
         2.0 / 15
@@ -57,7 +57,7 @@ class HypergeometricDistributionTest extends Suite {
     )
 
     hgd.cdf should ===(
-      ArrayBuffer(
+      Array(
         1.0 / 3,
         13.0 / 15,
         1
@@ -72,7 +72,8 @@ class HypergeometricDistributionTest extends Suite {
       13.0 / 15,
       1 - epsilon,
       1
-    ).map(hgd.invCDF(_)) should be(
+    )
+    .map(hgd.invCDF(_)) should be(
       List(
         0, 0, 1, 1, 2, 2, 2
       )
@@ -87,11 +88,35 @@ class HypergeometricDistributionTest extends Suite {
     compareToApache(hgd)
   }
 
+  test("4-0-4") {
+    val hgd = HypergeometricDistribution(4, 0, 4)
+    hgd.cdf should ===(Array(1.0))
+    hgd.pdf should ===(Array(1.0))
+  }
+
+  test("4-3-4") {
+    val hgd = HypergeometricDistribution(4, 3, 4)
+    hgd.pdf should ===(Array(0, 0, 0, 1.0))
+    hgd.cdf should ===(Array(0, 0, 0, 1.0))
+  }
+
+  test("4-4-4") {
+    val hgd = HypergeometricDistribution(4, 4, 4)
+    hgd.pdf should ===(Array(0, 0, 0, 0, 1.0))
+    hgd.cdf should ===(Array(0, 0, 0, 0, 1.0))
+  }
+
+  test("5-4-4") {
+    val hgd = HypergeometricDistribution(5, 4, 4)
+    hgd.pdf should ===(Array(0, 0, 0, 0.8, 0.2))
+    hgd.cdf should ===(Array(0, 0, 0, 0.8, 1.0))
+  }
+
   test("5000000000-4000000000-10") {
     val hgd = HypergeometricDistribution(5000000000L, 4000000000L, 10)
 
     hgd.pdf should be(
-      ArrayBuffer(
+      Array(
         1.0239999631360417E-7,  //  0
         4.0959998894081015E-6,  //  1
         7.372799858073784E-5,   //  2

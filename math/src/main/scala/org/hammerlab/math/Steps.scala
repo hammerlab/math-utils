@@ -1,7 +1,7 @@
 package org.hammerlab.math
 
 import scala.collection.immutable.SortedSet
-import scala.math.{ exp, log, max, min }
+import scala.math.{ exp, log, max }
 
 /**
  * Some utilities for generating exponential sequences of integers that can be used as e.g. histogram-bucket boundaries.
@@ -22,7 +22,7 @@ object Steps {
           for {
             i ← 1 until N
           } yield
-            min(
+            math.min(
               maxDepth,
               max(
                 i,
