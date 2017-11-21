@@ -8,6 +8,38 @@
 
 ## [`math`](math)
 
+Miscellaneous numeric utilities
+
+```scala
+import hammerlab.math._
+```
+
+### `min`
+Overloads of `math.min` that take an `Int` and a `Long` and return an `Int
+
+### `HypergeometricDistribution`
+
+Modeled after [commons-math3 implementation](http://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/index.html), but taking `Long` parameters
+
+### `div`
+
+Up-rounding integer-division:
+
+```scala
+div(20, 10)  // 2
+div(21L, 10)  // 3
+``` 
+
+### `Steps`
+
+```scala
+geometricSteps(100, 15)
+// SortedSet(0, 1, 2, 3, 4, 5, 6, 8, 11, 17, 24, 34, 49, 70, 100)
+
+roundNumbers(100)
+// SortedSet(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+```
+
 ## [`stats`](stats)
 
 ### Descriptive Statistics
@@ -50,3 +82,24 @@ sorted:	1×10000000100, 2×2000000000
 [`org.hammerlab.stats.HypergeometricDistribution`](https://github.com/hammerlab/iterator/blob/master/src/main/scala/org/hammerlab/stats/HypergeometricDistribution.scala) is an implementation of a hypergeometric distribution, modeled after [`org.apache.commons.math3.distribution.HypergeometricDistribution`](https://commons.apache.org/proper/commons-math/javadocs/api-3.6/org/apache/commons/math3/distribution/HypergeometricDistribution.html), but supporting 8-byte `Long` parameters.
 
 ## [`types`](types)
+
+- shorthands for `Either` and "or" ([`cats.Ior`](https://typelevel.org/cats/datatypes/ior.html)) subclasses:
+
+  ```scala
+  import hammerlab.either._
+  import hammerlab.or._
+  ```
+
+- `CanBuildFrom` instances for `Array`s and `Vector`s:
+
+  ```scala
+  import hammerlab.collection._
+  ```
+  
+- `cats.Monoid` derivations for products and coproducts:
+
+  ```scala
+  import hammerlab.monoid._
+  ```
+
+

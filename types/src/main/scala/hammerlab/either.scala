@@ -1,5 +1,8 @@
 package hammerlab
 
+/**
+ * Shorthands for [[Left]]/[[Right]]
+ */
 trait either {
   object L {
     def apply[A](a: A) = Left(a)

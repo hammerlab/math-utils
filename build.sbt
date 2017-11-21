@@ -1,6 +1,6 @@
 
 lazy val math = project.settings(
-  version := "2.1.1",
+  version := "2.1.2-SNAPSHOT",
   deps ++= Seq(
     cats,
     commons_math,
@@ -8,7 +8,8 @@ lazy val math = project.settings(
     shapeless,
     spire
   ),
-  testDeps += kryo
+  testDeps += kryo,
+  initialCommands := "import hammerlab.math._"
 )
 
 lazy val stats = project.settings(

@@ -5,9 +5,8 @@ import org.hammerlab.test.Suite
 
 import org.apache.commons.math3.distribution.{HypergeometricDistribution ⇒ ApacheHyperGeometricDistribution}
 
-import scala.collection.mutable.ArrayBuffer
-
-class HypergeometricDistributionTest extends Suite {
+class HypergeometricDistributionTest
+  extends Suite {
 
   var epsilon = 0.00001
 

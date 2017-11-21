@@ -6,14 +6,14 @@ import scala.math.{ exp, log, max }
 /**
  * Some utilities for generating exponential sequences of integers that can be used as e.g. histogram-bucket boundaries.
  */
-object Steps {
+trait Steps {
 
   /**
    * Divide [0, maxDepth] into N geometrically-evenly-spaced steps (of size ≈maxDepth^(1/N)).
    *
    * Until the k-th step is bigger than k, the whole number k is used in its stead.
    */
-  def geometricEvenSteps(maxDepth: Int, N: Int = 100): SortedSet[Int] = {
+  def geometricSteps(maxDepth: Int, N: Int = 100): SortedSet[Int] = {
     val logMaxDepth = log(maxDepth)
 
     SortedSet(
@@ -79,3 +79,5 @@ object Steps {
       ): _*
     )
 }
+
+object Steps extends Steps

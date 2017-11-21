@@ -7,8 +7,11 @@ import spire.math.Integral
 
 import scala.math.round
 
-object Format {
-  def scientific[I: Integral](n: I, precision: Int): String =
+/**
+ * Format an [[Integral]] type in scientific notation, displaying a configurable number of digits
+ */
+trait Format {
+  def scientific[I](n: I, precision: Int)(implicit int: Integral[I]): String =
     if (n < 0)
       s"-${scientific(-n, precision)}"
     else {
@@ -17,8 +20,7 @@ object Format {
       val numDigits = digits.length
       if (numDigits > precision + 3) {
 
-        val integral = implicitly[Integral[I]]
-        import integral.fromDouble
+        import int.fromDouble
 
         val roundedDigits =
           fromDouble(
@@ -37,8 +39,7 @@ object Format {
         digits
     }
 
-  def scientific[I: Integral](precision: Int): Show[I] =
-    show(scientific(_, precision))
+  def scientific[I: Integral](precision: Int): Show[I] = show(scientific(_, precision))
 
   object scientific {
     implicit def digits2[I: Integral] = scientific[I](2)
@@ -46,3 +47,5 @@ object Format {
     implicit def digits4[I: Integral] = scientific[I](3)
   }
 }
+
+object Format extends Format
