@@ -13,7 +13,7 @@ lazy val math = project.settings(
 )
 
 lazy val stats = project.settings(
-  version := "1.1.2-SNAPSHOT",
+  version := "1.1.2",
   deps ++= Seq(
     cats,
     io % "3.1.0",
