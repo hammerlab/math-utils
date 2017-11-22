@@ -4,7 +4,6 @@ import cats.Show
 import cats.syntax.show._
 import org.hammerlab.test.Suite
 import spire.math._
-import Format.scientific
 
 class FormatTest
   extends Suite {

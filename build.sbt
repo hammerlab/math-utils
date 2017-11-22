@@ -1,7 +1,6 @@
 
 lazy val math = project.settings(
-  name := "math",
-  version := "2.1.1-SNAPSHOT",
+  version := "2.1.2-SNAPSHOT",
   deps ++= Seq(
     cats,
     commons_math,
@@ -9,15 +8,15 @@ lazy val math = project.settings(
     shapeless,
     spire
   ),
-  testDeps += kryo
+  testDeps += kryo,
+  initialCommands := "import hammerlab.math._"
 )
 
 lazy val stats = project.settings(
-  name := "stats",
-  version := "1.1.1",
+  version := "1.1.2-SNAPSHOT",
   deps ++= Seq(
     cats,
-    io % "3.0.0",
+    io % "3.1.0",
     iterators % "2.0.0",
     spire
   )
@@ -27,7 +26,6 @@ lazy val stats = project.settings(
 )
 
 lazy val types = project.settings(
-  name := "types",
   version := "1.0.1",
   deps ++= Seq(
     cats,
@@ -38,4 +36,4 @@ lazy val types = project.settings(
 
 addScala212
 
-lazy val base = rootProject(math, stats, types)
+lazy val base = rootProject("math-base", math, stats, types)

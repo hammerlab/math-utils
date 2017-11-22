@@ -1,6 +1,6 @@
 package org.hammerlab.math
 
-import org.hammerlab.math.Steps._
+import hammerlab.math.Steps._
 import org.hammerlab.test.Suite
 import org.hammerlab.test.matchers.seqs.SeqMatcher.seqMatch
 
@@ -16,7 +16,7 @@ class StepsTest
   }
 
   test("geometricEvenSteps") {
-    geometricEvenSteps(1000, 20) should seqMatch(
+    geometricSteps(1000, 20) should seqMatch(
       Seq(
         0, 1, 2, 3, 4, 5, 6, 9, 14, 21, 31, 46, 68, 99, 146, 215, 316, 464, 681, 999
       )

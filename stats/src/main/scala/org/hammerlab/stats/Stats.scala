@@ -397,6 +397,22 @@ object Stats {
     runs → sum
   }
 
+  /**
+   * Default [[Show]] implementation, utilizing [[Show]]s for key- and value-types as well as [[Rational]] percentiles
+   * and a [[Double]] percentile values and summary statistics.
+   *
+   * Example with shuffled positive digits (from tests):
+   *
+   * {{{
+   * N: 9, μ/σ: 5/2.6, med/mad: 5/2
+   *  elems: 8 4 5 … 7 2 9
+   * sorted: 1 2 3 … 7 8 9
+   *   10:	1
+   *   25:	2.5
+   *   50:	5
+   *   75:	7.5
+   * }}}
+   */
   implicit def makeShow[
     K : Numeric : Show,
     V: Integral : Show
@@ -458,6 +474,9 @@ object Stats {
         strings.mkString("\n")
     }
 
+  /**
+   * Default [[Show]] for summary statistics and percentile values
+   */
   def showDouble: Show[Double] =
     show(
       d ⇒
@@ -467,8 +486,12 @@ object Stats {
           "%.1f".format(d)
     )
 
+  /**
+   * Default [[Show]] for percentile-keys (generally integers except for on the edges in large datasets, where
+   * percentiles of rthe forms 1e-N and 1-1e-N are included).
+   */
   def showPercentile(implicit
-                     showDouble: Show[Double] = cats.instances.double.catsStdShowForDouble,
+                     showDouble: Show[Double] = cats.implicits.catsStdShowForDouble,
                      showLong: Show[Long] = showLong): Show[Rational] =
     show(
       r ⇒
