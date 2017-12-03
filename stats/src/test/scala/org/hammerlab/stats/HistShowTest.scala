@@ -1,5 +1,7 @@
 package org.hammerlab.stats
 
+import hammerlab.indent.implicits.tab
+import hammerlab.print._
 import hammerlab.show._
 import org.hammerlab.stats.Stats.fromHist
 import org.hammerlab.test.Suite
@@ -18,7 +20,7 @@ class HistShowTest extends Suite {
 
   def check[V: Integral : Show](input: Seq[(Int, V)],
                                 expected: String): Unit =
-    fromHist(input).show should be(expected.stripMargin)
+    fromHist(input).showLines should be(expected.stripMargin)
 
   def check[V: Integral : Show](input: Seq[(Int, V)],
                                 numToSample: Int,
@@ -27,7 +29,7 @@ class HistShowTest extends Suite {
       input,
       numToSample
     )
-    .show should be(
+    .showLines should be(
       expected.stripMargin
     )
 
@@ -40,7 +42,7 @@ class HistShowTest extends Suite {
       numToSample,
       onlySampleSorted
     )
-    .show should be(
+    .showLines should be(
       expected.stripMargin
     )
 

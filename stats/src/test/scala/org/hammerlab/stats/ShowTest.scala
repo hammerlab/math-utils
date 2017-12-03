@@ -1,5 +1,7 @@
 package org.hammerlab.stats
 
+import hammerlab.indent.implicits.tab
+import hammerlab.print._
 import hammerlab.show._
 import org.hammerlab.test.Suite
 import spire.math.Numeric
@@ -14,7 +16,7 @@ class ShowTest extends Suite {
   setSeed(123L)
 
   def check[K : Numeric : Ordering : Show](input: Seq[K], expected: String): Unit =
-    Stats(input).show should be(
+    Stats(input).showLines should be(
       expected.stripMargin
     )
 
@@ -25,7 +27,7 @@ class ShowTest extends Suite {
       input,
       numToSample
     )
-    .show should be(
+    .showLines should be(
       expected.stripMargin
     )
 
@@ -38,7 +40,7 @@ class ShowTest extends Suite {
       numToSample,
       onlySampleSorted
     )
-    .show should be(
+    .showLines should be(
       expected.stripMargin
     )
 
