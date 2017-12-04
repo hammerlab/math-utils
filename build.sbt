@@ -1,6 +1,6 @@
 
 lazy val math = project.settings(
-  v"2.1.2",
+  r"2.1.2",
   dep(
     cats,
     commons_math,
@@ -13,7 +13,7 @@ lazy val math = project.settings(
 )
 
 lazy val stats = project.settings(
-  v"1.2.0",
+  r"1.2.0",
   dep(
     cats,
     io        % "4.0.0",
