@@ -16,7 +16,7 @@ lazy val stats = project.settings(
   v"1.2.0",
   dep(
     cats,
-    io % "4.0.0" snapshot,
+    io        % "4.0.0",
     iterators % "2.0.0",
     spire
   )
