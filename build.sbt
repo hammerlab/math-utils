@@ -9,7 +9,7 @@ lazy val math = project.settings(
     shapeless,
     spire
   ),
-  consolePkgs += "hammerlab.math"
+  consolePkg("hammerlab.math")
 )
 
 lazy val stats = project.settings(

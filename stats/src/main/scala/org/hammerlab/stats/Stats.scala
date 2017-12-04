@@ -417,16 +417,16 @@ object Stats {
     delimiter: Delimiter = space,
     indent: Indent = hammerlab.indent.tab
   ): ToLines[Stats[K, V]] =
-    new Print(_: Stats[K, V]) {
+    (t: Stats[K, V]) ⇒
       t match {
-        case e @ Empty() ⇒ write("(empty)")
+        case Empty() ⇒ "(empty)": Lines
         case NonEmpty(n, _, mean, stddev, median, mad, samplesOpt, sortedSamplesOpt, percentiles) ⇒
           def pair[L: Show, R: Show](l: L,
                                      r: R,
                                      d: Delimiter = delimiter): String =
             show"$l:$d$r"
 
-          write(
+          Lines(
             (
               List(
                 pair("N", n),
@@ -439,35 +439,32 @@ object Stats {
                   Nil
               )
             )
-            .mkString(", ")
-          )
+            .mkString(", "),
 
-          for {
-            samples ← samplesOpt
-            if samples.nonEmpty
-          } {
-            write(pair(" elems", samples))
-          }
+            for {
+              samples ← samplesOpt
+              if samples.nonEmpty
+            } yield
+              pair(" elems", samples),
 
-          for {
-            sortedSamples ← sortedSamplesOpt
-            if sortedSamples.nonEmpty
-          } {
-            write(pair("sorted", sortedSamples))
-          }
+            for {
+              sortedSamples ← sortedSamplesOpt
+              if sortedSamples.nonEmpty
+            } yield
+              pair("sorted", sortedSamples),
 
-          /**
-           * Show percentiles iff one of the [[Samples]] fields has elided elements
-           */
-          if (n >= 5)
-            write(
+            /**
+             * Show percentiles iff one of the [[Samples]] fields has elided elements
+             */
+            if (n >= 5)
               percentiles.map {
                 case (k, v) ⇒
                   pair(k, v, tab)
               }
-            )
+            else
+              Lines()
+          )
       }
-    }
 
   /**
    * Default [[Show]] for summary statistics and percentile values
