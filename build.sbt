@@ -1,22 +1,22 @@
 
 lazy val math = project.settings(
-  version := "2.1.2-SNAPSHOT",
-  deps ++= Seq(
+  v"2.1.2",
+  dep(
     cats,
     commons_math,
     iterators % "2.0.0",
+    kryo tests,
     shapeless,
     spire
   ),
-  testDeps += kryo,
-  initialCommands := "import hammerlab.math._"
+  consolePkg("hammerlab.math")
 )
 
 lazy val stats = project.settings(
-  version := "1.1.2-SNAPSHOT",
-  deps ++= Seq(
+  v"1.2.0",
+  dep(
     cats,
-    io % "3.1.0",
+    io        % "4.0.0",
     iterators % "2.0.0",
     spire
   )
@@ -26,8 +26,8 @@ lazy val stats = project.settings(
 )
 
 lazy val types = project.settings(
-  version := "1.0.1",
-  deps ++= Seq(
+  r"1.0.1",
+  dep(
     cats,
     shapeless,
     spire

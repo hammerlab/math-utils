@@ -2,11 +2,11 @@ package org.hammerlab.stats
 
 import hammerlab.bool._
 import hammerlab.iterator._
+import hammerlab.print._
 import hammerlab.show._
 import org.hammerlab.io.Delimiter
 import org.hammerlab.io.Delimiter.{ space, tab }
 import org.hammerlab.math.interpolate
-import org.hammerlab.stats.Stats.{ makeShow, showDouble, showPercentile }
 import spire.math.{ Integral, Numeric, Rational }
 import spire.syntax.all._
 
@@ -22,13 +22,7 @@ import scala.math.{ abs, ceil, floor, sqrt }
  * @tparam K [[Numeric]] element type. TODO(ryan): allow this to be non-[[Numeric]].
  * @tparam V [[Integral]] value type.
  */
-sealed abstract class Stats[K: Numeric, V: Integral] {
-  def show(implicit
-           showElem: Show[K],
-           showCount: Show[V],
-           showStat: Show[Double] = showDouble,
-           percentileShow: Show[Rational] = showPercentile): String
-}
+sealed abstract class Stats[K: Numeric, V: Integral]
 
 object Stats {
 
@@ -420,65 +414,63 @@ object Stats {
     implicit
     percentileShow: Show[Rational] = showPercentile,
     statShow: Show[Double] = showDouble,
-    delimiter: Delimiter = space
-  ): Show[Stats[K, V]] =
-    show {
-      case e @ Empty() ⇒ e.show
-      case NonEmpty(n, _, mean, stddev, median, mad, samplesOpt, sortedSamplesOpt, percentiles) ⇒
-        def pair[L: Show, R: Show](l: L,
-                                   r: R,
-                                   d: Delimiter = delimiter): String =
-          show"$l:$d$r"
+    delimiter: Delimiter = space,
+    indent: Indent = hammerlab.indent.tab
+  ): ToLines[Stats[K, V]] =
+    (t: Stats[K, V]) ⇒
+      t match {
+        case Empty() ⇒ "(empty)": Lines
+        case NonEmpty(n, _, mean, stddev, median, mad, samplesOpt, sortedSamplesOpt, percentiles) ⇒
+          def pair[L: Show, R: Show](l: L,
+                                     r: R,
+                                     d: Delimiter = delimiter): String =
+            show"$l:$d$r"
 
-        val strings = ArrayBuffer[String]()
-
-        strings +=
-          (
-            List(
-              pair("N", n),
-              pair("μ/σ", show"$mean/$stddev")
-            ) ++
+          Lines(
             (
-              if (n > 2)
-                List(pair("med/mad",  show"$median/$mad"))
-              else
-                Nil
+              List(
+                pair("N", n),
+                pair("μ/σ", show"$mean/$stddev")
+              ) ++
+              (
+                if (n > 2)
+                  List(pair("med/mad",  show"$median/$mad"))
+                else
+                  Nil
+              )
             )
+            .mkString(", "),
+
+            for {
+              samples ← samplesOpt
+              if samples.nonEmpty
+            } yield
+              pair(" elems", samples),
+
+            for {
+              sortedSamples ← sortedSamplesOpt
+              if sortedSamples.nonEmpty
+            } yield
+              pair("sorted", sortedSamples),
+
+            /**
+             * Show percentiles iff one of the [[Samples]] fields has elided elements
+             */
+            if (n >= 5)
+              percentiles.map {
+                case (k, v) ⇒
+                  pair(k, v, tab)
+              }
+            else
+              Lines()
           )
-          .mkString(", ")
-
-        for {
-          samples ← samplesOpt
-          if samples.nonEmpty
-        } {
-          strings += pair(" elems", samples)
-        }
-
-        for {
-          sortedSamples ← sortedSamplesOpt
-          if sortedSamples.nonEmpty
-        } {
-          strings += pair("sorted", sortedSamples)
-        }
-
-        /**
-         * Show percentiles iff one of the [[Samples]] fields has elided elements
-         */
-        if (n >= 5)
-          strings ++=
-            percentiles.map {
-              case (k, v) ⇒
-                pair(k, v, tab)
-            }
-
-        strings.mkString("\n")
-    }
+      }
 
   /**
    * Default [[Show]] for summary statistics and percentile values
    */
   def showDouble: Show[Double] =
-    show(
+    Show(
       d ⇒
         if (floor(d).toLong == ceil(d).toLong)
           d.toLong.toString
@@ -493,7 +485,7 @@ object Stats {
   def showPercentile(implicit
                      showDouble: Show[Double] = cats.implicits.catsStdShowForDouble,
                      showLong: Show[Long] = showLong): Show[Rational] =
-    show(
+    Show(
       r ⇒
         "%4s".format(
           if (r.isWhole())
@@ -505,14 +497,7 @@ object Stats {
 }
 
 case class Empty[K: Numeric, V: Integral]()
-  extends Stats[K, V] {
-  override def show(implicit
-                    showElem: Show[K],
-                    showCount: Show[V],
-                    showStat: Show[Double],
-                    percentileShow: Show[Rational]): String =
-    "(empty)"
-}
+  extends Stats[K, V]
 
 /**
  * Stores some computed statistics about a dataset of [[Numeric]] elements.
@@ -533,11 +518,4 @@ case class NonEmpty[K: Numeric, V: Integral](n: V,
                                              samplesOpt: Option[Samples[K, V]],
                                              sortedSamplesOpt: Option[Samples[K, V]],
                                              percentiles: Seq[(Rational, Double)])
-  extends Stats[K, V] {
-  override def show(implicit
-                    showElem: Show[K],
-                    showCount: Show[V],
-                    showStat: Show[Double],
-                    percentileShow: Show[Rational]): String =
-    makeShow.show(this)
-}
+  extends Stats[K, V]
