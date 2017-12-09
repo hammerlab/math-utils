@@ -15,10 +15,10 @@ lazy val math = project.settings(
 lazy val stats = project.settings(
   r"1.2.0",
   dep(
-    cats,
-    io        % "4.0.0",
+         cats,
+     io_utils % "4.0.0",
     iterators % "2.0.0",
-    spire
+        spire
   )
 ).dependsOn(
   math,
@@ -36,4 +36,4 @@ lazy val types = project.settings(
 
 addScala212
 
-lazy val base = rootProject("math-base", math, stats, types)
+lazy val base = rootProject("math-utils", math, stats, types)
