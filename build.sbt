@@ -34,6 +34,4 @@ lazy val types = project.settings(
   )
 )
 
-addScala212
-
 lazy val base = rootProject("math-utils", math, stats, types)
