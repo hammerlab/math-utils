@@ -1,7 +1,7 @@
 package hammerlab
 
 import hammerlab.bool._
-import org.hammerlab.test.Suite
+import org.hammerlab.Suite
 
 class BoolTest
   extends Suite {

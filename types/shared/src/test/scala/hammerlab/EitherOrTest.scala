@@ -1,6 +1,6 @@
 package hammerlab
 
-import org.hammerlab.test.Suite
+import org.hammerlab.Suite
 
 class EitherOrTest
   extends Suite {
