@@ -1,4 +1,4 @@
-package hammerlab.math.syntax
+package org.hammerlab.math.syntax
 
 /**
  * Type-class with various math-operations

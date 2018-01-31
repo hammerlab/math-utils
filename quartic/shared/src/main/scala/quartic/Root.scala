@@ -1,9 +1,11 @@
 package quartic
 
-import hammerlab.math.syntax.Arithmetic
+import org.hammerlab.math.syntax.Arithmetic
+import org.hammerlab.math.format.showSuperscript
 
 sealed abstract class Root[D](val degree: Int) {
   def value: D
+  override def toString: String = s"$value${showSuperscript.show(degree)}"
 }
 
 object Root {
@@ -22,18 +24,10 @@ object Root {
 
   def unapply[D](r: Root[D]): Some[(D, Int)] = Some((r.value, r.degree))
 
-  case class Single[D](value: D) extends Root[D](1) {
-    override def toString = value.toString
-  }
-  case class    Double[D](value: D) extends Root[D](2) {
-    override def toString = s"$value²"
-  }
-  case class    Triple[D](value: D) extends Root[D](3) {
-    override def toString = s"$value³"
-  }
-  case class Quadruple[D](value: D) extends Root[D](4) {
-    override def toString = s"$value⁴"
-  }
+  case class    Single[D](value: D) extends Root[D](1)
+  case class    Double[D](value: D) extends Root[D](2)
+  case class    Triple[D](value: D) extends Root[D](3)
+  case class Quadruple[D](value: D) extends Root[D](4)
 
   def map[In, Out](f: In ⇒ Out): Root[In] ⇒ Root[Out] = {
     case    Single(v) ⇒    Single(f(v))

@@ -1,4 +1,4 @@
-package hammerlab.math.syntax
+package org.hammerlab.math.syntax
 
 trait Doubleish[T] {
   def apply(t: T): Double

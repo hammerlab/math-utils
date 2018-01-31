@@ -11,11 +11,13 @@ import scala.util.Random.{ nextInt, setSeed, shuffle }
 /**
  * Test the default [[cats.Show.show show]] method of [[Stats]] instances.
  */
-class ShowTest extends Suite {
+class ShowTest
+  extends Suite {
 
   setSeed(123L)
 
-  def check[K : Numeric : Ordering : Show](input: Seq[K], expected: String): Unit =
+  def check[K : Numeric : Ordering : Show](input: Seq[K],
+                                           expected: String): Unit =
     Stats(input).showLines should be(
       expected.stripMargin
     )

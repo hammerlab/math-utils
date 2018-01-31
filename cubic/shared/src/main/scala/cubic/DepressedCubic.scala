@@ -1,9 +1,9 @@
 package cubic
 
-import hammerlab.math.syntax._
-import hammerlab.math.syntax.Arithmetic._
-import hammerlab.math.syntax.FuzzyCmp._
-import hammerlab.math.syntax.Math._
+import org.hammerlab.math.syntax._
+import org.hammerlab.math.syntax.Arithmetic._
+import org.hammerlab.math.syntax.FuzzyCmp._
+import org.hammerlab.math.syntax.Math._
 
 import scala.math.Pi
 
@@ -33,6 +33,8 @@ object DepressedCubic {
 
     import Root._
 
+//    println(s"\tdepressed: $p $q")
+
     if (p === 0 && q === 0)
       /**
        * Only possible triple-rooted depressed-cubic: x³=0
@@ -51,10 +53,13 @@ object DepressedCubic {
       val q2 = -q/2
       val q22 = q2 ^ 2
 
-      if (q22 <= p33) {
+//      println(s"\tq22: $q22, p33: $p33")
+
+      if (q22 ≤ p33) {
         val cos = q2 / p33.sqrt
         val sqp3 = p3.sqrt
-        val sqp32: D = 2 * sqp3
+        val sqp32 = sqp3 * 2
+//        println(s"\tdep cub: $p $q, $q2/${p33.sqrt} = ${q2 / p33.sqrt}, $q22/$p33 = ${(q22/p33).sqrt} $cos $sqp3")
         if (cos === 1)
           Seq(
             Double(-sqp3),

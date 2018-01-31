@@ -1,8 +1,8 @@
 package quartic
 
-import hammerlab.math.syntax._
-import hammerlab.math.syntax.Arithmetic._
-import hammerlab.math.syntax.Math._
+import org.hammerlab.math.syntax._
+import org.hammerlab.math.syntax.Arithmetic._
+import org.hammerlab.math.syntax.Math._
 
 object Quartic {
   def apply[
@@ -41,7 +41,7 @@ object Quartic {
       implicit ε: Tolerance  // fuzzy lt/gt/eq comparisons
    ):
   Seq[Root[D]] = {
-//    println(s"\tmonic: $b $c $d $e")
+    println(s"\tmonic: $b $c $d $e")
     val b2 = -b/2
     val b4 = -b/4
     val b28 = b2 * b4
@@ -51,7 +51,7 @@ object Quartic {
       e + b4*d + b28*c/2 - b28*b28*3/4
     ).map {
       r ⇒
-//        println(s"depressed root: $r")
+        println(s"depressed root: $r")
         r + b4
     }
   }
