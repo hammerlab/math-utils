@@ -1,4 +1,4 @@
-package hammerlab.polynomial
+package org.hammerlab.math.polynomial
 
 import org.hammerlab.math.format.showSuperscript
 

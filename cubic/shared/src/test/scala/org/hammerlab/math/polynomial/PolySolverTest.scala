@@ -1,4 +1,4 @@
-package cubic
+package org.hammerlab.math.polynomial
 
 import cats.syntax.show._
 import hammerlab.iterator._
@@ -89,7 +89,27 @@ abstract class PolySolverTest(N: Int)
                           roots: Seq[Complex[T]],
                          coeffs: Seq[T]) {
     override def toString: String =
-      s"roots: ${(reals ++ imags.map(_.show)).mkString(" ")}\t coeffs: ${coeffs.mkString(" ")}"
+      s"rts: ${(reals ++ imags.map(_.show)).mkString(" ")}\t coeffs: ${coeffs.mkString(" ")}"
+  }
+
+  object TestCase {
+    def apply[T: Ring](reals: Seq[R[T]],
+                       imags: Seq[(ImaginaryRootPair[T], Int)],
+                       scale: T): TestCase[T] = {
+      val roots =
+        reals
+          .flatMap(_.complex) ++
+        imags
+          .flatMap { case (ab, d) ⇒ fill(d)(ab) }
+          .flatMap(_.complex)
+
+      TestCase(
+        reals,
+        imags,
+        roots,
+        coeffs(roots, scale)
+      )
+    }
   }
 
   /**

@@ -1,19 +1,17 @@
 package cubic
 
 import cubic.Root.Single
+import org.hammerlab.Suite
 import org.hammerlab.math.syntax.Arithmetic._
 import org.hammerlab.math.syntax.Math._
-import org.hammerlab.Suite
 
 import scala.Array.fill
 import scala.math.{ cbrt, sqrt }
-import scala.scalajs.js.annotation.JSExport
 
-@JSExport
 class DepressedCubicTest
   extends Suite {
 
-  ε = 1e-6
+  ε = 1e-10
 
   type Dbl = Double
 
@@ -30,13 +28,13 @@ class DepressedCubicTest
   import Root._
 
   test("p == 0") {
-//    chk(0,  0)(Triple(0))
-//    chk(0,  1)(-1)
-//    chk(0, -1)( 1)
+    chk(0,  0)(Triple(0))
+    chk(0,  1)(-1)
+    chk(0, -1)( 1)
     chk(0, -2)(cbrt(2))
-//    chk(0,  2)(-cbrt(2))
-//    chk(0, -8)( 2)
-//    chk(0,  8)(-2)
+    chk(0,  2)(-cbrt(2))
+    chk(0, -8)( 2)
+    chk(0,  8)(-2)
   }
 
   test("q == 0") {

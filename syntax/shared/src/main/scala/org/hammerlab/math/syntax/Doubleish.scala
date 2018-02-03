@@ -22,4 +22,8 @@ object Doubleish {
 
   implicit def ord[D](implicit d: Doubleish[D]): Ordering[D] =
     Ordering.by[D, Double](d(_))(Ordering.Double)
+
+  implicit class DoubleishOps[T](val t: T) extends AnyVal {
+    def toDouble(implicit d: Doubleish[T]): Double = d(t)
+  }
 }

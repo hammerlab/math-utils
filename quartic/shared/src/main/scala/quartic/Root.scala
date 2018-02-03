@@ -2,8 +2,10 @@ package quartic
 
 import org.hammerlab.math.syntax.Arithmetic
 import org.hammerlab.math.format.showSuperscript
+import org.hammerlab.math.polynomial
 
-sealed abstract class Root[D](val degree: Int) {
+sealed abstract class Root[D](val degree: Int)
+  extends polynomial.Root[D] {
   def value: D
   override def toString: String = s"$value${showSuperscript.show(degree)}"
 }

@@ -21,37 +21,12 @@ object DepressedQuartic {
   )(
       implicit ε: Tolerance  // fuzzy lt/gt/eq comparisons
   ):
-    Seq[Root[T]] = {
+    Seq[T] = {
     println(s"\tdepressed: $c $d $e")
     val singleRoots =
       if (d === 0) {
         // Biquadratic case
-        val c2 = -c/2
-        val c22 = c2 * c2
-        (
-          if (c22 === e) {
-            Seq(
-              c2,
-              c2
-            )
-          } else if (c22 > e) {
-            val sq = (c22 - e).sqrt
-            println(s"\tsq: $sq")
-            Seq(
-              c2 - sq,
-              c2 + sq
-            )
-          } else
-            Nil
-        )
-        .filter(_ >= 0)
-        .flatMap {
-          d ⇒
-            val sq = d.sqrt
-            println(s"\td: $d, sq: $sq")
-            Seq(-sq, sq)
-        }
-        .sorted
+        biquadratic(c, e)
       } else {
         val cubics =
           Cubic.monic[T](
@@ -67,29 +42,33 @@ object DepressedQuartic {
           .find(_ >= 0) match {
             case Some(r) ⇒
 
-              println(s"\td: $r")
-
               val sqr2 = r.sqrt / 2
-              val r2a = -r - (2 * c: T)
+              val r2a = -r - c*2
               val bd = d / sqr2
-              val n1 = r2a - bd
-              val n2 = r2a + bd
-              def rootPair(sq: T, n: T) =
-                if (n >= 0) {
-                  val s = n.sqrt / 2
-                  Seq(
-                    sq - s,
-                    sq + s
-                  )
-                } else {
-                  Nil
-                }
 
-              (
-                rootPair( sqr2, n1) ++
-                rootPair(-sqr2, n2)
-              )
-              .sorted
+              val pair1 =
+                if (r2a >= bd) {
+                  val s = (r2a - bd).sqrt / 2
+                  Seq(
+                    sqr2 - s,
+                    sqr2 + s
+                  )
+                } else
+                  Nil
+
+              val pair2 =
+                if (r2a >= -bd) {
+                  val s = (r2a + bd).sqrt / 2
+                  Seq(
+                    -sqr2 - s,
+                    -sqr2 + s
+                  )
+                } else
+                  Nil
+
+              println(s"\tr: $r, p1: $pair1, p2: $pair2, sqr2: $sqr2, r2a $r2a bd $bd")
+
+              (pair1 ++ pair2).sorted
             case None ⇒
               throw new Exception(
                 s"no resolvent cubic root found for $c $d $e"
@@ -97,31 +76,94 @@ object DepressedQuartic {
           }
       }
 
-    println(s"\tsingles: $singleRoots")
+//    println(s"\tsingles: $singleRoots")
 
-    val iter = singleRoots.iterator.buffered
+    singleRoots
+      //group(singleRoots)
+  }
 
-    new Iterator[Root[T]] {
-      override def hasNext: Boolean = iter.hasNext
-      override def next(): Root[T] = {
-        val root = iter.next
-        var last = root
-        var n = 1
-        var sum = root
-        while (iter.hasNext && iter.head === last) {
-          n += 1
-          last = iter.next
-          sum += last
-        }
-        def avg = sum / n
-        n match {
-          case 1 ⇒    Single(root)
-          case 2 ⇒    Double( avg)
-          case 3 ⇒    Triple( avg)
-          case 4 ⇒ Quadruple( avg)
+  def group[
+      T: Doubleish
+       : Arithmetic.I
+       : Arithmetic.D
+  ](
+      singles: Seq[T]
+  )(
+      implicit
+      ε: Tolerance
+  ):
+      Seq[Root[T]] =
+    if (singles.isEmpty)
+      Vector()
+    else {
+      import math.abs
+      import Doubleish.DoubleishOps
+      val M = singles.map(d ⇒ abs(d.toDouble)).max
+      val iter = singles.iterator.buffered
+
+      new Iterator[Root[T]] {
+        override def hasNext: Boolean = iter.hasNext
+        override def next(): Root[T] = {
+          val root = iter.next
+          var last = root
+          var n = 1
+          var sum = root
+          println(s"dep quar root: $last")
+          while (iter.hasNext && new FuzzyCmpOps(M).===(abs(iter.head.toDouble - last.toDouble) + M)) {
+            n += 1
+            last = iter.next
+            sum += last
+          }
+          def avg = sum / n
+          n match {
+            case 1 ⇒    Single(root)
+            case 2 ⇒    Double( avg)
+            case 3 ⇒    Triple( avg)
+            case 4 ⇒ Quadruple( avg)
+          }
         }
       }
+      .toVector
     }
-    .toVector
+
+  def biquadratic[
+      T: Math
+       : Arithmetic.I
+       : Arithmetic.D
+       : Doubleish
+  ](
+      c: T,
+      e: T
+   )(
+      implicit ε: Tolerance  // fuzzy lt/gt/eq comparisons
+   ):
+      Seq[T] = {
+    val c2 = -c/2
+    val c22 = c2 * c2
+    println(s"\tc2: $c2, c22: $c22, e: $e")
+    (
+      if (c22 === e) {
+        Seq(
+          c2,
+          c2
+        )
+      } else if (c22 > e) {
+        val sq = (c22 - e).sqrt
+        println(s"\tsq: $sq")
+        Seq(
+          c2 - sq,
+          c2 + sq
+        )
+      } else
+        Nil
+    )
+    .filter(_ >= 0)
+    .flatMap {
+      d ⇒
+        val sq = d.sqrt
+        println(s"\td: $d, sq: $sq")
+        Seq(-sq, sq)
+    }
+    .sorted
   }
 }

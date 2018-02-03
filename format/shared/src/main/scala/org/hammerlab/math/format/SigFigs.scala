@@ -18,9 +18,9 @@ object SigFigs {
   /**
    * Given a [[SigFigs]] and [[Exponent]]-format, render a [[Double]] to a [[String]]
    */
-  implicit def toShow(implicit
-                      s: SigFigs,
-                      ef: Exponent = Exponent.default): Show[Double] =
+  implicit def showSigFigs(implicit
+                           s: SigFigs,
+                           ef: Exponent = Exponent.default): Show[Double] =
     new Show[Double] {
       override def show(d: Double): String =
         if (d < 0)

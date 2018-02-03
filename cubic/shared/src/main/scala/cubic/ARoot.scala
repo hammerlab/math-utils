@@ -1,6 +1,6 @@
 package cubic
 
-import hammerlab.polynomial
+import org.hammerlab.math.polynomial
 import org.hammerlab.math.syntax.Arithmetic
 
 /**

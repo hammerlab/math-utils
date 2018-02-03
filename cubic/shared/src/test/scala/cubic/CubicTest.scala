@@ -1,12 +1,10 @@
 package cubic
 
+import org.hammerlab.math.polynomial.PolySolverTest
 import org.hammerlab.math.syntax.Arithmetic._
 import org.hammerlab.math.syntax.Math._
 import spire.algebra.Ring
 
-import scala.scalajs.js.annotation.JSExport
-
-@JSExport
 class CubicTest
   extends PolySolverTest(3) {
 
