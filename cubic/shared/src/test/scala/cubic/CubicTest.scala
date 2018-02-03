@@ -2,19 +2,25 @@ package cubic
 
 import org.hammerlab.math.polynomial.PolySolverTest
 import org.hammerlab.math.syntax.Arithmetic._
+import org.hammerlab.math.syntax.Doubleish
 import org.hammerlab.math.syntax.Math._
-import spire.algebra.Ring
+import spire.algebra.{ Ring, Semiring }
+import spire.math.Complex
+
+import Seq.fill
 
 class CubicTest
   extends PolySolverTest(3) {
 
   ε = 1e-8
 
-  override type R[T] = Root[T]
+  type R[T] = Root[T]
+  type Real[T] = R[T]
 
-  override def root[T: Ring](value: T, degree: Int): R[T] = Root(value, degree)
+  override def root[T](value: T, degree: Int) = Seq(Root(value, degree))
 
-  override def M: Int = 5
+  val M: Int = 5
+
 
   test("roots sweep") {
     for {
@@ -29,8 +35,9 @@ class CubicTest
   }
 
   test("random roots") {
+    import cubic.Root.doubleish
     for {
-      t @ TestCase(reals, _, _, Seq(a, b, c, d)) <- randomCases
+      t @ TestCase(reals, _, _, Seq(a, b, c, d)) <- randomCases(doubleish(Doubleish.id))
     } withClue(t.toString) {
       ===(
         Cubic[Dbl](a, b, c, d).toList,
@@ -82,4 +89,6 @@ class CubicTest
       )
     )
   }
+
+  override def toComplex[T: Ring](r: Root[T]): Seq[Complex[T]] = fill(r.degree)(Complex(r.value))
 }

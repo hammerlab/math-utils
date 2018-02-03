@@ -1,5 +1,8 @@
 package org.hammerlab.math.syntax
 
+import spire.math.Complex
+import spire.implicits._
+
 /**
  * Type-class with various math-operations
  */
@@ -59,5 +62,14 @@ object Math {
             throw new IllegalArgumentException(s"Illegal arccos: $t")
         else
           math.acos(t)
+    }
+
+  implicit val complex =
+    new Math[Complex[Double]] {
+      override def ^(base: Complex[Double], exp: Double): Complex[Double] = base.pow(exp)
+      override def unary_-(t: Complex[Double]): Complex[Double] = -t
+      override def sqrt(t: Complex[Double])(implicit ε: Tolerance): Complex[Double] = t.sqrt
+      override def cos(t: Complex[Double]): Complex[Double] = t.cos
+      override def acos(t: Complex[Double])(implicit ε: Tolerance): Complex[Double] = t.acos
     }
 }

@@ -1,5 +1,8 @@
 package org.hammerlab.math.syntax
 
+import spire.math.Complex
+import spire.implicits._
+
 trait Doubleish[T] {
   def apply(t: T): Double
 }
@@ -26,4 +29,9 @@ object Doubleish {
   implicit class DoubleishOps[T](val t: T) extends AnyVal {
     def toDouble(implicit d: Doubleish[T]): Double = d(t)
   }
+
+  implicit def complex: Doubleish[Complex[Double]] =
+    new Doubleish[Complex[Double]] {
+      override def apply(c: Complex[Double]): Double = c.norm
+    }
 }

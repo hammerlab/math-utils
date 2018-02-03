@@ -5,7 +5,7 @@ default(
 
 lazy val cubic = crossProject.settings(
   dep(
-    iterators % "2.1.0".snapshot tests,
+    iterators % "2.1.0".snapshot,
     shapeless,
     spire
   )
@@ -70,7 +70,8 @@ lazy val stats = project.settings(
 lazy val syntax = crossProject.settings(
   v"1.0.0",
   dep(
-    cats
+    cats,
+    spire
   ),
   testDeps := Seq(scalatest)
 ).dependsOn(

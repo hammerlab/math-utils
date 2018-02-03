@@ -1,7 +1,8 @@
 package cubic
 
 import org.hammerlab.math.polynomial
-import org.hammerlab.math.syntax.Arithmetic
+import org.hammerlab.math.polynomial.Real
+import org.hammerlab.math.syntax.{ Arithmetic, Doubleish }
 
 /**
  * This file is named ARoot.scala instead of Root.scala because it needs to come before "Cubic.scala" lexicographically,
@@ -43,5 +44,10 @@ object Root {
       override def -(l: Root[D], r: D) = map[D, D](_ - r)(l)
       override def *(l: Root[D], r: D) = map[D, D](_ * r)(l)
       override def /(l: Root[D], r: D) = map[D, D](_ / r)(l)
+    }
+
+  def doubleish[T](implicit d: Doubleish[T]): Doubleish[Root[T]] =
+    new Doubleish[Root[T]] {
+      override def apply(t: Root[T]): scala.Double = d(t.value)
     }
 }

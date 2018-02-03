@@ -1,6 +1,7 @@
 package org.hammerlab.math.syntax
 
 import Arithmetic.ReverseArithmeticOps
+import spire.math.Complex
 
 trait Arithmetic[L, R] {
   def +(l: L, r: R): L
@@ -42,10 +43,28 @@ object Arithmetic
     }
 
   implicit val double: Arithmetic.I[Double] =
-    new Arithmetic[Double, Double] {
+    new Arithmetic.I[Double] {
       override def +(l: Double, r: Double): Double = l + r
       override def -(l: Double, r: Double): Double = l - r
       override def *(l: Double, r: Double): Double = l * r
       override def /(l: Double, r: Double): Double = l / r
+    }
+
+  import spire.implicits._
+
+  implicit val complex =
+    new Arithmetic.I[Complex[Double]] {
+      override def +(l: Complex[Double], r: Complex[Double]): Complex[Double] = l + r
+      override def -(l: Complex[Double], r: Complex[Double]): Complex[Double] = l - r
+      override def *(l: Complex[Double], r: Complex[Double]): Complex[Double] = l * r
+      override def /(l: Complex[Double], r: Complex[Double]): Complex[Double] = l / r
+    }
+
+  implicit val complexDouble =
+    new Arithmetic.D[Complex[Double]] {
+      override def +(l: Complex[Double], r: Double): Complex[Double] = l + r
+      override def -(l: Complex[Double], r: Double): Complex[Double] = l - r
+      override def *(l: Complex[Double], r: Double): Complex[Double] = l * r
+      override def /(l: Complex[Double], r: Double): Complex[Double] = l / r
     }
 }
