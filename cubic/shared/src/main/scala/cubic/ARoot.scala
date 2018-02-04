@@ -45,9 +45,4 @@ object Root {
       override def *(l: Root[D], r: D) = map[D, D](_ * r)(l)
       override def /(l: Root[D], r: D) = map[D, D](_ / r)(l)
     }
-
-  def doubleish[T](implicit d: Doubleish[T]): Doubleish[Root[T]] =
-    new Doubleish[Root[T]] {
-      override def apply(t: Root[T]): scala.Double = d(t.value)
-    }
 }

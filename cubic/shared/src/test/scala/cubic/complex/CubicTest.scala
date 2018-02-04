@@ -6,7 +6,6 @@ import org.hammerlab.math.syntax.Doubleish, Doubleish.DoubleishOps
 import spire.algebra.Ring
 import spire.math.Complex
 import spire.syntax.all._
-import Real.doubleish
 
 import scala.Seq.fill
 
@@ -43,8 +42,9 @@ class CubicTest
   }
 
   test("random roots") {
+    import Real.doubleish
     for {
-      t @ TestCase(_, _, _, Seq(a, b, c, d)) <- randomCases(doubleish(Doubleish.id))
+      t @ TestCase(_, _, _, Seq(a, b, c, d)) <- randomCases(doubleish)
     } withClue(s"$t:\n") {
       ===(
         Cubic.doubleResult.apply(a, b, c, d),
@@ -52,7 +52,6 @@ class CubicTest
       )
     }
   }
-
 
   override type Real[T] = polynomial.Real[T]
 

@@ -3,10 +3,20 @@ package quartic
 import hammerlab.iterator._
 import org.hammerlab.math.polynomial.PolySolverTest
 import spire.algebra.Ring
-import spire.implicits._
+import spire.syntax.all._
+import spire.implicits.DoubleAlgebra
+import org.hammerlab.math.polynomial.Root.doubleish
+import spire.math.Complex
+import Seq.fill
 
 class QuarticTest
   extends PolySolverTest(4) {
+
+  override type R[T] = Root[T]
+  override type Real[T] = Root[T]
+  override def root[T](value: T, degree: Int) = Seq(Root(value, degree))
+  override def toComplex[T: Ring](r: Root[T]): Seq[Complex[T]] = fill(r.degree)(Complex(r.value))
+  override val casePrintInterval: Int = 1
 
   // Maximum root value (positive or negative) to sweep over while checking [[Quartic]]-solver
   val M = 4
@@ -34,8 +44,9 @@ class QuarticTest
   }
 
   test("random roots") {
+    import org.hammerlab.math.polynomial.Root.doubleish
     for {
-      t @ TestCase(reals, _, _, Seq(a, b, c, d, e)) ← randomCases
+      t @ TestCase(reals, _, _, Seq(a, b, c, d, e)) ← randomCases(doubleish)
     } withClue(t.toString + ":\n") {
       ===(
         Quartic[Dbl](a, b, c, d, e).toList,
@@ -109,10 +120,6 @@ class QuarticTest
     )
   }
 
-  override val casePrintInterval: Int = 1
-
-  override type R[T] = Root[T]
-
   //  test("quad root") {
 //    val value = 0.22606201283216426
 //    val root = Root(value, 4)
@@ -131,5 +138,5 @@ class QuarticTest
 //      roots
 //    )
 //  }
-  override def root[T: Ring](value: T, degree: Int): Root[T] = Root(value, degree)
+//  override def root[T: Ring](value: T, degree: Int): Root[T] = Root(value, degree)
 }

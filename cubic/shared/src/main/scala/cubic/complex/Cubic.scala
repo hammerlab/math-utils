@@ -1,5 +1,6 @@
 package cubic.complex
 
+import org.hammerlab.math.polynomial.ImaginaryRootPair.pairs
 import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, Result }
 import org.hammerlab.math.syntax.Tolerance
 import spire.algebra._
@@ -26,12 +27,39 @@ abstract class Cubic[CoeffT: Field, ResultT](implicit ε: Tolerance) {
   def depressed(p: CoeffT, q: CoeffT): Seq[ResultT]
 }
 
+trait DoubleComplex {
+  def diff(a: Complex[Double], b: Double): Complex[Double] = a - b
+}
+
+trait DoubleResult {
+  def diff(a: Result[Double], b: Double): Result[Double] =
+    a match {
+      case Real(r) ⇒ Real(r - b)
+      case ImaginaryRootPair(r, c) ⇒ ImaginaryRootPair(r - b, c)
+    }
+
+  def makeResults(complexes: Seq[Complex[Double]])(implicit ε: Tolerance): Seq[Result[Double]] = {
+    val scale = complexes.flatMap { case Complex(a, b) ⇒ Seq(abs(a), abs(b)) }.max
+
+    complexes
+      .partition {
+        case Complex(a, b) ⇒ scale + b === scale
+      } match {
+        case (reals, imags) ⇒
+          reals
+            .map(r ⇒ Real(r.real))
+            .sortBy(_.t) ++
+          pairs(imags.toList).sortBy(_.a)
+      }
+  }
+}
+
 object Cubic {
 
   implicit def doubleComplex(implicit ε: Tolerance) =
-    new Cubic[Double, Complex[Double]] {
+    new Cubic[Double, Complex[Double]] with DoubleComplex {
 
-      override def diff(a: Complex[D], b: D): Complex[D] = a - b
+      //override def diff(a: Complex[D], b: D): Complex[D] = a - b
 
       override def monic(b: D, c: D, d: D): Seq[Complex[D]] = {
         val b3   = b / 3
@@ -89,8 +117,8 @@ object Cubic {
 
             //      println(s"\tq22: $q22, p33: $p33")
 
-            val cos = abs(q2) / p3 / Complex(p3).sqrt
-            val sqp3 = Complex(p3).sqrt
+            val cos = abs(q2) / p3 / Complex(p3).nroot(2)
+            val sqp3 = Complex(p3).nroot(2)
             val sqp32 = sqp3 * 2
 
 //            println(s"\tdo acos: $cos (${cos.acos} ${cos.acos / 3})")
@@ -114,40 +142,12 @@ object Cubic {
 
 
   implicit def doubleResult(implicit ε: Tolerance) =
-    new Cubic[Double, Result[D]] {
-
-      override def diff(a: Result[D], b: D): Result[D] =
-        a match {
-          case Real(r) ⇒ Real(r - b)
-          case ImaginaryRootPair(r, c) ⇒ ImaginaryRootPair(r - b, c)
-        }
-
-      def makeResults(complexes: Seq[Complex[D]]): Seq[Result[D]] = {
-        val scale = complexes.flatMap { case Complex(a, b) ⇒ Seq(abs(a), abs(b)) }.max
-
-        complexes
-          .partition {
-            case Complex(a, b) ⇒ scale + b === scale
-          } match {
-            case (reals, Nil) ⇒ reals.map(r ⇒ Real(r.real)).sortBy(_.t)
-            case (Seq(r), Seq(Complex(a1, b1), Complex(a2, b2))) ⇒
-              Seq(
-                Real(r.real),
-                ImaginaryRootPair(
-                  (a1 + a2) / 2,
-                  abs((b1 - b2) / 2)
-                )
-              )
-          }
-      }
-
+    new Cubic[Double, Result[D]] with DoubleResult {
       override def     monic(b: D, c: D, d: D): Seq[Result[D]] = makeResults(doubleComplex.    monic(b, c, d))
       override def depressed(      p: D, q: D): Seq[Result[D]] = makeResults(doubleComplex.depressed(   p, q))
     }
 
   type D = Double
-  type Res = Complex[D]
-
 
   /*  import Root.map
     import hammerlab.iterator._

@@ -3,7 +3,7 @@ package org.hammerlab.math.syntax
 import spire.math.Complex
 import spire.implicits._
 
-trait Doubleish[T] {
+trait Doubleish[-T] {
   def apply(t: T): Double
 }
 

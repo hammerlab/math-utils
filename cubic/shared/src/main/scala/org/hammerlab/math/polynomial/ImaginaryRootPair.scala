@@ -1,33 +1,14 @@
 package org.hammerlab.math.polynomial
 
-import org.hammerlab.math.syntax.{ Arithmetic, Doubleish }
-import spire.algebra.Ring
+import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp, Tolerance }
+import spire.algebra.{ Field, NRoot, Ring, Rng, Signed }
 import spire.math.Complex
+import spire.math.abs
+import spire.implicits._
 
-sealed trait Result[T] {
-//  def +(d: Double): Result[T]
-//  def -(d: Double): Result[T]
-//  def *(d: Double): Result[T]
-//  def /(d: Double): Result[T]
-}
+sealed trait Result[T]
 
-//object Result {
-//  def doubleArithmetic[T] =
-//    new Arithmetic.D[Result[T]] {
-//      override def +(l: Result[T], r: Double): Result[T] = l + r
-//      override def -(l: Result[T], r: Double): Result[T] = l - r
-//      override def *(l: Result[T], r: Double): Result[T] = l * r
-//      override def /(l: Result[T], r: Double): Result[T] = l / r
-//    }
-//}
-
-import Arithmetic._
 case class Real[T](t: T) extends Result[T] {
-
-//  override def +(d: Double) = Real(t + d)
-//  override def -(d: Double) = Real(t - d)
-//  override def *(d: Double) = Real(t * d)
-//  override def /(d: Double) = Real(t / d)
   override def toString: String = s"$t"
 }
 
@@ -51,15 +32,9 @@ case class ImaginaryRootPair[T](a: T, b: T) extends Result[T] {
       "±" +
       (if (b == 1) "" else s"$b") +
       "i"
-
-//  override def +(d: Double): ImaginaryRootPair[T] = ImaginaryRootPair(a + d, b)
-//  override def -(d: Double): ImaginaryRootPair[T] = ImaginaryRootPair(a - d, b)
-//  override def *(d: Double): ImaginaryRootPair[T] = ImaginaryRootPair(a * d, b)
-//  override def /(d: Double): ImaginaryRootPair[T] = ImaginaryRootPair(a / d, b)
 }
 
 object ImaginaryRootPair {
-  import spire.implicits._
   implicit class ImaginaryRootPairOps[T](r: ImaginaryRootPair[T]) {
     def complex(implicit e: Ring[T]): Seq[Complex[T]] =
       Seq(
@@ -67,4 +42,47 @@ object ImaginaryRootPair {
         Complex(r.a, r.b)
       )
   }
+
+  def pairs[D: Field : Signed](imags: List[Complex[D]])(implicit ε: Tolerance, ord: Ordering[D], cmp: FuzzyCmp[D, D]): List[ImaginaryRootPair[D]] =
+    imags match {
+      case Nil ⇒ Nil
+      case head :: tail ⇒
+        val conj = head.conjugate
+        val next = List.newBuilder[Complex[D]]
+        var min: Option[(Complex[D], D)] = None
+//        println(s"pairing $head (conj: $conj)")
+        tail
+          .foreach {
+            imag ⇒
+              val Complex(a, b) = imag - conj
+              val distance = a*a + b*b
+//              println(s"distance from $imag: $distance")
+              min match {
+                case None ⇒
+                  min = Some(imag → distance)
+                case Some((prev, m)) if ord.lt(distance, m) ⇒
+                  next += prev
+                  min = Some(imag → distance)
+                case _ ⇒
+                  next += imag
+              }
+          }
+
+        import org.hammerlab.math.syntax.FuzzyCmp._
+        (
+          (head, min) match {
+            case (Complex(a1, b1), Some((Complex(a2, b2), d))) ⇒
+              val m = Seq(a1, b1, a2, b2).max
+              if (m + d !== m)
+                throw new IllegalArgumentException(
+                  s"Bad conjugate pairs: $head $min, distance: $d imags: $imags"
+                )
+              ImaginaryRootPair(
+                (a1 + a2) / 2,
+                abs((b1 - b2) / 2)
+              )
+          }
+        ) :: pairs(next.result())
+
+    }
 }

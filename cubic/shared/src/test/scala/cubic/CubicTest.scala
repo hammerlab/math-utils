@@ -21,7 +21,6 @@ class CubicTest
 
   val M: Int = 5
 
-
   test("roots sweep") {
     for {
       t @ TestCase(reals, _, _, Seq(a, b, c, d)) ← rootSweep
@@ -35,9 +34,9 @@ class CubicTest
   }
 
   test("random roots") {
-    import cubic.Root.doubleish
+    import org.hammerlab.math.polynomial.Root.doubleish
     for {
-      t @ TestCase(reals, _, _, Seq(a, b, c, d)) <- randomCases(doubleish(Doubleish.id))
+      t @ TestCase(reals, _, _, Seq(a, b, c, d)) <- randomCases(doubleish)
     } withClue(t.toString) {
       ===(
         Cubic[Dbl](a, b, c, d).toList,

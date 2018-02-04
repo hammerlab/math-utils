@@ -33,7 +33,7 @@ abstract class PolySolverTest(N: Int)
       a ← -M to M
       b ←  1 to M
     } yield
-      ImaginaryRootPair(a, b)
+      ImaginaryRootPair[Dbl](a, b)
 
   def toComplex[T: Ring](r: R[T]): Seq[Complex[T]]
 
@@ -68,7 +68,7 @@ abstract class PolySolverTest(N: Int)
                           roots: Seq[Complex[T]],
                          coeffs: Seq[T]) {
     override def toString: String =
-      s"rts: ${(reals ++ imags.map(_.show)).mkString(" ")}\t coeffs: ${coeffs.mkString(" ")}"
+      s"rts: ${(reals ++ imags.map(_.show)).mkString(", ")}\t coeffs: ${coeffs.mkString(" ")}"
   }
 
   object TestCase {
@@ -94,13 +94,13 @@ abstract class PolySolverTest(N: Int)
   /**
    * Iterator over all sets of `num` integer-roots in the range [-M,M] (including double/triple/quadruple roots)
    */
-  def realRootsIter(num: Int): Iterator[List[R[Int]]] =
+  def realRootsIter(num: Int): Iterator[List[R[Dbl]]] =
     (-M to M)
       .unorderedSubsetsWithReplacement(num)
       .map {
         _.flatMap {
           case (value, arity) ⇒
-            root(value, arity)
+            root[Dbl](value, arity)
         }
       }
 
@@ -108,7 +108,7 @@ abstract class PolySolverTest(N: Int)
    * Generate roots and corresponding coefficients for all possible mixtures of real/imaginary roots with coefficients
    * in [-M,m]
    */
-  def rootSweep: Iterator[TestCase[Int]] =
+  def rootSweep: Iterator[TestCase[Dbl]] =
     printEveryN(
       for {
         numImaginaryRootPairs ← (0 to N/2).iterator
@@ -135,7 +135,7 @@ abstract class PolySolverTest(N: Int)
           reals,
           imags,
           roots,
-          coeffs(roots, scale)
+          coeffs[Dbl](roots, scale)
         )
     )
 
@@ -215,7 +215,7 @@ abstract class PolySolverTest(N: Int)
           reals,
           imags,
           roots,
-          coeffs(roots, scale)
+          coeffs[Dbl](roots, scale)
         )
     )
   }
