@@ -5,10 +5,12 @@ import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, 
 import org.hammerlab.math.syntax.{ Doubleish, Tolerance }
 import org.hammerlab.math.syntax.FuzzyCmp.FuzzyCmpOps
 import org.hammerlab.test.CanEq
+import Doubleish.DoubleishOps
 import spire.algebra.Ring
 import spire.math.Complex
 import spire.syntax.all._
 import spire.implicits.DoubleAlgebra
+import ImaginaryRootPair.ImaginaryRootPairOps
 
 import Seq.fill
 
@@ -24,13 +26,8 @@ class QuarticTest
       case ImaginaryRootPair(a, b) ⇒ Seq(Complex(a, -b), Complex(a, b))
     }
 
-  ε = 1e-6
-
   override val casePrintInterval: Int = 1000
 
-  import ImaginaryRootPair.ImaginaryRootPairOps
-
-  import Doubleish.DoubleishOps
   def expected[T: Doubleish](t: TestCase[T]): Seq[Complex[Dbl]] = {
     (
       t
@@ -49,15 +46,32 @@ class QuarticTest
     )
   }
 
-  import spire.implicits.DoubleAlgebra
+  type Results = Seq[Complex[Dbl]]
+  case class ResultsCmp(msg: String, l: Results, r: Results) {
+    override def toString: String =
+      (
+        msg ::
+        l
+          .zip(r)
+          .map { case (l, r) ⇒ s"$l\t\t$r" }
+          .toList
+      )
+      .mkString("\n\t")
+  }
 
   import math.max
-  implicit def complexCanEq(implicit ε: Tolerance): CanEq[Seq[Complex[Dbl]], Seq[Complex[Dbl]]] =
-    new CanEq[Seq[Complex[Dbl]], Seq[Complex[Dbl]]] {
-      override type Error = (String, Seq[Complex[Dbl]], Seq[Complex[Dbl]])
-      override def eqv(t: Seq[Complex[Dbl]], u: Seq[Complex[Dbl]]): Option[Error] =
+  implicit def complexCanEq(implicit ε: Tolerance): CanEq[Results, Results] =
+    new CanEq[Results, Results] {
+      override type Error = ResultsCmp //String //(String, Results, Results)
+      override def eqv(t: Results, u: Results): Option[Error] =
         if (t.size != u.size)
-          Some((s"Sizes don't match: $t vs $u", t, u))
+          Some(
+            ResultsCmp(
+              s"Sizes don't match: $t vs $u",
+              t,
+              u
+            )
+          )
         else {
           val (r, (idx, maxErr, sum)) =
             u
@@ -69,15 +83,25 @@ class QuarticTest
                       .zip(r)
                       .zipWithIndex
                       .map {
-                        case ((l, r), idx) ⇒ (l - r).abs → idx
+                        case ((l, r), idx) ⇒
+                          (l - r).abs → idx
                       }
-                      .foldLeft((-1, 0.0, 0.0)) {
-                        case ((prevIdx, maxErr, sum), (cur, idx)) ⇒
+                      .foldLeft(
+                        (
+                           -1,  // index where maximum error was observed
+                          0.0,  // maximum error observed
+                          0.0   // sum of error across all elements
+                        )
+                      ) {
+                        case (
+                          (maxIdx, maxErr, sum),
+                          (cur, idx)
+                        ) ⇒
                           (
-                            if (cur >= M)
+                            if (cur >= maxErr)
                               idx
                             else
-                              prevIdx,
+                              maxIdx,
                             max(maxErr, cur),
                             sum + cur
                           )
@@ -89,7 +113,7 @@ class QuarticTest
             None
           else {
             Some(
-              (
+              ResultsCmp(
                 s"Best alignment of complex sequences was still bad: err $maxErr at idx $idx, sum $sum, ε $ε",
                 t,
                 r
@@ -102,10 +126,7 @@ class QuarticTest
   def check(t: TestCase[Dbl])(implicit ε: Tolerance = ε): Unit =
     withClue(s"$t:\n") {
       val Seq(a, b, c, d, e) = t.coeffs
-      //val actual: Seq[R[Dbl]] = Quartic.doubleResult.apply(a, b, c, d, e)
-      val actual: Seq[Complex[Dbl]] = {
-        Quartic.doubleComplex(this.ε).apply(a, b, c, d, e)
-      }
+      val actual: Results = Quartic.doubleComplex(this.ε).apply(a, b, c, d, e)
 
       // Test that the solver returns the correct roots, given the coefficients
       ===(
@@ -199,15 +220,5 @@ class QuarticTest
   test("random roots") {
     import Real.doubleish
     randomCases(doubleish).foreach(check(_)(1e-3))
-/*
-    for {
-      t @ TestCase(_, _, _, Seq(a, b, c, d, e)) <- randomCases(doubleish)
-    } withClue(s"$t:\n") {
-      ===(
-        Quartic.doubleResult.apply(a, b, c, d, e),
-        expected(t)
-      )
-    }
-*/
   }
 }
