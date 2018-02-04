@@ -43,6 +43,53 @@ object Quartic {
     new Quartic[D, Complex[D]]
       with DoubleComplex {
 
+      /**
+       * Attempt at directly solving the quartic without routing through the depressed quartic first
+       *
+       * This avoids loss of precision resulting from subtracting two numbers that are very close to one another (e.g.
+       * when computing the depressed-quartic coefficients for a polynomial of the form (x-r)³(x-r-ε) where
+       * |r| > 100*|ε|), but introduces corresponding precision-loss in other cases
+       *
+       * I'm not sure how to manage this precision-loss in a more principled way / it seems like a lot of work
+       */
+/*
+      override def monic(b: D, c: D, d: D, e: D): Seq[Complex[D]] = {
+        val cubics =
+          Cubic.doubleComplex.monic(
+            -c,
+            b*d - 4*e,
+            e*(4*c - b*b) - d*d
+          )
+
+        cubics
+          .map {
+            v ⇒
+              val s = (4*(v - c) + b*b).nroot(2)
+              println(s"\tcubic: $v $s")
+              (v, s)
+          }
+          .find(_._2 != 0) match {
+            case None ⇒ Seq(-b/4, -b/4, -b/4, -b/4)
+            case Some((v, s)) ⇒
+
+              val w = (b*v - 2*d) / s
+
+              val smb = s - b
+              val spb = s + b
+
+              val d1 = (smb*smb - 8*(v - w)).nroot(2)
+              val d2 = (spb*spb - 8*(v + w)).nroot(2)
+
+              Seq(
+                (smb - d1) / 4,
+                (smb + d1) / 4,
+                (-spb - d2) / 4,
+                (-spb + d2) / 4
+              )
+          }
+      }
+*/
+
       override def monic(b: D, c: D, d: D, e: D): Seq[Complex[D]] = {
         val b2 = -b/2
         val b4 = -b/4
@@ -63,7 +110,7 @@ object Quartic {
 
         def zero(v: D): Boolean = scale + v === scale
 
-        println(s"\tmonic: b $b c $c d $d e $e, dc $dc dd $dd de $de scale: $scale")
+        println(s"\tmonic: b $b c $c d $d e $e, dc $dc dd $dd de $de scale: $scale ε $ε")
 
         (
           if (zero(dd)) {

@@ -59,8 +59,6 @@ object Cubic {
   implicit def doubleComplex(implicit ε: Tolerance) =
     new Cubic[Double, Complex[Double]] with DoubleComplex {
 
-      //override def diff(a: Complex[D], b: D): Complex[D] = a - b
-
       override def monic(b: D, c: D, d: D): Seq[Complex[D]] = {
         val b3   = b / 3
         val b32  = b3 * b3
@@ -142,7 +140,8 @@ object Cubic {
 
 
   implicit def doubleResult(implicit ε: Tolerance) =
-    new Cubic[Double, Result[D]] with DoubleResult {
+    new Cubic[Double, Result[D]]
+      with DoubleResult {
       override def     monic(b: D, c: D, d: D): Seq[Result[D]] = makeResults(doubleComplex.    monic(b, c, d))
       override def depressed(      p: D, q: D): Seq[Result[D]] = makeResults(doubleComplex.depressed(   p, q))
     }

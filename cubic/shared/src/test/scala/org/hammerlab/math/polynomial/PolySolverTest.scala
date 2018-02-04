@@ -140,7 +140,9 @@ abstract class PolySolverTest(N: Int)
     )
 
   import scala.util.Random._
+  import math.exp
   def rnd(): Double = {
+    //exp(nextGaussian() * 5) * (if (nextBoolean()) 1 else -1)
     nextGaussian()
   }
 

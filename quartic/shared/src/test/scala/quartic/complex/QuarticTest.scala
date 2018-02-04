@@ -2,8 +2,8 @@ package quartic.complex
 
 import org.hammerlab.math.polynomial
 import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Result }
-import org.hammerlab.math.syntax.Doubleish
-import Doubleish.DoubleishOps
+import org.hammerlab.math.syntax.{ Doubleish, Tolerance }
+import cats.Eq
 import org.hammerlab.math.syntax.FuzzyCmp.FuzzyCmpOps
 import org.hammerlab.test.CanEq
 import spire.algebra.Ring
@@ -30,6 +30,7 @@ class QuarticTest
 
   import ImaginaryRootPair.ImaginaryRootPairOps
 
+/*
   def expected[T: Doubleish](t: TestCase[T]): Seq[R[Dbl]] =
     t
       .reals
@@ -42,11 +43,109 @@ class QuarticTest
         case (i @ ImaginaryRootPair(a, b), d) ⇒
           fill(d)(ImaginaryRootPair(a.toDouble, b.toDouble))
       }
+*/
 
-  def check(t: TestCase[Dbl]): Unit =
+  import Doubleish.DoubleishOps
+  def expected[T: Doubleish](t: TestCase[T]): Seq[Complex[Dbl]] = {
+    import spire.implicits.DoubleAlgebra
+    (
+      t
+        .reals
+        .map {
+          case Real(r) ⇒
+            Complex(r.toDouble)
+        } ++
+      t
+        .imags
+        .flatMap {
+          case (i @ ImaginaryRootPair(a, b), d) ⇒
+            fill(d)(ImaginaryRootPair(a.toDouble, b.toDouble))
+        }
+        .flatMap(_.complex)
+    )
+    //.sortBy(_.abs)
+  }
+
+/*
+  implicit def complexCanEq(implicit ε: Tolerance): CanEq[Complex[Dbl], Complex[Dbl]] =
+    new CanEq[Complex[Dbl], Complex[Dbl]] {
+      override def eqv(x: Complex[Dbl], y: Complex[Dbl]): Boolean = {
+        //x.asPolarTuple
+        //        new FuzzyCmpOps(x.abs).===(y.abs) &&
+        val req = new FuzzyCmpOps(x.real).===(y.real)
+        val ieq = new FuzzyCmpOps(x.imag).===(y.imag)
+        println(s"cmp: $x $y, $req $ieq")
+        req && ieq
+      }
+    }
+*/
+
+//  implicit val complexOrd: Ordering[Complex[Dbl]] =
+//    new Ordering[Complex[Dbl]] {
+//      override def compare(x: Complex[Dbl], y: Complex[Dbl]): Int = ???
+//    }
+
+  import spire.implicits.DoubleAlgebra
+
+  import math.max
+  implicit def complexCanEq(implicit ε: Tolerance): CanEq[Seq[Complex[Dbl]], Seq[Complex[Dbl]]] =
+    new CanEq[Seq[Complex[Dbl]], Seq[Complex[Dbl]]] {
+      override type Error = (String, Seq[Complex[Dbl]], Seq[Complex[Dbl]])
+      override def eqv(t: Seq[Complex[Dbl]], u: Seq[Complex[Dbl]]): Option[Error] =
+        if (t.size != u.size)
+          Some((s"Sizes don't match: $t vs $u", t, u))
+        else {
+          val (r, (idx, maxErr, sum)) =
+            u
+              .permutations
+              .map {
+                r ⇒
+                  r →
+                    t
+                      .zip(r)
+                      .zipWithIndex
+                      .map {
+                        case ((l, r), idx) ⇒ (l - r).abs → idx
+                      }
+                      .foldLeft((-1, 0.0, 0.0)) {
+                        case ((prevIdx, maxErr, sum), (cur, idx)) ⇒
+                          (
+                            if (cur >= M)
+                              idx
+                            else
+                              prevIdx,
+                            max(maxErr, cur),
+                            sum + cur
+                          )
+                      }
+              }
+              .minBy(_._2._2)
+
+          if (doubleCanEq.eqv(maxErr, 0).isEmpty)
+            None
+          else {
+            Some(
+              (
+                s"Best alignment of complex sequences was still bad: err $maxErr at idx $idx, sum $sum, ε $ε",
+                t,
+                r
+              )
+            )
+          }
+          //if (new FuzzyCmpOps(maxErr).=== 0)
+        }
+    }
+
+  def check(t: TestCase[Dbl])(implicit ε: Tolerance = ε): Unit =
     withClue(s"$t:\n") {
       val Seq(a, b, c, d, e) = t.coeffs
-      val actual: Seq[R[Dbl]] = Quartic.doubleResult.apply(a, b, c, d, e)
+      //val actual: Seq[R[Dbl]] = Quartic.doubleResult.apply(a, b, c, d, e)
+      val actual: Seq[Complex[Dbl]] = {
+        import spire.implicits.DoubleAlgebra
+        Quartic.doubleComplex(this.ε).apply(a, b, c, d, e)//.sortBy(_.abs)
+      }
+
+      println(s"caneq: ${implicitly[CanEq[Complex[Dbl], Complex[Dbl]]]}")
 
       // Test that the solver returns the correct roots, given the coefficients
       ===(
@@ -125,9 +224,21 @@ class QuarticTest
     )
   }
 
+  test("simple hard triple") {
+    check(
+      TestCase(
+        Seq(Real(1.0), Real(1.0), Real(1.0), Real(1.01)),
+        Nil,
+        1.0
+      )
+    )(
+      1e-4
+    )
+  }
+
   test("random roots") {
     import Real.doubleish
-    randomCases(doubleish).foreach(check)
+    randomCases(doubleish).foreach(check(_)(1e-3))
 /*
     for {
       t @ TestCase(_, _, _, Seq(a, b, c, d, e)) <- randomCases(doubleish)
