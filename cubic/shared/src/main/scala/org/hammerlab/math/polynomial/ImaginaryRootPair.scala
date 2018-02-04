@@ -1,10 +1,9 @@
 package org.hammerlab.math.polynomial
 
 import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp, Tolerance }
-import spire.algebra.{ Field, NRoot, Ring, Rng, Signed }
-import spire.math.Complex
-import spire.math.abs
+import spire.algebra.{ Field, Ring, Signed }
 import spire.implicits._
+import spire.math.{ Complex, abs }
 
 sealed trait Result[T]
 
@@ -43,20 +42,24 @@ object ImaginaryRootPair {
       )
   }
 
-  def pairs[D: Field : Signed](imags: List[Complex[D]])(implicit ε: Tolerance, ord: Ordering[D], cmp: FuzzyCmp[D, D]): List[ImaginaryRootPair[D]] =
+  def pairs[D: Field : Signed](imags: List[Complex[D]])(
+      implicit
+        ε: Tolerance,
+      ord: Ordering[D],
+      cmp: FuzzyCmp[D, D]
+  )
+         : List[ImaginaryRootPair[D]] =
     imags match {
       case Nil ⇒ Nil
       case head :: tail ⇒
         val conj = head.conjugate
         val next = List.newBuilder[Complex[D]]
         var min: Option[(Complex[D], D)] = None
-//        println(s"pairing $head (conj: $conj)")
         tail
           .foreach {
             imag ⇒
               val Complex(a, b) = imag - conj
               val distance = a*a + b*b
-//              println(s"distance from $imag: $distance")
               min match {
                 case None ⇒
                   min = Some(imag → distance)
@@ -78,9 +81,11 @@ object ImaginaryRootPair {
                   s"Bad conjugate pairs: $head $min, distance: $d imags: $imags"
                 )
               ImaginaryRootPair(
-                (a1 + a2) / 2,
+                    (a1 + a2) / 2,
                 abs((b1 - b2) / 2)
               )
+            case _ ⇒
+              throw new IllegalArgumentException(s"Odd number of roots to pair? $imags")
           }
         ) :: pairs(next.result())
 

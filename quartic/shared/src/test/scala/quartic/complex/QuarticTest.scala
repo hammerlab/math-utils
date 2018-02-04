@@ -4,7 +4,7 @@ import org.hammerlab.math.polynomial
 import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Result }
 import org.hammerlab.math.syntax.{ Doubleish, Tolerance }
 import org.hammerlab.math.syntax.FuzzyCmp.FuzzyCmpOps
-import org.hammerlab.test.CanEq
+import org.hammerlab.test.Cmp
 import Doubleish.DoubleishOps
 import spire.algebra.Ring
 import spire.math.Complex
@@ -60,26 +60,25 @@ class QuarticTest
   }
 
   import math.max
-  implicit def complexCanEq(implicit ε: Tolerance): CanEq[Results, Results] =
-    new CanEq[Results, Results] {
-      override type Error = ResultsCmp //String //(String, Results, Results)
-      override def eqv(t: Results, u: Results): Option[Error] =
-        if (t.size != u.size)
+  implicit def complexCanEq(implicit ε: Tolerance): Cmp[Results] =
+    Cmp[Results, ResultsCmp](
+      (l, r) ⇒
+        if (l.size != r.size)
           Some(
             ResultsCmp(
-              s"Sizes don't match: $t vs $u",
-              t,
-              u
+              s"Sizes don't match: $l vs $r",
+              l,
+              r
             )
           )
         else {
-          val (r, (idx, maxErr, sum)) =
-            u
+          val (aligned, (idx, maxErr, sum)) =
+            r
               .permutations
               .map {
                 r ⇒
                   r →
-                    t
+                    l
                       .zip(r)
                       .zipWithIndex
                       .map {
@@ -109,19 +108,19 @@ class QuarticTest
               }
               .minBy(_._2._2)
 
-          if (doubleCanEq.eqv(maxErr, 0).isEmpty)
+          if (doubleCmp.eqv(maxErr, 0))
             None
           else {
             Some(
               ResultsCmp(
                 s"Best alignment of complex sequences was still bad: err $maxErr at idx $idx, sum $sum, ε $ε",
-                t,
-                r
+                l,
+                aligned
               )
             )
           }
         }
-    }
+    )
 
   def check(t: TestCase[Dbl])(implicit ε: Tolerance = ε): Unit =
     withClue(s"$t:\n") {
