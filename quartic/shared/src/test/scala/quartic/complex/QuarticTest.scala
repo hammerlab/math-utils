@@ -3,12 +3,12 @@ package quartic.complex
 import org.hammerlab.math.polynomial
 import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Result }
 import org.hammerlab.math.syntax.{ Doubleish, Tolerance }
-import cats.Eq
 import org.hammerlab.math.syntax.FuzzyCmp.FuzzyCmpOps
 import org.hammerlab.test.CanEq
 import spire.algebra.Ring
 import spire.math.Complex
 import spire.syntax.all._
+import spire.implicits.DoubleAlgebra
 
 import Seq.fill
 
@@ -26,28 +26,12 @@ class QuarticTest
 
   ε = 1e-6
 
-  override val casePrintInterval: Int = 1
+  override val casePrintInterval: Int = 1000
 
   import ImaginaryRootPair.ImaginaryRootPairOps
 
-/*
-  def expected[T: Doubleish](t: TestCase[T]): Seq[R[Dbl]] =
-    t
-      .reals
-      .map {
-        case Real(r) ⇒ Real(r.toDouble)
-      } ++
-    t
-      .imags
-      .flatMap {
-        case (i @ ImaginaryRootPair(a, b), d) ⇒
-          fill(d)(ImaginaryRootPair(a.toDouble, b.toDouble))
-      }
-*/
-
   import Doubleish.DoubleishOps
   def expected[T: Doubleish](t: TestCase[T]): Seq[Complex[Dbl]] = {
-    import spire.implicits.DoubleAlgebra
     (
       t
         .reals
@@ -63,27 +47,7 @@ class QuarticTest
         }
         .flatMap(_.complex)
     )
-    //.sortBy(_.abs)
   }
-
-/*
-  implicit def complexCanEq(implicit ε: Tolerance): CanEq[Complex[Dbl], Complex[Dbl]] =
-    new CanEq[Complex[Dbl], Complex[Dbl]] {
-      override def eqv(x: Complex[Dbl], y: Complex[Dbl]): Boolean = {
-        //x.asPolarTuple
-        //        new FuzzyCmpOps(x.abs).===(y.abs) &&
-        val req = new FuzzyCmpOps(x.real).===(y.real)
-        val ieq = new FuzzyCmpOps(x.imag).===(y.imag)
-        println(s"cmp: $x $y, $req $ieq")
-        req && ieq
-      }
-    }
-*/
-
-//  implicit val complexOrd: Ordering[Complex[Dbl]] =
-//    new Ordering[Complex[Dbl]] {
-//      override def compare(x: Complex[Dbl], y: Complex[Dbl]): Int = ???
-//    }
 
   import spire.implicits.DoubleAlgebra
 
@@ -132,7 +96,6 @@ class QuarticTest
               )
             )
           }
-          //if (new FuzzyCmpOps(maxErr).=== 0)
         }
     }
 
@@ -141,11 +104,8 @@ class QuarticTest
       val Seq(a, b, c, d, e) = t.coeffs
       //val actual: Seq[R[Dbl]] = Quartic.doubleResult.apply(a, b, c, d, e)
       val actual: Seq[Complex[Dbl]] = {
-        import spire.implicits.DoubleAlgebra
-        Quartic.doubleComplex(this.ε).apply(a, b, c, d, e)//.sortBy(_.abs)
+        Quartic.doubleComplex(this.ε).apply(a, b, c, d, e)
       }
-
-      println(s"caneq: ${implicitly[CanEq[Complex[Dbl], Complex[Dbl]]]}")
 
       // Test that the solver returns the correct roots, given the coefficients
       ===(
@@ -157,8 +117,6 @@ class QuarticTest
   test("sweep") {
     rootSweep.foreach(check)
   }
-
-  import spire.implicits.DoubleAlgebra
 
   test("double and imag pair") {
     check(
@@ -221,6 +179,8 @@ class QuarticTest
         Nil,
         -0.8856759931799498
       )
+    )(
+      1e-4
     )
   }
 

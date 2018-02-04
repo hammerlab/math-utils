@@ -20,18 +20,7 @@ abstract class Quartic[CoeffT: Field, ResultT](implicit ε: Tolerance) {
       e / a
     )
 
-  def monic(b: CoeffT, c: CoeffT, d: CoeffT, e: CoeffT): Seq[ResultT]/* = {
-    val b2 = -b/2
-    val b4 = -b/4
-    val b28 = b2 * b4
-
-    val dc = c - b28 * 3
-    val dd = b28*b + b2*c + d
-    val de = e + b4*d + b28*c/2 - b28*b28*3/4
-
-    depressed(dc, dd, de).map { diff(_, b4) }
-  }
-*/
+  def monic(b: CoeffT, c: CoeffT, d: CoeffT, e: CoeffT): Seq[ResultT]
 
   def depressed(c: CoeffT, d: CoeffT, e: CoeffT): Seq[ResultT]
 }
@@ -42,53 +31,6 @@ object Quartic {
   implicit def doubleComplex(implicit ε: Tolerance) =
     new Quartic[D, Complex[D]]
       with DoubleComplex {
-
-      /**
-       * Attempt at directly solving the quartic without routing through the depressed quartic first
-       *
-       * This avoids loss of precision resulting from subtracting two numbers that are very close to one another (e.g.
-       * when computing the depressed-quartic coefficients for a polynomial of the form (x-r)³(x-r-ε) where
-       * |r| > 100*|ε|), but introduces corresponding precision-loss in other cases
-       *
-       * I'm not sure how to manage this precision-loss in a more principled way / it seems like a lot of work
-       */
-/*
-      override def monic(b: D, c: D, d: D, e: D): Seq[Complex[D]] = {
-        val cubics =
-          Cubic.doubleComplex.monic(
-            -c,
-            b*d - 4*e,
-            e*(4*c - b*b) - d*d
-          )
-
-        cubics
-          .map {
-            v ⇒
-              val s = (4*(v - c) + b*b).nroot(2)
-              println(s"\tcubic: $v $s")
-              (v, s)
-          }
-          .find(_._2 != 0) match {
-            case None ⇒ Seq(-b/4, -b/4, -b/4, -b/4)
-            case Some((v, s)) ⇒
-
-              val w = (b*v - 2*d) / s
-
-              val smb = s - b
-              val spb = s + b
-
-              val d1 = (smb*smb - 8*(v - w)).nroot(2)
-              val d2 = (spb*spb - 8*(v + w)).nroot(2)
-
-              Seq(
-                (smb - d1) / 4,
-                (smb + d1) / 4,
-                (-spb - d2) / 4,
-                (-spb + d2) / 4
-              )
-          }
-      }
-*/
 
       override def monic(b: D, c: D, d: D, e: D): Seq[Complex[D]] = {
         val b2 = -b/2
@@ -110,15 +52,15 @@ object Quartic {
 
         def zero(v: D): Boolean = scale + v === scale
 
-        println(s"\tmonic: b $b c $c d $d e $e, dc $dc dd $dd de $de scale: $scale ε $ε")
+//        println(s"\tmonic: b $b c $c d $d e $e, dc $dc dd $dd de $de scale: $scale ε $ε")
 
         (
           if (zero(dd)) {
             if (zero(dc) && zero(de)) {
-              println("\tquad")
+//              println("\tquad")
               Seq[Complex[D]](0, 0, 0, 0)
             } else if (!zero(dc) && !zero(de)) {
-              println("\tbiquad")
+//              println("\tbiquad")
               biquad(dc, de)
             } else
               depressed(dc, dd, de)
@@ -146,7 +88,7 @@ object Quartic {
             -d*d
           )
 
-        println(s"\tcubics: $cubics")
+//        println(s"\tcubics: $cubics")
 
         val u = cubics.find(_ != 0).get
 
@@ -172,8 +114,8 @@ object Quartic {
             -squ2 + s2
           )
 
-        println(s"\tu: $u, $squ2 ± $s1, ${-squ2} ± $s2, squ2: $squ2, u2c $u2c du $du")
-        println(s"\tdep roots: $roots")
+//        println(s"\tu: $u, $squ2 ± $s1, ${-squ2} ± $s2, squ2: $squ2, u2c $u2c du $du")
+//        println(s"\tdep roots: $roots")
 
         roots
       }
