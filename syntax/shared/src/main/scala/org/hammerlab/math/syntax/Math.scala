@@ -12,11 +12,11 @@ trait Math[D] extends Any {
 
   def unary_-(t: D): D
 
-  def sqrt(t: D)(implicit ε: Tolerance): D
+  def sqrt(t: D)(implicit ε: E): D
   def cbrt(t: D): D = ^(t, 1.0/3)
 
   def cos(t: D): D
-  def acos(t: D)(implicit ε: Tolerance): D
+  def acos(t: D)(implicit ε: E): D
 }
 
 object Math {
@@ -28,18 +28,18 @@ object Math {
 
     def unary_- : D = n.unary_-(d)
 
-    def sqrt(implicit ε: Tolerance): D = n.sqrt(d)
+    def sqrt(implicit ε: E): D = n.sqrt(d)
     def cbrt: D = n.cbrt(d)
 
     def cos: D = n.cos(d)
-    def acos(implicit ε: Tolerance): D = n.acos(d)
+    def acos(implicit ε: E): D = n.acos(d)
   }
 
   implicit val double =
     new Math[Double] {
       override def ^(base: Double, exp: Double): Double = math.pow(base, exp)
       override def unary_-(t: Double): Double = -t
-      override def sqrt(t: Double)(implicit ε: Tolerance): Double =
+      override def sqrt(t: Double)(implicit ε: E): Double =
         if (t < 0)
           if (t >= -ε)
             0
@@ -49,7 +49,7 @@ object Math {
           math.sqrt(t)
       override def cbrt(t: Double): Double = math.cbrt(t)
       override def cos(t: Double): Double = math.cos(t)
-      override def acos(t: Double)(implicit ε: Tolerance): Double =
+      override def acos(t: Double)(implicit ε: E): Double =
         if (t > 1)
           if (t <= 1 + ε)
             0
@@ -68,8 +68,8 @@ object Math {
     new Math[Complex[Double]] {
       override def ^(base: Complex[Double], exp: Double): Complex[Double] = base.pow(exp)
       override def unary_-(t: Complex[Double]): Complex[Double] = -t
-      override def sqrt(t: Complex[Double])(implicit ε: Tolerance): Complex[Double] = t.sqrt
+      override def sqrt(t: Complex[Double])(implicit ε: E): Complex[Double] = t.sqrt
       override def cos(t: Complex[Double]): Complex[Double] = t.cos
-      override def acos(t: Complex[Double])(implicit ε: Tolerance): Complex[Double] = t.acos
+      override def acos(t: Complex[Double])(implicit ε: E): Complex[Double] = t.acos
     }
 }

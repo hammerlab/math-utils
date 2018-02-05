@@ -2,7 +2,7 @@ package cubic.complex
 
 import org.hammerlab.math.polynomial.ImaginaryRootPair.pairs
 import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, Result }
-import org.hammerlab.math.syntax.Tolerance
+import org.hammerlab.math.syntax.E
 import spire.algebra._
 import spire.math._
 import spire.implicits._
@@ -11,7 +11,7 @@ import Cubic.pi23
 
 import math.Pi
 
-abstract class Cubic[CoeffT: Field, ResultT](implicit ε: Tolerance) {
+abstract class Cubic[CoeffT: Field, ResultT](implicit ε: E) {
 
   def diff(a: ResultT, b: CoeffT): ResultT
 
@@ -38,7 +38,7 @@ trait DoubleResult {
       case ImaginaryRootPair(r, c) ⇒ ImaginaryRootPair(r - b, c)
     }
 
-  def makeResults(complexes: Seq[Complex[Double]])(implicit ε: Tolerance): Seq[Result[Double]] = {
+  def makeResults(complexes: Seq[Complex[Double]])(implicit ε: E): Seq[Result[Double]] = {
     val scale = complexes.flatMap { case Complex(a, b) ⇒ Seq(abs(a), abs(b)) }.max
 
     complexes
@@ -56,7 +56,7 @@ trait DoubleResult {
 
 object Cubic {
 
-  implicit def doubleComplex(implicit ε: Tolerance) =
+  implicit def doubleComplex(implicit ε: E) =
     new Cubic[Double, Complex[Double]] with DoubleComplex {
 
       override def monic(b: D, c: D, d: D): Seq[Complex[D]] = {
@@ -139,7 +139,7 @@ object Cubic {
     }
 
 
-  implicit def doubleResult(implicit ε: Tolerance) =
+  implicit def doubleResult(implicit ε: E) =
     new Cubic[Double, Result[D]]
       with DoubleResult {
       override def     monic(b: D, c: D, d: D): Seq[Result[D]] = makeResults(doubleComplex.    monic(b, c, d))
@@ -150,7 +150,7 @@ object Cubic {
 
   /*  import Root.map
     import hammerlab.iterator._
-    implicit def doubleRoot(implicit ε: Tolerance) =
+    implicit def doubleRoot(implicit ε: E) =
       new Cubic[Double, Root[Double]] {
         override def diff(a: Root[D], b: D): Root[D] = map[D, D](_ - b)(a)
         override def depressed(p: D, q: D): Seq[Root[D]] = {

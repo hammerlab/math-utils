@@ -2,7 +2,7 @@ package quartic.complex
 
 import org.hammerlab.math.polynomial
 import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Result }
-import org.hammerlab.math.syntax.{ Doubleish, Tolerance }
+import org.hammerlab.math.syntax.{ Doubleish, E }
 import org.hammerlab.math.syntax.FuzzyCmp.FuzzyCmpOps
 import org.hammerlab.test.Cmp
 import Doubleish.DoubleishOps
@@ -28,7 +28,7 @@ class QuarticTest
 
   override val casePrintInterval: Int = 1000
 
-  def expected[T: Doubleish](t: TestCase[T]): Seq[Complex[Dbl]] = {
+  def expected[T: Doubleish](t: TestCase[T]): Seq[Complex[D]] = {
     (
       t
         .reals
@@ -46,7 +46,7 @@ class QuarticTest
     )
   }
 
-  type Results = Seq[Complex[Dbl]]
+  type Results = Seq[Complex[D]]
   case class ResultsCmp(msg: String, l: Results, r: Results) {
     override def toString: String =
       (
@@ -60,7 +60,7 @@ class QuarticTest
   }
 
   import math.max
-  implicit def complexCanEq(implicit ε: Tolerance): Cmp[Results] =
+  implicit def complexCanEq(implicit ε: E): Cmp[Results] =
     Cmp[Results, ResultsCmp](
       (l, r) ⇒
         if (l.size != r.size)
@@ -122,7 +122,7 @@ class QuarticTest
         }
     )
 
-  def check(t: TestCase[Dbl])(implicit ε: Tolerance = ε): Unit =
+  def check(t: TestCase[D])(implicit ε: E = ε): Unit =
     withClue(s"$t:\n") {
       val Seq(a, b, c, d, e) = t.coeffs
       val actual: Results = Quartic.doubleComplex(this.ε).apply(a, b, c, d, e)
@@ -142,7 +142,7 @@ class QuarticTest
     check(
       TestCase(
         Seq(Real(-6.0), Real(-6.0)),
-        Seq(ImaginaryRootPair[Dbl](-5, 2) → 1),
+        Seq(ImaginaryRootPair[D](-5, 2) → 1),
         -3.0
       )
     )
@@ -152,7 +152,7 @@ class QuarticTest
     check(
       TestCase(
         Nil,
-        Seq(ImaginaryRootPair[Dbl](-6, 1) → 2),
+        Seq(ImaginaryRootPair[D](-6, 1) → 2),
         -3.0
       )
     )
@@ -163,8 +163,8 @@ class QuarticTest
       TestCase(
         Nil,
         Seq(
-          ImaginaryRootPair[Dbl](-6, 1) → 1,
-          ImaginaryRootPair[Dbl](-5, 1) → 1
+          ImaginaryRootPair[D](-6, 1) → 1,
+          ImaginaryRootPair[D](-5, 1) → 1
         ),
         -3.0
       )
@@ -174,8 +174,8 @@ class QuarticTest
       TestCase(
         Nil,
         Seq(
-          ImaginaryRootPair[Dbl](-6, 1) → 1,
-          ImaginaryRootPair[Dbl](-5, 2) → 1
+          ImaginaryRootPair[D](-6, 1) → 1,
+          ImaginaryRootPair[D](-5, 2) → 1
         ),
         -3.0
       )
@@ -186,7 +186,7 @@ class QuarticTest
     check(
       TestCase(
         Seq(Real(-6.0), Real(-6.0)),
-        Seq(ImaginaryRootPair[Dbl](-6, 1) → 1),
+        Seq(ImaginaryRootPair[D](-6, 1) → 1),
         -3.0
       )
     )

@@ -1,6 +1,6 @@
 package org.hammerlab.math.polynomial
 
-import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp, Tolerance }
+import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp, E }
 import spire.algebra.{ Field, Ring, Signed }
 import spire.implicits._
 import spire.math.{ Complex, abs }
@@ -44,7 +44,7 @@ object ImaginaryRootPair {
 
   def pairs[D: Field : Signed](imags: List[Complex[D]])(
       implicit
-        ε: Tolerance,
+        ε: E,
       ord: Ordering[D],
       cmp: FuzzyCmp[D, D]
   )

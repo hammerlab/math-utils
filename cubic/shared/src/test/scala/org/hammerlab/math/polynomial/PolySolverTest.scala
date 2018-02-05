@@ -4,9 +4,9 @@ import cats.syntax.show._
 import hammerlab.iterator._
 import org.hammerlab.Suite
 import org.hammerlab.math.format.showSuperscript
-import org.hammerlab.math.syntax.Doubleish
+import org.hammerlab.math.polynomial
 import spire.algebra.Ring
-import spire.implicits.{IntAlgebra, DoubleAlgebra}
+import spire.implicits.{ DoubleAlgebra, IntAlgebra }
 import spire.syntax.all._
 import spire.math.Complex
 
@@ -16,13 +16,9 @@ import scala.Array.fill
 abstract class PolySolverTest(N: Int)
   extends Suite {
 
-  type Dbl = Double
-
-  type R[T]
-
-  type Real[T] <: R[T]
-
-  def root[T](value: T, degree: Int): Seq[Real[T]]
+  type D = Double
+  type Real[T] = polynomial.Real[T]
+  type R[T] = polynomial.Result[T]
 
   def M: Int
 
@@ -33,26 +29,41 @@ abstract class PolySolverTest(N: Int)
       a ← -M to M
       b ←  1 to M
     } yield
-      ImaginaryRootPair[Dbl](a, b)
+      ImaginaryRootPair[D](a, b)
 
-  def toComplex[T: Ring](r: R[T]): Seq[Complex[T]]
+  def toComplex[T: Ring](r: R[T]): Seq[Complex[T]] =
+    r match {
+      case Real(r) ⇒ Seq(Complex(r))
+      case ImaginaryRootPair(a, b) ⇒ Seq(Complex(a, -b), Complex(a, b))
+    }
 
   implicit class RootOps[T](r: R[T]) {
     def complex(implicit e: Ring[T]): Seq[Complex[T]] = toComplex(r)
+  }
+
+  implicit class MultipleRootOps[T](r: (R[T], Int)) {
+    def complex(implicit e: Ring[T]): Seq[Complex[T]] = toComplex(r._1).flatMap(fill(r._2)(_))
   }
 
   import cats.Show
   import Show.show
 
   /**
-   * Pretty-print an imaginary-conjugate root-pair, possibly repeated as a multiple root (denoted by a superscript, as
-   * with [[Root]])
+   * Pretty-print an imaginary-conjugate root-pair, possibly repeated as a multiple root (denoted by a superscript
    */
   implicit def showImagRoot[T]: Show[(ImaginaryRootPair[T], Int)] =
     show {
       case (pair, 1) ⇒ pair.toString
       case (pair, degree) ⇒ s"($pair)${showSuperscript.show(degree)}"
     }
+
+  implicit def showRealRoot[T]: Show[(Real[T], Int)] =
+    show {
+      case (real, 1) ⇒ real.toString
+      case (real, degree) ⇒ s"$real${showSuperscript.show(degree)}"
+    }
+
+
 
   /**
    * Iterate over the available imaginary-root conjugate-pairs (with integral real and imaginary parts in [-M, M], per
@@ -63,21 +74,23 @@ abstract class PolySolverTest(N: Int)
     allImaginaryRootPairs
       .unorderedSubsetsWithReplacement(num)
 
-  case class TestCase[T]( reals: Seq[R[T]],
+  case class TestCase[T]( reals: Seq[(Real[T], Int)],
                           imags: Seq[(ImaginaryRootPair[T], Int)],
                           roots: Seq[Complex[T]],
                          coeffs: Seq[T]) {
+    def scale = coeffs.head
     override def toString: String =
-      s"rts: ${(reals ++ imags.map(_.show)).mkString(", ")}\t coeffs: ${coeffs.mkString(" ")}"
+      s"roots: ${(reals.map(_.show) ++ imags.map(_.show)).mkString(", ")}\t coeffs: ${coeffs.mkString(" ")}"
   }
 
   object TestCase {
-    def apply[T: Ring](reals: Seq[R[T]],
+    def apply[T: Ring](reals: Seq[(Real[T], Int)],
                        imags: Seq[(ImaginaryRootPair[T], Int)],
                        scale: T): TestCase[T] = {
       val roots =
         reals
-          .flatMap(_.complex) ++
+          .flatMap { case (ab, d) ⇒ fill(d)(ab) }
+          .flatMap(_.complex)
         imags
           .flatMap { case (ab, d) ⇒ fill(d)(ab) }
           .flatMap(_.complex)
@@ -94,13 +107,13 @@ abstract class PolySolverTest(N: Int)
   /**
    * Iterator over all sets of `num` integer-roots in the range [-M,M] (including double/triple/quadruple roots)
    */
-  def realRootsIter(num: Int): Iterator[List[R[Dbl]]] =
+  def realRootsIter(num: Int): Iterator[List[(Real[D], Int)]] =
     (-M to M)
       .unorderedSubsetsWithReplacement(num)
       .map {
-        _.flatMap {
+        _.map {
           case (value, arity) ⇒
-            root[Dbl](value, arity)
+            Real(value.toDouble) → arity
         }
       }
 
@@ -108,7 +121,7 @@ abstract class PolySolverTest(N: Int)
    * Generate roots and corresponding coefficients for all possible mixtures of real/imaginary roots with coefficients
    * in [-M,m]
    */
-  def rootSweep: Iterator[TestCase[Dbl]] =
+  def rootSweep: Iterator[TestCase[D]] =
     printEveryN(
       for {
         numImaginaryRootPairs ← (0 to N/2).iterator
@@ -135,7 +148,7 @@ abstract class PolySolverTest(N: Int)
           reals,
           imags,
           roots,
-          coeffs[Dbl](roots, scale)
+          coeffs[D](roots, scale)
         )
     )
 
@@ -182,9 +195,7 @@ abstract class PolySolverTest(N: Int)
           d
       }
 
-  import Doubleish.DoubleishOps
-
-  def randomCases(implicit d: Doubleish[Real[Dbl]]): Iterator[TestCase[Dbl]] = {
+  def randomCases: Iterator[TestCase[D]] = {
     scala.util.Random.setSeed(123)
     printEveryN(
       for {
@@ -200,7 +211,7 @@ abstract class PolySolverTest(N: Int)
         // do 10 reps with each possible arity-distribution of [imaginary X real] roots
         _ ← 1 to iterationsPerRootShape
 
-        reals = realArities.flatMap(root(rnd(), _)).sortBy(_.toDouble)
+        reals = realArities.map(Real(rnd()) → _).sortBy(_._1.t)
 
         imags = imagPairArities.map(ImaginaryRootPair(rnd(), abs(rnd())) → _)
 
@@ -217,7 +228,7 @@ abstract class PolySolverTest(N: Int)
           reals,
           imags,
           roots,
-          coeffs[Dbl](roots, scale)
+          coeffs[D](roots, scale)
         )
     )
   }

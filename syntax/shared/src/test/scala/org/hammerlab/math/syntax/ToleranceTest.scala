@@ -8,7 +8,7 @@ class ToleranceTest
   extends FunSuite
     with Matchers {
 
-  implicit val ε: Tolerance = 1e-6
+  implicit val ε: E = 1e-6
 
   def check(
       l: Double,
@@ -128,10 +128,10 @@ object Cmp {
   /**
    * Define these outside of [[ToleranceTest]] because otherwise [[FuzzyCmpOps.=== ===]] conflicts with [[FunSuite.===]]
    */
-  def gt[T: Doubleish](l: T, r: T)(implicit ε: Tolerance): Boolean = l  >  r
-  def ge[T: Doubleish](l: T, r: T)(implicit ε: Tolerance): Boolean = l  >= r
-  def eq[T: Doubleish](l: T, r: T)(implicit ε: Tolerance): Boolean = l === r
-  def ne[T: Doubleish](l: T, r: T)(implicit ε: Tolerance): Boolean = l !== r
-  def lt[T: Doubleish](l: T, r: T)(implicit ε: Tolerance): Boolean = l  <  r
-  def le[T: Doubleish](l: T, r: T)(implicit ε: Tolerance): Boolean = l  <= r
+  def gt[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  >  r
+  def ge[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  >= r
+  def eq[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l === r
+  def ne[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l !== r
+  def lt[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  <  r
+  def le[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  <= r
 }

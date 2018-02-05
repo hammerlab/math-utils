@@ -2,14 +2,14 @@ package quartic.complex
 
 import cubic.complex.{ Cubic, DoubleComplex, DoubleResult }
 import org.hammerlab.math.polynomial.Result
-import org.hammerlab.math.syntax.Tolerance
+import org.hammerlab.math.syntax.E
 import spire.algebra.Field
 import spire.implicits._
 import spire.math.Complex
 import math.{abs, sqrt}
 import org.hammerlab.math.syntax.FuzzyCmp._
 
-abstract class Quartic[CoeffT: Field, ResultT](implicit ε: Tolerance) {
+abstract class Quartic[CoeffT: Field, ResultT](implicit ε: E) {
   def diff(a: ResultT, b: CoeffT): ResultT
 
   def apply(a: CoeffT, b: CoeffT, c: CoeffT, d: CoeffT, e: CoeffT): Seq[ResultT] =
@@ -28,7 +28,7 @@ abstract class Quartic[CoeffT: Field, ResultT](implicit ε: Tolerance) {
 object Quartic {
   type D = Double
 
-  implicit def doubleComplex(implicit ε: Tolerance) =
+  implicit def doubleComplex(implicit ε: E) =
     new Quartic[D, Complex[D]]
       with DoubleComplex {
 
@@ -121,7 +121,7 @@ object Quartic {
       }
     }
 
-  implicit def doubleResult(implicit ε: Tolerance) =
+  implicit def doubleResult(implicit ε: E) =
     new Quartic[D, Result[D]]
       with DoubleResult {
       override def     monic(b: D, c: D, d: D, e: D): Seq[Result[D]] = makeResults(doubleComplex.    monic(b, c, d, e))

@@ -1,69 +1,193 @@
 package cubic.complex
 
-import org.hammerlab.math.polynomial
-import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Result }
-import org.hammerlab.math.syntax.Doubleish, Doubleish.DoubleishOps
-import spire.algebra.Ring
+import cats.Show
+import cats.Show.show
+import cats.implicits.catsStdShowForInt
+import cats.syntax.show._
+import hammerlab.iterator._
+import org.hammerlab.math.format.SigFigs
+import org.hammerlab.math.format.SigFigs.showSigFigs
+import org.hammerlab.math.polynomial.PolySolverTest
+import org.hammerlab.math.syntax.E
+import org.hammerlab.test.CanEq
+import spire.implicits.DoubleAlgebra
 import spire.math.Complex
-import spire.syntax.all._
 
-import scala.Seq.fill
+import scala.math.{ max, sqrt }
 
-class CubicTest
+abstract class CubicTest
   extends PolySolverTest(3) {
 
-  ε = 1e-6
+  implicit var sigfigs: SigFigs = 3
 
-//  override val casePrintInterval: Int = 1
+  implicit val showComplex: Show[Complex[D]] =
+    show {
+      case Complex(r, i) ⇒
+        if (i == 0)
+          show"$r"
+        else if (i < 0)
+          show"$r${i}i"
+        else
+          show"$r+${i}i"
+    }
 
-  def expected[T: Doubleish](t: TestCase[T]): Seq[R[Dbl]] =
-    t.reals
-      .map {
-        case Real(r) ⇒ Real(r.toDouble)
-      } ++
-    t.imags
-      .map {
-        case (ImaginaryRootPair(a, b), _) ⇒
-          ImaginaryRootPair[Dbl](a.toDouble, b.toDouble)
+  override val casePrintInterval: Int = 500
+
+  implicit val showResult: Show[(Result, Int)] =
+    show {
+      case (Result(tc, actual, maxErr), num) ⇒
+        (
+          show"max err: $maxErr ($num copies)" ::
+          tc
+            .roots
+            .zip(actual)
+            .map { case (e, a) ⇒ show"$e\t\t$a" }
+            .toList
+        )
+        .mkString("\n\t")
+    }
+
+  def worstN(cases: Iterator[TestCase[D]], n: Int): Vector[(Result, Int)] =
+    cases
+      .map(Result(_))
+      .toVector
+      .sortBy(-_.maxErr)
+      .runLengthEncode(
+        (cur, next) ⇒
+          if (cur.maxErr == next.maxErr)
+            Some(cur)
+          else
+            None
+      )
+      .take(n)
+      .toVector
+
+  case class Result(tc: TestCase[D],
+                    actual: Seq[Complex[D]],
+                    maxErr: D)
+
+  object Result {
+    def apply(t: TestCase[D]): Result = {
+      val TestCase(_, _, roots, Seq(a, b, c, d)) = t
+      val actual: Seq[Complex[D]] = Cubic.doubleComplex.apply(a, b, c, d)
+
+      if (roots.size != actual.size)
+        throw new IllegalArgumentException(
+          s"Sizes differ: $actual vs $roots"
+        )
+
+      val (aligned, maxErr) =
+        actual
+          .permutations
+          .map {
+            r ⇒
+              r →
+                roots
+                  .zip(r)
+                  .map {
+                    case (l, r) ⇒
+                      (l - r).abs
+                  }
+                  .foldLeft(
+                    0.0  // maximum error observed
+                  ) {
+                    case (
+                      maxErr,
+                      cur
+                    ) ⇒
+                      max(maxErr, cur)
+                  }
+          }
+          .minBy(_._2)
+
+      Result(
+        t,
+        aligned,
+        maxErr
+      )
+    }
+  }
+
+  case class Results(results: Seq[(Result, Int)], n: Int, μ: D, σ: D) {
+    def max = results.head._1.maxErr
+  }
+
+  object Results {
+    def apply(cases: Iterator[TestCase[D]]): Results = {
+      val results =
+        cases
+          .map(Result(_))
+          .toVector
+          .sortBy(-_.maxErr)
+
+      val grouped =
+        results
+          .runLengthEncode(
+            (cur, next) ⇒
+              if (cur.maxErr == next.maxErr)
+                Some(cur)
+              else
+                None
+          )
+          .toVector
+
+      val sumErr = results.map(_.maxErr).sum
+      val n = results.size
+      val μ = sumErr / n
+      val sumSqs = results.map(r ⇒ r.maxErr * r.maxErr).sum
+      val σ = sqrt(sumSqs/n - μ*μ)
+      Results(
+        grouped,
+        n,
+        μ,
+        σ
+      )
+    }
+
+    implicit val showResults: Show[Results] =
+      show {
+        case Results(
+          results,
+          n,
+          μ,
+          σ
+        ) ⇒
+          (
+            show"n $n μ $μ σ $σ:" ::
+            results.take(3).map(_.show).toList
+          )
+          .mkString("\n", "\n\t", "\n")
       }
-
-  test("sweep") {
-    for {
-      t @ TestCase(_, _, _, Seq(a, b, c, d)) ← rootSweep
-    } withClue(s"$t:\n") {
-      val actual: Seq[R[Dbl]] = Cubic.doubleResult.apply(a, b, c, d)
-
-      // Test that the solver returns the correct roots, given the coefficients
-      ===(
-        actual,
-        expected(t)
-      )
-    }
   }
 
-  test("random roots") {
-    import Real.doubleish
-    for {
-      t @ TestCase(_, _, _, Seq(a, b, c, d)) <- randomCases(doubleish)
-    } withClue(s"$t:\n") {
-      ===(
-        Cubic.doubleResult.apply(a, b, c, d),
-        expected(t)
-      )
-    }
+  case class FuzzyDouble(v: D, r: D)
+  implicit class FuzzyDoubleOps(l: D) {
+    def ±(r: D): FuzzyDouble = FuzzyDouble(l, r)
   }
 
-  override type Real[T] = polynomial.Real[T]
-
-  override def root[T](value: T, degree: Int): Seq[Real[T]] = fill(degree)(Real(value))
-
-  override def toComplex[T: Ring](r: Result[T]): Seq[Complex[T]] =
-    r match {
-      case Real(r) ⇒ Seq(Complex(r))
-      case ImaginaryRootPair(a, b) ⇒ Seq(Complex(a, -b), Complex(a, b))
+  implicit val cmpFuzzyDouble =
+    CanEq.instance[Double, FuzzyDouble, String] {
+      case (l, FuzzyDouble(v, r)) ⇒
+        implicit val ε: E = r
+        doubleCmp.cmp(l, v)
     }
 
-  type R[T] = Result[T]
+  def check(cases: Iterator[TestCase[D]],
+                n: Int,
+              max: D,
+                μ: D,
+                σ: D
+           ): Unit = {
+    val results = Results(cases)
+    println(results.show)
+
+    ===(results.  n, n)
+
+    implicit val ε: E = 1e-3
+    ===(results.max, max)
+    ===(results.  μ,   μ)
+    ===(results.  σ,   σ)
+  }
 
   val M: Int = 6
 }
