@@ -1,7 +1,7 @@
 package quartic.complex
 
 import org.hammerlab.math.polynomial
-import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Result }
+import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, Root }
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import org.hammerlab.math.syntax.FuzzyCmp.FuzzyCmpOps
 import org.hammerlab.test.Cmp
@@ -16,11 +16,11 @@ import Seq.fill
 
 class QuarticTest
   extends PolySolverTest(4) {
-  override type R[T] = Result[T]
+  override type R[T] = Root[T]
   override type Real[T] = polynomial.Real[T]
   override def root[T](value: T, degree: Int): Seq[Real[T]] = fill(degree)(Real(value))
   override def M: Int = 6
-  override def toComplex[T: Ring](r: Result[T]): Seq[Complex[T]] =
+  override def toComplex[T: Ring](r: Root[T]): Seq[Complex[T]] =
     r match {
       case Real(r) ⇒ Seq(Complex(r))
       case ImaginaryRootPair(a, b) ⇒ Seq(Complex(a, -b), Complex(a, b))

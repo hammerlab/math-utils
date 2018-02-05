@@ -1,7 +1,7 @@
 package quartic.complex
 
 import cubic.complex.{ Cubic, DoubleComplex, DoubleResult }
-import org.hammerlab.math.polynomial.Result
+import org.hammerlab.math.polynomial.Root
 import org.hammerlab.math.syntax.E
 import spire.algebra.Field
 import spire.implicits._
@@ -122,9 +122,9 @@ object Quartic {
     }
 
   implicit def doubleResult(implicit ε: E) =
-    new Quartic[D, Result[D]]
+    new Quartic[D, Root[D]]
       with DoubleResult {
-      override def     monic(b: D, c: D, d: D, e: D): Seq[Result[D]] = makeResults(doubleComplex.    monic(b, c, d, e))
-      override def depressed(      c: D, d: D, e: D): Seq[Result[D]] = makeResults(doubleComplex.depressed(   c, d, e))
+      override def     monic(b: D, c: D, d: D, e: D): Seq[Root[D]] = makeResults(doubleComplex.monic(b, c, d, e))
+      override def depressed(      c: D, d: D, e: D): Seq[Root[D]] = makeResults(doubleComplex.depressed(c, d, e))
     }
 }

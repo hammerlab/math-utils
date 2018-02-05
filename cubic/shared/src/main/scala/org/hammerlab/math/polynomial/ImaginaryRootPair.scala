@@ -1,13 +1,31 @@
 package org.hammerlab.math.polynomial
 
-import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp, E }
+import org.hammerlab.math.format.showSuperscript
+import org.hammerlab.math.syntax.{ Doubleish, E, FuzzyCmp }
 import spire.algebra.{ Field, Ring, Signed }
 import spire.implicits._
 import spire.math.{ Complex, abs }
 
-sealed trait Result[T]
+sealed trait Root[T]
 
-case class Real[T](t: T) extends Result[T] {
+object Root {
+  import cats.Show
+  import Show.show
+
+  /**
+   * Pretty-print an [[ImaginaryRootPair imaginary-conjugate root-pair]] or [[Real real root]], in each case possibly
+   * repeated as a multiple root (denoted by a superscript)
+   */
+  implicit def showRoot[T]: Show[(Root[T], Int)] =
+    show {
+      case (root, 1) ⇒ root.toString
+      case (root: ImaginaryRootPair[T], degree) ⇒ s"($root)${showSuperscript.show(degree)}"
+      case (real, degree) ⇒ s"$real${showSuperscript.show(degree)}"
+    }
+}
+
+case class Real[T](t: T)
+  extends Root[T] {
   override def toString: String = s"$t"
 }
 
@@ -25,7 +43,8 @@ object Real {
  *
  * [[b]] must be greater than zero; real roots are not modeled with this data structure
  */
-case class ImaginaryRootPair[T](a: T, b: T) extends Result[T] {
+case class ImaginaryRootPair[T](a: T, b: T)
+  extends Root[T] {
   override def toString: String =
     (if (a == 0) "" else s"$a") +
       "±" +
@@ -88,6 +107,5 @@ object ImaginaryRootPair {
               throw new IllegalArgumentException(s"Odd number of roots to pair? $imags")
           }
         ) :: pairs(next.result())
-
     }
 }

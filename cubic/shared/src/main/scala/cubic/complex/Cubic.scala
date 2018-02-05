@@ -1,7 +1,7 @@
 package cubic.complex
 
 import org.hammerlab.math.polynomial.ImaginaryRootPair.pairs
-import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, Result }
+import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, Root }
 import org.hammerlab.math.syntax.E
 import spire.algebra._
 import spire.math._
@@ -32,13 +32,13 @@ trait DoubleComplex {
 }
 
 trait DoubleResult {
-  def diff(a: Result[Double], b: Double): Result[Double] =
+  def diff(a: Root[Double], b: Double): Root[Double] =
     a match {
       case Real(r) ⇒ Real(r - b)
       case ImaginaryRootPair(r, c) ⇒ ImaginaryRootPair(r - b, c)
     }
 
-  def makeResults(complexes: Seq[Complex[Double]])(implicit ε: E): Seq[Result[Double]] = {
+  def makeResults(complexes: Seq[Complex[Double]])(implicit ε: E): Seq[Root[Double]] = {
     val scale = complexes.flatMap { case Complex(a, b) ⇒ Seq(abs(a), abs(b)) }.max
 
     complexes
@@ -140,10 +140,10 @@ object Cubic {
 
 
   implicit def doubleResult(implicit ε: E) =
-    new Cubic[Double, Result[D]]
+    new Cubic[Double, Root[D]]
       with DoubleResult {
-      override def     monic(b: D, c: D, d: D): Seq[Result[D]] = makeResults(doubleComplex.    monic(b, c, d))
-      override def depressed(      p: D, q: D): Seq[Result[D]] = makeResults(doubleComplex.depressed(   p, q))
+      override def     monic(b: D, c: D, d: D): Seq[Root[D]] = makeResults(doubleComplex.monic(b, c, d))
+      override def depressed(      p: D, q: D): Seq[Root[D]] = makeResults(doubleComplex.depressed(p, q))
     }
 
   type D = Double
