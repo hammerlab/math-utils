@@ -1,11 +1,13 @@
 package org.hammerlab.math
 
-import org.hammerlab.test.Suite
+import org.hammerlab.Suite
+import org.hammerlab.test.CanEqual
 import org.scalactic.TypeCheckedTripleEquals
 
 class DivTest
   extends Suite
-    with TypeCheckedTripleEquals {
+    with TypeCheckedTripleEquals
+    with CanEqual {
 
   test("ints") {
     div( 0, 20) should ===(0)

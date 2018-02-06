@@ -26,18 +26,23 @@ lazy val format = crossProject.settings(
 lazy val formatJS  = format.js
 lazy val formatJVM = format.jvm.settings(scalajs.stubs)
 
-lazy val math = project.settings(
+lazy val math = crossProject.settings(
   group("org.hammerlab"),
   v"2.1.3",
   dep(
     cats,
-    commons_math,
-    iterators % "2.0.0",
-    kryo tests,
+    iterators % "2.1.0".snapshot,
     shapeless,
     spire
   ),
   consolePkg("hammerlab.math")
+)
+lazy val mathJS  = math.js
+lazy val mathJVM = math.jvm.settings(
+  dep(
+    commons_math,
+    kryo tests
+  )
 )
 
 lazy val quartic = crossProject.settings(
@@ -63,7 +68,7 @@ lazy val stats = project.settings(
         spire
   )
 ).dependsOn(
-  math,
+  mathJVM,
   typesJVM
 )
 
@@ -73,6 +78,8 @@ lazy val syntax = crossProject.settings(
     cats,
     spire
   ),
+  // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
+  // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
   testDeps := Seq(scalatest)
 ).dependsOn(
   format
@@ -94,10 +101,10 @@ lazy val typesJVM = types.jvm
 
 lazy val math_utils = rootProject(
   "math-utils",
-  math,
   stats,
     cubicJS,   cubicJVM,
    formatJS,  formatJVM,
+     mathJS,    mathJVM,
   quarticJS, quarticJVM,
    syntaxJS,  syntaxJVM,
     typesJS,   typesJVM

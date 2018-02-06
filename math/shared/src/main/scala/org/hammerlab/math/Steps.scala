@@ -1,7 +1,7 @@
 package org.hammerlab.math
 
 import scala.collection.immutable.SortedSet
-import scala.math.{ exp, log, max }
+import scala.math.{ exp, log, max, round }
 
 /**
  * Some utilities for generating exponential sequences of integers that can be used as e.g. histogram-bucket boundaries.
@@ -18,22 +18,24 @@ trait Steps {
 
     SortedSet(
       0 ::
-        (
-          for {
-            i ← 1 until N
-          } yield
-            math.min(
-              maxDepth,
-              max(
-                i,
+      (
+        for {
+          i ← 1 until N
+        } yield
+          math.min(
+            maxDepth,
+            max(
+              i,
+              round(
                 exp(
                   (i - 1) * logMaxDepth / (N - 2)
                 )
-                .toInt
               )
+              .toInt
             )
-        )
-        .toList: _*
+          )
+      )
+      .toList: _*
     )
   }
 
@@ -70,12 +72,14 @@ trait Steps {
     SortedSet(
       (
         (0 until 10) ++
-          RoundNumbers(
-            (10 until 20) ++ (20 until 50 by 2) ++ (50 until 100 by 5),
-            maxDepth,
-            10
-          )
-          .toSeq
+        RoundNumbers(
+          (10 until  20     ) ++
+          (20 until  50 by 2) ++
+          (50 until 100 by 5),
+          maxDepth,
+          10
+        )
+        .toSeq
       ): _*
     )
 }

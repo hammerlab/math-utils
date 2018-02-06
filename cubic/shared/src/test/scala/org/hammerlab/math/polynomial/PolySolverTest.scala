@@ -1,10 +1,16 @@
 package org.hammerlab.math.polynomial
 
+import cats.implicits.catsStdShowForInt
+import cats.syntax.show._
+import hammerlab.iterator._
+import org.hammerlab.math.format.SigFigs.showSigFigs
 import hammerlab.iterator._
 import org.hammerlab.Suite
 import org.hammerlab.math.format.SigFigs
 import org.hammerlab.math.polynomial
+import org.hammerlab.math.syntax.E
 import spire.implicits._
+import spire.math.Complex
 
 import scala.math.{ abs, exp }
 import scala.util.Random._
@@ -22,6 +28,9 @@ abstract class PolySolverTest(N: Int)
 
   val casePrintInterval = 1000
 
+  /**
+   * All distinct imaginary-root pairs with integral coefficients in the range [-M,M]
+   */
   val allImaginaryRootPairs =
     for {
       a ← -M to M
@@ -129,5 +138,26 @@ abstract class PolySolverTest(N: Int)
           scale
         )
     )
+  }
+
+  implicit def solve(t: TestCase[D]): Seq[Complex[D]]
+
+  def check(cases: Iterator[TestCase[D]],
+                n: Int,
+              max: D,
+                μ: D,
+                σ: D
+           ): Unit = {
+    val results = Results(cases)
+    println(results.show)
+
+    ===(results.  n, n)
+
+    {
+      implicit val ε: E = 1e-3
+      ===(results.max, max)
+      ===(results.  μ,   μ)
+      ===(results.  σ,   σ)
+    }
   }
 }

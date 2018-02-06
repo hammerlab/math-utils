@@ -1,6 +1,6 @@
 package org.hammerlab.math
 
-import org.hammerlab.test.Suite
+import org.hammerlab.Suite
 
 class InterpolateTest
   extends Suite {
