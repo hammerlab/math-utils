@@ -13,6 +13,21 @@ class StepsTest
       ( 50 until 100 by  5) ++
       (100    to 200 by 10)
     )
+
+    RoundNumbers(
+      Seq(1, 2, 5),
+      base = 10
+    )
+    .take(10)
+    .map(_.toInt)
+    .toSeq should seqMatch(
+      Seq(
+           1,   2,   5,
+          10,  20,  50,
+         100, 200, 500,
+        1000
+      )
+    )
   }
 
   test("geometricEvenSteps") {

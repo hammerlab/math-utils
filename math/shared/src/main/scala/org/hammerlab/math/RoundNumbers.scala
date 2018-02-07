@@ -1,6 +1,5 @@
 package org.hammerlab.math
 
-import hammerlab.iterator._
 import spire.math.Integral
 import spire.implicits._
 
@@ -11,25 +10,33 @@ import spire.implicits._
 class RoundNumbers[I: Integral] private(steps: Seq[Int],
                                         base: Int = 10,
                                         limitOpt: Option[I])
-  extends SimpleIterator[I] {
+  extends Iterator[I] {
 
+  var n: Option[I] = None
   private var idx = 0
   private var basePow: I = Integral[I].one
 
-  override protected def _advance: Option[I] = {
-    val n = steps(idx) * basePow
-    if (limitOpt.exists(_ < n))
-      None
-    else
-      Some(n)
+  override def hasNext: Boolean = {
+    if (n.isEmpty) {
+      val next = steps(idx) * basePow
+      if (limitOpt.exists(_ < next)) {
+        return false
+      } else
+        n = Some(next)
+    }
+    true
   }
 
-  override protected def postNext(): Unit = {
+  override def next(): I = {
+    if (!hasNext) throw new NoSuchElementException
+    val r = n.get
+    n = None
     idx += 1
     if (idx == steps.size) {
       idx = 0
       basePow *= base
     }
+    r
   }
 }
 

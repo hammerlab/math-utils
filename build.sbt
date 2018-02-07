@@ -1,11 +1,14 @@
 
 default(
-  group("org.hammerlab.math")
+  group("org.hammerlab.math"),
+  versions(
+    iterators → "2.1.0".snapshot
+  )
 )
 
 lazy val cubic = crossProject.settings(
   dep(
-    iterators % "2.1.0".snapshot,
+    iterators,
     shapeless,
     spire
   )
@@ -14,13 +17,13 @@ lazy val cubic = crossProject.settings(
   syntax
 )
 lazy val cubicJS  = cubic.js
-lazy val cubicJVM = cubic.jvm.settings(scalajs.stubs)
+lazy val cubicJVM = cubic.jvm
 
 lazy val format = crossProject.settings(
   v"1.0.0",
   dep(
     cats,
-    iterators % "2.1.0".snapshot tests
+    iterators.tests
   )
 )
 lazy val formatJS  = format.js
@@ -31,7 +34,6 @@ lazy val math = crossProject.settings(
   v"2.1.3",
   dep(
     cats,
-    iterators % "2.1.0".snapshot,
     shapeless,
     spire
   ),
@@ -39,6 +41,7 @@ lazy val math = crossProject.settings(
 )
 lazy val mathJS  = math.js
 lazy val mathJVM = math.jvm.settings(
+  // a couple components depend on Java-only libraries and are only included in the JVM module
   dep(
     commons_math,
     kryo tests
@@ -49,7 +52,7 @@ lazy val quartic = crossProject.settings(
   dep(
     cats,
     shapeless,
-    iterators % "2.1.0".snapshot tests
+    iterators.tests
   )
 ).dependsOn(
   cubic % "compile->compile;test->test",
@@ -68,7 +71,7 @@ lazy val stats = project.settings(
         spire
   )
 ).dependsOn(
-  mathJVM,
+   mathJVM,
   typesJVM
 )
 

@@ -1,6 +1,7 @@
 package org.hammerlab.math
 
 trait all
-  extends Div
+  extends HasBinomial
+     with Div
      with Interpolate
      with Min
