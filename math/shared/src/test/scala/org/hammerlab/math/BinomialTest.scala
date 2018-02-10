@@ -1,5 +1,6 @@
 package org.hammerlab.math
 
+import hammerlab.math.binomial
 import org.hammerlab.Suite
 
 class BinomialTest

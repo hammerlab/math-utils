@@ -40,7 +40,7 @@ object Stats {
 
     var alreadySorted = true
     val hist = mutable.HashMap[K, V]()
-    var n = Integral[V].zero
+    var n: V = 0
 
     val values = {
       val vBuilder = Vector.newBuilder[(K, V)]
@@ -56,7 +56,7 @@ object Stats {
         }
         vBuilder += value → num
         n += num
-        hist.update(value, hist.getOrElse(value, Integral[V].zero) + num)
+        hist.update(value, hist.getOrElse(value, 0: V) + num)
       }
 
       vBuilder.result()
@@ -237,7 +237,7 @@ object Stats {
    * Compute percentiles listed in `ps` of the data in `values`; wrapper for implementation below.
    */
   private def getRunPercentiles[K: Numeric, V: Integral](values: Seq[(K, V)],
-                                                         ps: Seq[(Rational, (V, Double))]): Vector[(Rational, Double)] =
+                                                         ps: Seq[(Rational, (V, Double))]): Percentiles[K] =
     getRunPercentiles(
       values
         .iterator
@@ -261,7 +261,7 @@ object Stats {
                                                          percentiles: BufferedIterator[(Rational, (V, Double))]): Iterator[(Rational, Double)] =
     new Iterator[(Rational, Double)] {
 
-      var elemsPast = Integral[V].zero
+      var elemsPast: V = 0
       var curK: Option[K] = None
 
       override def hasNext: Boolean = percentiles.hasNext
@@ -330,12 +330,14 @@ object Stats {
       .sortBy(_._1)
   }
 
+  type Percentiles[K] = Vector[(Rational, PercentileValue[K])]
+
   /**
    * Compute some relevant percentiles based on the number of elements present.
    * @return pairs of (percentile, value).
    */
   private def histPercentiles[K: Numeric, V: Integral](N: V,
-                                                       values: IndexedSeq[(K, V)]): Vector[(Rational, Double)] =
+                                                       values: IndexedSeq[(K, V)]): Percentiles[K] =
     getRunPercentiles(
       values,
       percentileIdxs(N)
@@ -370,13 +372,13 @@ object Stats {
   /**
    * Find the first `N` "runs" from the beginning of `it`. If `reverse`, return them in reversed order.
    */
-  private def runLengthEncodeWithSum[K: Numeric](it: Iterator[K],
-                                                 N: Int,
-                                                 reverse: Boolean = false): (Seq[(K, Int)], Int) = {
+  private def runLengthEncodeWithSum[K: Numeric: Ordering](it: Iterator[K],
+                                                           N: Int,
+                                                           reverse: Boolean = false): (Seq[(K, Int)], Int) = {
     var sum = 0
     var i = 0
     val runs = ArrayBuffer[(K, Int)]()
-    val runLengthIterator = it.runLengthEncode()
+    val runLengthIterator = it.runLengthEncode
     while (i < N && runLengthIterator.hasNext) {
       val (elem, count) = runLengthIterator.next()
 
@@ -417,54 +419,53 @@ object Stats {
     delimiter: Delimiter = space,
     indent: Indent = hammerlab.indent.tab
   ): ToLines[Stats[K, V]] =
-    (t: Stats[K, V]) ⇒
-      t match {
-        case Empty() ⇒ "(empty)": Lines
-        case NonEmpty(n, _, mean, stddev, median, mad, samplesOpt, sortedSamplesOpt, percentiles) ⇒
-          def pair[L: Show, R: Show](l: L,
-                                     r: R,
-                                     d: Delimiter = delimiter): String =
-            show"$l:$d$r"
+    ToLines {
+      case Empty() ⇒ "(empty)": Lines
+      case NonEmpty(n, _, mean, stddev, median, mad, samplesOpt, sortedSamplesOpt, percentiles) ⇒
+        def pair[L: Show, R: Show](l: L,
+                                   r: R,
+                                   d: Delimiter = delimiter): String =
+          show"$l:$d$r"
 
-          Lines(
+        Lines(
+          (
+            List(
+              pair("N", n),
+              pair("μ/σ", show"$mean/$stddev")
+            ) ++
             (
-              List(
-                pair("N", n),
-                pair("μ/σ", show"$mean/$stddev")
-              ) ++
-              (
-                if (n > 2)
-                  List(pair("med/mad",  show"$median/$mad"))
-                else
-                  Nil
+              if (n > 2)
+                List(pair("med/mad", show"$median/$mad"))
+              else
+                Nil
               )
-            )
-            .mkString(", "),
-
-            for {
-              samples ← samplesOpt
-              if samples.nonEmpty
-            } yield
-              pair(" elems", samples),
-
-            for {
-              sortedSamples ← sortedSamplesOpt
-              if sortedSamples.nonEmpty
-            } yield
-              pair("sorted", sortedSamples),
-
-            /**
-             * Show percentiles iff one of the [[Samples]] fields has elided elements
-             */
-            if (n >= 5)
-              percentiles.map {
-                case (k, v) ⇒
-                  pair(k, v, tab)
-              }
-            else
-              Lines()
           )
-      }
+          .mkString(", "),
+
+          for {
+            samples ← samplesOpt
+            if samples.nonEmpty
+          } yield
+            pair(" elems", samples),
+
+          for {
+            sortedSamples ← sortedSamplesOpt
+            if sortedSamples.nonEmpty
+          } yield
+            pair("sorted", sortedSamples),
+
+          /**
+           * Show percentiles iff one of the [[Samples]] fields has elided elements
+           */
+          if (n >= 5)
+            percentiles.map {
+              case (k, v) ⇒
+                pair(k, v, tab)
+            }
+          else
+            Lines()
+        )
+    }
 
   /**
    * Default [[Show]] for summary statistics and percentile values

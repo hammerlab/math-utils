@@ -1,20 +1,19 @@
 package org.hammerlab.math.format
 
-import hammerlab.iterator._
-import org.hammerlab.Suite
 import cats.syntax.show._
 import SigFigs._
+import org.scalatest.{ FunSuite, Matchers }
 
 class SigFigsTest
-  extends Suite {
+  extends FunSuite
+    with Matchers {
   def check(d: Double, expecteds: String*): Unit = {
     expecteds
       .zipWithIndex
-      .mapValues(_ + 1)
       .foreach {
-        case (expected, sigFigs) ⇒
-          implicit val s: SigFigs = sigFigs
-          withClue(s"$s digits: ") {
+        case (expected, idx) ⇒
+          implicit val sigfigs: SigFigs = (idx + 1)
+          withClue(s"$sigfigs digits: ") {
             d.show should be(expected)
             (-d).show should be('-' + expected)
           }

@@ -21,13 +21,11 @@ lazy val cubicJVM = cubic.jvm
 
 lazy val format = crossProject.settings(
   v"1.0.0",
-  dep(
-    cats,
-    iterators.tests
-  )
+  dep(cats),
+  testDeps := Seq(scalatest)
 )
 lazy val formatJS  = format.js
-lazy val formatJVM = format.jvm.settings(scalajs.stubs)
+lazy val formatJVM = format.jvm
 
 lazy val math = crossProject.settings(
   group("org.hammerlab"),
@@ -62,18 +60,20 @@ lazy val quartic = crossProject.settings(
 lazy val quarticJS  = quartic.js
 lazy val quarticJVM = quartic.jvm
 
-lazy val stats = project.settings(
-  v"1.2.1",
+lazy val stats = crossProject.settings(
+  v"1.3.0",
   dep(
     cats,
-     io_utils % "4.1.0-SNAPSHOT",
-    iterators % "2.0.0",
+     io_utils % "4.1.0".snapshot,
+    iterators % "2.1.0".snapshot,
         spire
   )
 ).dependsOn(
-   mathJVM,
-  typesJVM
+   math,
+  types
 )
+lazy val statsJS  = stats.js
+lazy val statsJVM = stats.jvm
 
 lazy val syntax = crossProject.settings(
   v"1.0.0",
@@ -104,11 +104,11 @@ lazy val typesJVM = types.jvm
 
 lazy val math_utils = rootProject(
   "math-utils",
-  stats,
     cubicJS,   cubicJVM,
    formatJS,  formatJVM,
      mathJS,    mathJVM,
   quarticJS, quarticJVM,
+    statsJS,   statsJVM,
    syntaxJS,  syntaxJVM,
     typesJS,   typesJVM
 )

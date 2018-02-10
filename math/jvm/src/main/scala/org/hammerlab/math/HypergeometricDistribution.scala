@@ -1,5 +1,6 @@
 package org.hammerlab.math
 
+import hammerlab.math.min
 import org.apache.commons.math3.util.FastMath.{ exp, log }
 
 import scala.Array.fill

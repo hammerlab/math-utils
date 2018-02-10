@@ -1,10 +1,12 @@
 package org.hammerlab.stats
 
 import hammerlab.indent.implicits.tab
-import hammerlab.print._
+import hammerlab.lines._
 import hammerlab.show._
 import org.hammerlab.stats.Stats.fromHist
-import org.hammerlab.test.Suite
+import org.hammerlab.Suite
+import org.hammerlab.math.format.SigFigs
+import org.hammerlab.math.format.SigFigs.showSigFigs
 import spire.math.Integral
 
 import scala.util.Random
@@ -17,6 +19,8 @@ import scala.util.Random
 class HistShowTest extends Suite {
 
   Random.setSeed(123L)
+
+  implicit val sf: SigFigs = 2
 
   def check[V: Integral : Show](input: Seq[(Int, V)],
                                 expected: String): Unit =

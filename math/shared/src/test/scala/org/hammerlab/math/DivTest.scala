@@ -3,6 +3,7 @@ package org.hammerlab.math
 import org.hammerlab.Suite
 import org.hammerlab.test.CanEqual
 import org.scalactic.TypeCheckedTripleEquals
+import hammerlab.math.div
 
 class DivTest
   extends Suite

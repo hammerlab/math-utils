@@ -1,9 +1,9 @@
 package org.hammerlab.stats
 
 import hammerlab.indent.implicits.tab
-import hammerlab.print._
+import hammerlab.lines._
 import hammerlab.show._
-import org.hammerlab.test.Suite
+import org.hammerlab.Suite
 import spire.math.Numeric
 
 import scala.util.Random.{ nextInt, setSeed, shuffle }

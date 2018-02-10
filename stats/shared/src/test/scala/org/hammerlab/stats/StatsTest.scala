@@ -1,7 +1,6 @@
 package org.hammerlab.stats
 
-import org.hammerlab.test.Suite
-import org.scalactic.Equality
+import org.hammerlab.Suite
 import spire.implicits._
 import spire.math.Numeric
 

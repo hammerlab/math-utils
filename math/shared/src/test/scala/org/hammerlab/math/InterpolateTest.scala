@@ -1,5 +1,6 @@
 package org.hammerlab.math
 
+import hammerlab.math.interpolate
 import org.hammerlab.Suite
 
 class InterpolateTest
