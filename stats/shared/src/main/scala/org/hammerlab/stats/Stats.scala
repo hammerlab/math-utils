@@ -2,11 +2,12 @@ package org.hammerlab.stats
 
 import hammerlab.bool._
 import hammerlab.iterator._
-import hammerlab.print._
+import hammerlab.lines._
+import hammerlab.math.interpolate
 import hammerlab.show._
 import org.hammerlab.io.Delimiter
 import org.hammerlab.io.Delimiter.{ space, tab }
-import org.hammerlab.math.interpolate
+import org.hammerlab.stats.Stats.{ PercentileValue, Percentiles }
 import spire.math.{ Integral, Numeric, Rational }
 import spire.syntax.all._
 
@@ -40,7 +41,8 @@ object Stats {
 
     var alreadySorted = true
     val hist = mutable.HashMap[K, V]()
-    var n: V = 0
+    val zero = intToA[V](0)
+    var n = zero
 
     val values = {
       val vBuilder = Vector.newBuilder[(K, V)]
@@ -56,7 +58,7 @@ object Stats {
         }
         vBuilder += value → num
         n += num
-        hist.update(value, hist.getOrElse(value, 0: V) + num)
+        hist.update(value, hist.getOrElse(value, zero) + num)
       }
 
       vBuilder.result()
@@ -80,13 +82,15 @@ object Stats {
 
     val medianDeviationsBuilder = Vector.newBuilder[(Double, V)]
 
+    //import org.hammerlab.math.syntax.Arithmetic._
+
     var sum = 0.0
     var sumSquares = 0.0
-    for ((value, num) ← sorted) {
-      val d = value.toDouble
+    for ((k, num) ← sorted) {
+      val d = k.toDouble()
       sum += d * num.toDouble()
       sumSquares += d * d * num.toDouble()
-      medianDeviationsBuilder += abs(d - median) → num
+      medianDeviationsBuilder += spire.math.abs(median - d) → num
     }
 
     val medianDeviations = medianDeviationsBuilder.result().sortBy(_._1)
@@ -95,7 +99,7 @@ object Stats {
       getRunPercentiles(
         medianDeviations,
         Seq(
-          Rational(50) →
+          Mid(50) →
             (
               (n - 1) /~ 2,
               ((n - 1) % 2).toDouble() / 2.0
@@ -105,8 +109,8 @@ object Stats {
       .head
       ._2
 
-    val mean = sum / n.toDouble()
-    val stddev = sqrt(sumSquares / n.toDouble() - mean * mean)
+    val mean = sum.toDouble() / n.toDouble()
+    val stddev = sqrt(sumSquares.toDouble() / n.toDouble() - mean * mean)
 
     def samples(vs: Vector[(K, V)]): Samples[K, V] =
       Samples[K, V](
@@ -188,8 +192,8 @@ object Stats {
     val medianDeviations = medianDeviationsBuilder.result().sorted
     val mad = getMedian(medianDeviations)
 
-    val mean = sum / n
-    val stddev = sqrt(sumSquares / n - mean * mean)
+    val mean = sum.toDouble() / n
+    val stddev = sqrt(sumSquares.toDouble() / n - mean * mean)
 
     def samples(vs: Vector[K]): Samples[K, Int] = {
       // Count occurrences of the first N distinct values.
@@ -237,7 +241,7 @@ object Stats {
    * Compute percentiles listed in `ps` of the data in `values`; wrapper for implementation below.
    */
   private def getRunPercentiles[K: Numeric, V: Integral](values: Seq[(K, V)],
-                                                         ps: Seq[(Rational, (V, Double))]): Percentiles[K] =
+                                                         ps: Seq[(Percentile, (V, Double))]): Percentiles[K] =
     getRunPercentiles(
       values
         .iterator
@@ -258,15 +262,15 @@ object Stats {
    * @return pairs of (percentile, value).
    */
   private def getRunPercentiles[K: Numeric, V: Integral](values: BufferedIterator[(K, V)],
-                                                         percentiles: BufferedIterator[(Rational, (V, Double))]): Iterator[(Rational, Double)] =
-    new Iterator[(Rational, Double)] {
+                                                         percentiles: BufferedIterator[(Percentile, (V, Double))]): Iterator[(Percentile, Double)] =
+    new Iterator[(Percentile, Double)] {
 
-      var elemsPast: V = 0
+      var elemsPast = intToA[V](0)
       var curK: Option[K] = None
 
       override def hasNext: Boolean = percentiles.hasNext
 
-      override def next(): (Rational, Double) = {
+      override def next(): (Percentile, Double) = {
         val (percentile, (floor, remainder)) = percentiles.next()
 
         while(elemsPast <= floor) {
@@ -287,32 +291,61 @@ object Stats {
       }
     }
 
-  private def percentileIdxs[K: Numeric, V: Integral](N: V): Vector[(Rational, (V, Double))] = {
+  private def percentileIdxs[K: Numeric, V: Integral](N: V): Vector[(Percentile, (V, Double))] = {
     val n = N + 1
 
     implicit def fromInt = Integral[V].fromInt _
+    //implicit def toInt = Integral[V].toInt _
 
-    val denominators: Iterator[V] = {
-      lazy val pow10s: Stream[V] = 100 #:: pow10s.map(_ * 10)
+    val denominators: Iterator[(V, Option[Int])] = {
+      lazy val pow10s: Stream[(V, Int)] =
+        (1000: V, 3) #:: (
+        pow10s
+          .map {
+            case (percentile, exp) ⇒
+              (percentile * 10: V, exp + 1)
+          }
+        )
+
       Iterator[V](
          2,  // 50
          4,  // 25/75
         10,  // 10/90
-        20   //  5/95
-      ) ++ pow10s.iterator  // 1/99, .1/99.9, .01/99.99, …
+        20,  //  5/95
+       100   //  1/100
+      )
+      .map(_ → None) ++
+      pow10s
+        .iterator  // 1/99, .1/99.9, .01/99.99, …
+        .map {
+          case (percentile, exp) ⇒
+            percentile → Some(exp)
+        }
+
     }
 
     denominators
-      .takeWhile(_ <= n)
+      .takeWhile(_._1 <= n)
       .flatMap {
-        d ⇒
-          val loPercentile = Rational(100, d.toSafeLong)
-          val hiPercentile = 100 - loPercentile
+        case (d, expOpt) ⇒
+          val (loPercentile, hiPercentile) =
+            expOpt match {
+              case Some(exp) ⇒
+                (
+                  Lo(exp),
+                  Hi(exp)
+                )
+              case None ⇒
+                (
+                  Mid(100 / d.toInt),
+                  Mid(100 - 100 / d.toInt)
+                )
+            }
 
           val loFloor: V = n /~ d - 1
-          val loRemainder = (n % d).toDouble() / d.toDouble()
+          val loRemainder = (n % d).toDouble() / d.toDouble
 
-          val hiFloor = n - 3 - loFloor
+          val hiFloor: V = n - 3 - loFloor
           val hiRemainder = 1 - loRemainder
 
           if (d == 2)
@@ -321,7 +354,7 @@ object Stats {
           else
             // In general, we emit two tuples per "denominator", one on the high side and one on the low. For example, for
           // denominator 4, we emit the 25th and 75th percentiles.
-            Iterator(
+            Iterator[(Percentile, (V, Double))](
               loPercentile → (loFloor, loRemainder),
               hiPercentile → (hiFloor, hiRemainder)
             )
@@ -330,7 +363,8 @@ object Stats {
       .sortBy(_._1)
   }
 
-  type Percentiles[K] = Vector[(Rational, PercentileValue[K])]
+  type PercentileValue[K] = Double
+  type Percentiles[K] = Vector[(Percentile, PercentileValue[K])]
 
   /**
    * Compute some relevant percentiles based on the number of elements present.
@@ -348,7 +382,7 @@ object Stats {
    *
    * @return pairs of (percentile, value).
    */
-  private def percentiles[T: Numeric](values: IndexedSeq[T]): Vector[(Rational, Double)] =
+  private def percentiles[T: Numeric](values: IndexedSeq[T]): Percentiles[T] =
     percentileIdxs(values.length)
       .map {
         case (d, (floor, weight)) ⇒
@@ -414,8 +448,8 @@ object Stats {
     V: Integral : Show
   ](
     implicit
-    percentileShow: Show[Rational] = showPercentile,
-    statShow: Show[Double] = showDouble,
+    statShow: Show[Double],
+    percentileShow: Show[Percentile],
     delimiter: Delimiter = space,
     indent: Indent = hammerlab.indent.tab
   ): ToLines[Stats[K, V]] =
@@ -457,12 +491,14 @@ object Stats {
           /**
            * Show percentiles iff one of the [[Samples]] fields has elided elements
            */
-          if (n >= 5)
+          if (n >= 5) {
+            val maxKeyLen = percentiles.map(_._1.show.length).max
+            val fmt = s"%${maxKeyLen+2}s"
             percentiles.map {
               case (k, v) ⇒
-                pair(k, v, tab)
+                pair(fmt.format(k.show), v, tab)
             }
-          else
+          } else
             Lines()
         )
     }
@@ -470,6 +506,7 @@ object Stats {
   /**
    * Default [[Show]] for summary statistics and percentile values
    */
+/*
   def showDouble: Show[Double] =
     Show(
       d ⇒
@@ -478,14 +515,16 @@ object Stats {
         else
           "%.1f".format(d)
     )
+*/
 
   /**
    * Default [[Show]] for percentile-keys (generally integers except for on the edges in large datasets, where
    * percentiles of rthe forms 1e-N and 1-1e-N are included).
    */
+/*
   def showPercentile(implicit
-                     showDouble: Show[Double] = cats.implicits.catsStdShowForDouble,
-                     showLong: Show[Long] = showLong): Show[Rational] =
+                     showDouble: Show[Double],
+                     showLong: Show[Long] = showLong): Show[] =
     Show(
       r ⇒
         "%4s".format(
@@ -495,6 +534,7 @@ object Stats {
             r.toDouble.show
         )
     )
+*/
 }
 
 case class Empty[K: Numeric, V: Integral]()
@@ -514,9 +554,9 @@ case class NonEmpty[K: Numeric, V: Integral](n: V,
                                              sum: Double,
                                              mean: Double,
                                              stddev: Double,
-                                             median: Double,
-                                             mad: Double,
+                                             median: PercentileValue[K],
+                                             mad: PercentileValue[K],
                                              samplesOpt: Option[Samples[K, V]],
                                              sortedSamplesOpt: Option[Samples[K, V]],
-                                             percentiles: Seq[(Rational, Double)])
+                                             percentiles: Percentiles[K])
   extends Stats[K, V]

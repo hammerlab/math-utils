@@ -69,8 +69,10 @@ lazy val stats = crossProject.settings(
         spire
   )
 ).dependsOn(
-   math,
-  types
+  format,
+    math,
+  syntax,
+   types
 )
 lazy val statsJS  = stats.js
 lazy val statsJVM = stats.jvm

@@ -13,6 +13,30 @@ class SigFigs(val n: Int) extends AnyVal {
 
 object SigFigs {
 
+  sealed trait TrimTrailingZeros extends (String ⇒ String)
+  object TrimTrailingZeros {
+    /** By default, don't trim trailing zeros */
+    implicit case object no extends TrimTrailingZeros {
+      def apply(s: String): String = s
+    }
+    object implicits {
+      /** Import this to trim trailing zeros */
+      implicit case object yes extends TrimTrailingZeros {
+        val regex = """^([^.]*)\.(\d*?)0+([^\d].*)?$""".r
+        def apply(s: String): String =
+          s match {
+            case regex(beforeDot, afterDot, suffixGroup) ⇒
+              val suffix = Option(suffixGroup).getOrElse("")
+              if (afterDot.isEmpty)
+                s"$beforeDot$suffix"
+              else
+                s"$beforeDot.$afterDot$suffix"
+            case _ ⇒ s
+          }
+      }
+    }
+  }
+
   implicit def apply(n: Int): SigFigs = new SigFigs(n)
 
   /**
@@ -20,6 +44,7 @@ object SigFigs {
    */
   implicit def showSigFigs(implicit
                            s: SigFigs,
+                           trim: TrimTrailingZeros,
                            ef: Exponent = Exponent.default): Show[Double] =
     new Show[Double] {
       override def show(d: Double): String =
@@ -46,16 +71,18 @@ object SigFigs {
             else
               -exp + 1 + s.n
 
-          if (rawLength <= scientificLength) {
-            // if printing the number directly is at least as short as scientific-notation, prefer the former
-            s"%.${max(0, s.n - 1 - exp)}f".format(d)
-          } else {
-            // render with scientific notation
-            val normalized = d / pow(10, exp)
-            val fmt = s"%.${s.n - 1}f"
-            val mantissa = fmt.format(normalized)
-            s"$mantissa$expStr"
-          }
+          trim(
+            if (rawLength <= scientificLength) {
+              // if printing the number directly is at least as short as scientific-notation, prefer the former
+              s"%.${max(0, s.n - 1 - exp)}f".format(d)
+            } else {
+              // render with scientific notation
+              val normalized = d / pow(10, exp)
+              val fmt = s"%.${s.n - 1}f"
+              val mantissa = fmt.format(normalized)
+              s"$mantissa$expStr"
+            }
+          )
         }
     }
 }

@@ -61,7 +61,7 @@ class StatsTest
             )
           ),
         sortedSamplesOpt = None,
-        percentiles = Vector(r"50" → 0.0)
+        percentiles = Vector(Mid(50) → 0.0)
       )
     )
   }
@@ -85,7 +85,7 @@ class StatsTest
             )
           ),
         sortedSamplesOpt = None,
-        percentiles = Vector(r"50" → .5)
+        percentiles = Vector(Mid(50) → .5)
       )
     )
   }
@@ -116,7 +116,7 @@ class StatsTest
               Runs(Seq(0 → 1, 1 → 1))
             )
           ),
-        percentiles = Vector(r"50" → .5)
+        percentiles = Vector(Mid(50) → .5)
       )
     )
   }
@@ -140,7 +140,7 @@ class StatsTest
             )
           ),
         sortedSamplesOpt = None,
-        percentiles = Vector(r"25" → 0, r"50" → 1, r"75" → 2)
+        percentiles = Vector[(Percentile, Double)](Mid(25) → 0, Mid(50) → 1, Mid(75) → 2)
       )
     )
   }
