@@ -17,8 +17,8 @@ class CubicJVMTest
       randomCases,
         n = 1200,
       max = 1.365e-7,
-        μ = 3.392e-9,
-        σ = 1.087e-8
+        μ = 3.554e-9,
+        σ = 1.104e-8
     )
   }
 }

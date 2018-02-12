@@ -2,16 +2,19 @@ package quartic.complex
 
 import org.hammerlab.math.polynomial.{ PolySolverTest, TestCase }
 import spire.math.Complex
+import spire.implicits._
 
 class QuarticTest
-  extends PolySolverTest(4) {
+  extends PolySolverTest[Double](4) {
+
+  type D = Double
 
   val M = 6
   override val casePrintInterval = 1000
 
   def solve(t: TestCase[D]): Seq[Complex[D]] = {
     val Seq(a, b, c, d, e) = t.coeffs
-    Quartic.doubleComplex.apply(a, b, c, d, e)
+    Quartic.doubleComplex[D].apply(a, b, c, d, e)
   }
 
   sigfigs = 5

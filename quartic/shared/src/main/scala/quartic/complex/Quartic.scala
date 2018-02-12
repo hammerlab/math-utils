@@ -1,17 +1,13 @@
 package quartic.complex
 
-import cubic.complex.{ Cubic, DoubleComplex, DoubleResult }
-import org.hammerlab.math.polynomial.Root
-import org.hammerlab.math.syntax.E
-import spire.algebra.Field
-import spire.implicits._
-import spire.math.Complex
-import math.{abs, sqrt}
+import cubic.complex.Cubic
 import org.hammerlab.math.syntax.FuzzyCmp._
+import org.hammerlab.math.syntax.{ Doubleish, E }
+import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
+import spire.implicits._
+import spire.math.{ Complex, abs, sqrt }
 
 abstract class Quartic[CoeffT: Field, ResultT](implicit ε: E) {
-  def diff(a: ResultT, b: CoeffT): ResultT
-
   def apply(a: CoeffT, b: CoeffT, c: CoeffT, d: CoeffT, e: CoeffT): Seq[ResultT] =
     monic(
       b / a,
@@ -26,11 +22,11 @@ abstract class Quartic[CoeffT: Field, ResultT](implicit ε: E) {
 }
 
 object Quartic {
-  type D = Double
+  implicit def doubleComplex[D: Doubleish : Field : NRoot : Signed : Trig : Ordering : IsReal](implicit ε: E) =
+    new Quartic[D, Complex[D]] {
 
-  implicit def doubleComplex(implicit ε: E) =
-    new Quartic[D, Complex[D]]
-      with DoubleComplex {
+      val field = Field[D]
+      import field.fromDouble
 
       override def monic(b: D, c: D, d: D, e: D): Seq[Complex[D]] = {
         val b2 = -b/2
@@ -45,24 +41,23 @@ object Quartic {
           Seq(
             abs(b)/4,
             sqrt(abs(c)/6),
-            abs(d).pow(1.0/3),
-            abs(e).pow(1.0/4)
+            abs(d).nroot(3),
+            abs(e).nroot(4)
           )
           .max
 
         def zero(v: D): Boolean = scale + v === scale
 
-//        println(s"\tmonic: b $b c $c d $d e $e, dc $dc dd $dd de $de scale: $scale ε $ε")
-
         (
           if (zero(dd)) {
             if (zero(dc) && zero(de)) {
-//              println("\tquad")
-              Seq[Complex[D]](0, 0, 0, 0)
-            } else if (!zero(dc) && !zero(de)) {
-//              println("\tbiquad")
+              val z = Complex(fromDouble(0))
+              // TODO: express these in terms of the coefficients, for more numerical stability, gradient propagation,
+              // etc.
+              Seq(z, z, z, z)
+            } else if (!zero(dc) && !zero(de))
               biquad(dc, de)
-            } else
+            else
               depressed(dc, dd, de)
           } else
             depressed(dc, dd, de)
@@ -70,7 +65,7 @@ object Quartic {
         .map { _ + b4 }
       }
 
-      def biquad(c: D, e: D): Seq[Complex[D]] = {
+      private def biquad(c: D, e: D): Seq[Complex[D]] = {
         val c2 = c/2
         val d = Complex(c2*c2 - e).nroot(2)
         val r1 = (d - c2).nroot(2)
@@ -88,13 +83,11 @@ object Quartic {
             -d*d
           )
 
-//        println(s"\tcubics: $cubics")
-
         val u = cubics.find(_ != 0).get
 
-        val squ2 = u.nroot(2) / 2
+        val squ2 = u.nroot(2) / fromDouble(2)
         val u2c = -u - c*2
-        val du = d / squ2
+        val du = Complex(d) / squ2
 
         val n1 = u2c - du
         val n1s = -n1.nroot(2)
@@ -102,29 +95,15 @@ object Quartic {
         val n2 = u2c + du
         val n2s = -n2.nroot(2)
 
-        val s1 = (u2c - du).nroot(2) / 2
+        val s1 = (u2c - du).nroot(2) / fromDouble(2)
+        val s2 = (u2c + du).nroot(2) / fromDouble(2)
 
-        val s2 = (u2c + du).nroot(2) / 2
-
-        val roots =
-          Seq(
-             squ2 - s1,
-             squ2 + s1,
-            -squ2 - s2,
-            -squ2 + s2
-          )
-
-//        println(s"\tu: $u, $squ2 ± $s1, ${-squ2} ± $s2, squ2: $squ2, u2c $u2c du $du")
-//        println(s"\tdep roots: $roots")
-
-        roots
+        Seq(
+           squ2 - s1,
+           squ2 + s1,
+          -squ2 - s2,
+          -squ2 + s2
+        )
       }
-    }
-
-  implicit def doubleResult(implicit ε: E) =
-    new Quartic[D, Root[D]]
-      with DoubleResult {
-      override def     monic(b: D, c: D, d: D, e: D): Seq[Root[D]] = makeResults(doubleComplex.monic(b, c, d, e))
-      override def depressed(      c: D, d: D, e: D): Seq[Root[D]] = makeResults(doubleComplex.depressed(c, d, e))
     }
 }

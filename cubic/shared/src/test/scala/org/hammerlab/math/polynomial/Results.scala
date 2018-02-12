@@ -7,21 +7,21 @@ import cats.syntax.show._
 import hammerlab.iterator._
 import org.hammerlab.math.format.SigFigs
 import org.hammerlab.math.format.SigFigs.showSigFigs
-import org.hammerlab.math.syntax.E
+import org.hammerlab.math.syntax.{ Doubleish, E }
+import spire.algebra.{ Field, IsReal, NRoot }
 import spire.math.Complex
-
-import scala.math.sqrt
+import spire.implicits._
+import spire.math.sqrt
 
 case class Results[D](results: Seq[(Result[D], Int)],
                       n: Int,
-                      μ: D,
-                      σ: D) {
+                      μ: Double,
+                      σ: Double) {
   def max = results.head._1.maxErr
 }
 
 object Results {
-  type D = Double
-  def apply(cases: Iterator[TestCase[D]])(
+  def apply[D: Field : Doubleish : IsReal : NRoot](cases: Iterator[TestCase[D]])(
       implicit
       ε: E,
       solve: TestCase[D] ⇒ Seq[Complex[D]]
@@ -34,13 +34,11 @@ object Results {
 
     val grouped =
       results
-        .runLengthEncode(
-          (cur, next) ⇒
-            if (cur.maxErr == next.maxErr)
-              Some(cur)
-            else
-              None
-        )
+        .runLengthPartial {
+          case (cur, next)
+            if (cur.maxErr == next.maxErr) ⇒
+            cur
+        }
         .toVector
 
     val sumErr = results.map(_.maxErr).sum
@@ -56,13 +54,13 @@ object Results {
     )
   }
 
-  implicit def showResults(implicit sf: SigFigs): Show[Results[D]] =
+  implicit def showResults[D: Show : Field : Ordering](implicit sf: SigFigs): Show[Results[D]] =
     show {
       case Results(
-      results,
-      n,
-      μ,
-      σ
+        results,
+        n,
+        μ,
+        σ
       ) ⇒
         (
           show"n $n μ $μ σ $σ:" ::
