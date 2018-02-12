@@ -13,7 +13,7 @@ import spire.syntax.all._
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.math.{ abs, ceil, floor, sqrt }
+import scala.math.{ abs, sqrt }
 
 /**
  * Stores some computed statistics about a dataset of [[Numeric]] elements.
@@ -82,8 +82,6 @@ object Stats {
 
     val medianDeviationsBuilder = Vector.newBuilder[(Double, V)]
 
-    //import org.hammerlab.math.syntax.Arithmetic._
-
     var sum = 0.0
     var sumSquares = 0.0
     for ((k, num) ← sorted) {
@@ -134,7 +132,7 @@ object Stats {
       median, mad,
       samplesOpt,
       sortedSamplesOpt,
-      percentiles
+      collapsePercentiles(percentiles)
     )
   }
 
@@ -233,8 +231,40 @@ object Stats {
       median, mad,
       samplesOpt,
       sortedSamplesOpt,
-      percentiles(sorted)
+      collapsePercentiles(percentiles(sorted))
     )
+  }
+
+  def collapsePercentiles[K](percentiles: Percentiles[K]): Percentiles[K] = {
+    val endpoints =
+      percentiles
+        .groupRunsFn {
+          case ((_, lv), (rp, rv))
+            if lv == rv ⇒
+            true
+          case _ ⇒
+            false
+        }
+        .map(_.toVector)
+        .map(v ⇒ (v.head, v.last, v.length))
+        .zipWithIndex
+        .toVector
+
+    endpoints
+      .flatMap {
+        case ((first, last, size), idx) ⇒
+          if (idx == 0)
+            Seq(last)
+          else if (idx + 1 == endpoints.length)
+            Seq(first)
+          else if (size == 1)
+            Seq(first)
+          else
+            Seq(
+              first,
+              last
+            )
+      }
   }
 
   /**
@@ -514,25 +544,6 @@ object Stats {
           d.toLong.toString
         else
           "%.1f".format(d)
-    )
-*/
-
-  /**
-   * Default [[Show]] for percentile-keys (generally integers except for on the edges in large datasets, where
-   * percentiles of rthe forms 1e-N and 1-1e-N are included).
-   */
-/*
-  def showPercentile(implicit
-                     showDouble: Show[Double],
-                     showLong: Show[Long] = showLong): Show[] =
-    Show(
-      r ⇒
-        "%4s".format(
-          if (r.isWhole())
-            r.toLong.show
-          else
-            r.toDouble.show
-        )
     )
 */
 }

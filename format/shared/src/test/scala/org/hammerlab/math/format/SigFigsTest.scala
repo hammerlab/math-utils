@@ -23,7 +23,7 @@ abstract class SigFigsTest(implicit val ttz: TrimTrailingZeros)
 }
 
 class DefaultSigFigsTest
-  extends SigFigsTest {
+  extends SigFigsTest()(TrimTrailingZeros.no) {
   test("3-digit numbers") {
     check( 123000, "1e5" , "1.2e5" , "123000" , "123000"  , "123000"   )
     check(  12300, "1e4" , "12300" , "12300"  , "12300"   , "12300"    )
@@ -78,7 +78,7 @@ class DefaultSigFigsTest
 }
 
 class TrimZerosSigFigsTest
-  extends SigFigsTest()(TrimTrailingZeros.implicits.yes) {
+  extends SigFigsTest {
   test("3-digit numbers") {
     check( 123000, "1e5" , "1.2e5" , "123000" , "123000" , "123000" )
     check(  12300, "1e4" , "12300" , "12300"  , "12300"  , "12300"  )

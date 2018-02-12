@@ -21,7 +21,6 @@ class HistShowTest extends Suite {
   Random.setSeed(123L)
 
   implicit val sf: SigFigs = 2
-  import SigFigs.TrimTrailingZeros.implicits.yes
 
   def check[V: Integral : Show](input: Seq[(Int, V)],
                                 expected: String): Unit =
@@ -104,11 +103,8 @@ class HistShowTest extends Suite {
       List(1 → 5, 2 → 4),
       """N: 9, μ/σ: 1.4/0.5, med/mad: 1/0
         | elems: 1×5 2×4
-        |  .10:	1
-        |  .25:	1
         |  .50:	1
-        |  .75:	2
-        |  .90:	2"""
+        |  .75:	2"""
     )
   }
 
@@ -117,11 +113,9 @@ class HistShowTest extends Suite {
       List(0 → 5, 1 → 5),
       """N: 10, μ/σ: 0.5/0.5, med/mad: 0.5/0.5
         | elems: 0×5 1×5
-        |  .10:	0
         |  .25:	0
         |  .50:	0.5
-        |  .75:	1
-        |  .90:	1"""
+        |  .75:	1"""
     )
   }
 
@@ -130,11 +124,8 @@ class HistShowTest extends Suite {
       List(0 → 4, 1 → 6),
       """N: 10, μ/σ: 0.6/0.49, med/mad: 1/0
         | elems: 0×4 1×6
-        |  .10:	0
         |  .25:	0
-        |  .50:	1
-        |  .75:	1
-        |  .90:	1"""
+        |  .50:	1"""
     )
   }
 
@@ -148,8 +139,7 @@ class HistShowTest extends Suite {
         |  .25:	5
         |  .50:	7
         |  .75:	9
-        |  .90:	10
-        |  .95:	10"""
+        |  .90:	10"""
     )
   }
 
@@ -175,8 +165,7 @@ class HistShowTest extends Suite {
         |  .10:	0
         |  .25:	1.5
         |  .50:	3
-        |  .75:	10
-        |  .90:	10"""
+        |  .75:	10"""
     )
   }
 
@@ -191,31 +180,8 @@ class HistShowTest extends Suite {
       """N: 12000000100, μ/σ: 1.2/0.37, med/mad: 1/0
         | elems: 1×10000000000 2×1000000000 1×100 2×1000000000
         |sorted: 1×10000000100 2×2000000000
-        |    1e-10:	1
-        |     1e-9:	1
-        |     1e-8:	1
-        |     1e-7:	1
-        |     1e-6:	1
-        |     1e-5:	1
-        |     1e-4:	1
-        |     .001:	1
-        |      .01:	1
-        |      .05:	1
-        |      .10:	1
-        |      .25:	1
-        |      .50:	1
-        |      .75:	1
-        |      .90:	2
-        |      .95:	2
-        |      .99:	2
-        |     .999:	2
-        |    .9999:	2
-        |   .99999:	2
-        |   1-1e-6:	2
-        |   1-1e-7:	2
-        |   1-1e-8:	2
-        |   1-1e-9:	2
-        |  1-1e-10:	2"""
+        |  .75:	1
+        |  .90:	2"""
     )
   }
 }

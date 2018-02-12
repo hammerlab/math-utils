@@ -13,30 +13,6 @@ class SigFigs(val n: Int) extends AnyVal {
 
 object SigFigs {
 
-  sealed trait TrimTrailingZeros extends (String ⇒ String)
-  object TrimTrailingZeros {
-    /** By default, don't trim trailing zeros */
-    implicit case object no extends TrimTrailingZeros {
-      def apply(s: String): String = s
-    }
-    object implicits {
-      /** Import this to trim trailing zeros */
-      implicit case object yes extends TrimTrailingZeros {
-        val regex = """^([^.]*)\.(\d*?)0+([^\d].*)?$""".r
-        def apply(s: String): String =
-          s match {
-            case regex(beforeDot, afterDot, suffixGroup) ⇒
-              val suffix = Option(suffixGroup).getOrElse("")
-              if (afterDot.isEmpty)
-                s"$beforeDot$suffix"
-              else
-                s"$beforeDot.$afterDot$suffix"
-            case _ ⇒ s
-          }
-      }
-    }
-  }
-
   implicit def apply(n: Int): SigFigs = new SigFigs(n)
 
   /**
