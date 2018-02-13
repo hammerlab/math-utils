@@ -17,8 +17,6 @@ class QuarticTest
     Quartic.doubleComplex[D].apply(a, b, c, d, e)
   }
 
-  sigfigs = 5
-
   test("sweep") {
     check(
       rootSweep,
@@ -35,8 +33,8 @@ class QuarticTest
       randomCases,
         n = 2700,
       max = 2.173e-4,
-        μ = 3.103e-7,
-        σ = 7.373e-6
+        μ = 2.998e-7,
+        σ = 7.323e-6
     )
   }
 }

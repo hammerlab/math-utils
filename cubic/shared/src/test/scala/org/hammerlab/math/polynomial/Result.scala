@@ -4,20 +4,56 @@ import cats.Show
 import cats.Show.show
 import cats.implicits.catsStdShowForInt
 import cats.syntax.show._
-import org.hammerlab.math.format.SigFigs
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import Doubleish._
-import spire.algebra.{ Field, IsReal, NRoot }
+import spire.algebra.{ Field, IsReal, NRoot, Order, Trig }
 import spire.math.Complex
+import spire.math.{ log, max, min }
 import spire.implicits._
-import spire.math.max
 
 case class Result[D](tc: TestCase[D],
                      actual: Seq[Complex[D]],
-                     maxErr: Double)
+                     maxAbsErr: Double,
+                     maxErrRatio: Option[Double],
+                     numExpectedZeros: Int,
+                     numActualZeros: Int)
+
+sealed trait Ratio
+object Ratio {
+  def apply[D: Doubleish : Field : Trig : Order : IsReal : NRoot](l: Complex[D], r: Complex[D]): Ratio =
+    (l.abs, r.abs, (l - r).abs) match {
+      case (0, 0, _) ⇒ Log(0)
+      case (0, _, _) ⇒ LeftZero
+      case (_, 0, _) ⇒ RightZero
+      case (l, r, d) ⇒
+        Log(
+          max(
+            log(l + d) - log(l),
+            log(r + d) - log(r)
+          )
+          .toDouble
+        )
+    }
+
+  implicit val ord: Ordering[Ratio] =
+    new Ordering[Ratio] {
+      override def compare(x: Ratio, y: Ratio): Int =
+        (x, y) match {
+          case (            LeftZero,            RightZero) ⇒  1
+          case (           RightZero,             LeftZero) ⇒ -1
+          case (LeftZero | RightZero,               Log(_)) ⇒  1
+          case (              Log(_), LeftZero | RightZero) ⇒ -1
+          case (              Log(l),               Log(r)) ⇒  Ordering[Double].compare(l, r)
+          case _ ⇒ 0
+        }
+    }
+}
+case object LeftZero extends Ratio
+case object RightZero extends Ratio
+case class Log(v: Double) extends Ratio
 
 object Result {
-  def apply[D: Field : Doubleish : IsReal : NRoot](t: TestCase[D])(
+  def apply[D: Field : Doubleish : IsReal : NRoot : Trig ](t: TestCase[D])(
       implicit
       ε: E,
       solve: TestCase[D] ⇒ Seq[Complex[D]]
@@ -38,7 +74,7 @@ object Result {
      * returned as having small imaginary components due to floating-point error, with some roots-configurations
      * especially exacerbating this).
      */
-    val (aligned, maxErr) =
+    val (aligned, (maxAbsErr, maxErrRatio, numExpectedZeros, numActualZeros)) =
       actual
         .permutations
         .map {
@@ -49,19 +85,37 @@ object Result {
                 .zip(r)
                 .map {
                   case (l, r) ⇒
-                    (l - r).abs
+                    (
+                      (l - r).abs,  // absolute error
+                      Ratio(l, r)   // error ratio
+                    )
                 }
                 .foldLeft(
-                  0.0  // maximum error observed
+                  (
+                    0.0,                   // maximum absolute error
+                    None: Option[Double],  // maximum log(error ratio); considered to be "not present" if e.g. all mappings are asymmetric zeros
+                    0,                     // number of {expected-zero, actual non-zero}s
+                    0                      // number of {expected-nonzero, actual zero}s
+                  )
                 ) {
                   case (
-                    maxErr,
-                    cur
+                    (maxAbsErr, maxRatio, numExpectedZeros, numActualZeros),
+                    (abs, ratio)
                   ) ⇒
-                    max(
-                      maxErr,
-                      cur.toDouble
-                    )
+                    val absErr =
+                      max(
+                        maxAbsErr,
+                        abs.toDouble
+                      )
+
+                    ratio match {
+                      case LeftZero ⇒
+                        (absErr, maxRatio, numExpectedZeros + 1, numActualZeros)
+                      case RightZero ⇒
+                        (absErr, maxRatio, numExpectedZeros, numActualZeros + 1)
+                      case Log(r) ⇒
+                        (absErr, maxRatio.map(max(_, r)).orElse(Some(r)), numExpectedZeros, numActualZeros)
+                    }
                 }
         }
         .minBy(_._2)
@@ -69,12 +123,14 @@ object Result {
     Result(
       t,
       aligned,
-      maxErr
+      maxAbsErr,
+      maxErrRatio,
+      numExpectedZeros,
+      numActualZeros
     )
   }
 
-  import SigFigs.showSigFigs
-  implicit def showComplex[D: Show : Field : Ordering](implicit sf: SigFigs): Show[Complex[D]] =
+  implicit def showComplex[D: Show : Field : Ordering](implicit d: Show[Double]): Show[Complex[D]] =
     show {
       case Complex(r, i) ⇒
         if (i == 0)
@@ -85,11 +141,19 @@ object Result {
           show"$r+${i}i"
     }
 
-  implicit def showResult[D: Show : Field : Ordering](implicit sf: SigFigs): Show[(Result[D], Int)] =
+  implicit def showResult[D: Show : Field : Ordering](implicit d: Show[Double]): Show[(Result[D], Int)] =
     show {
-      case (Result(tc, actual, maxErr), num) ⇒
+      case (Result(tc, actual, maxAbsErr, maxErrRatio, numExpectedZeros, numActualZeros), num) ⇒
+
+        val parenthetical =
+          if (numExpectedZeros > 0 || numActualZeros > 0)
+            show"$numExpectedZeros,$numActualZeros mismatched zeros; $num copies"
+          else
+            show"$num copies"
+
+        import cats.implicits.catsStdShowForString
         (
-          show"max err: $maxErr ($num copies)" ::
+          show"max err: $maxAbsErr abs, ${maxErrRatio.fold("NaN")(_.show)} ratio ($parenthetical)" ::
           tc
             .roots
             .zip(actual)

@@ -5,23 +5,55 @@ import cats.Show.show
 import cats.implicits.catsStdShowForInt
 import cats.syntax.show._
 import hammerlab.iterator._
-import org.hammerlab.math.format.SigFigs
-import org.hammerlab.math.format.SigFigs.showSigFigs
 import org.hammerlab.math.syntax.{ Doubleish, E }
-import spire.algebra.{ Field, IsReal, NRoot }
+import spire.algebra.{ Field, IsReal, NRoot, Trig }
 import spire.math.Complex
-import spire.implicits._
 import spire.math.sqrt
 
+import math.max
+
 case class Results[D](results: Seq[(Result[D], Int)],
-                      n: Int,
-                      μ: Double,
-                      σ: Double) {
-  def max = results.head._1.maxErr
+                      absStats: Stats,
+                      ratioStats: Stats,
+                      numExpectedZeros: Int,
+                      numActualZeros: Int)
+
+case class Stats(μ: Double, σ: Double, n: Int, max: Double)
+object Stats {
+  def apply(elems: Iterable[Double]): Stats = {
+    val (sum, sqs, n, mx) =
+      elems
+        .foldLeft(
+          (
+            0.0,  // sum
+            0.0,  // sum of squares
+            0,    // num elements
+            0.0   // maximum
+          )
+        ) {
+        case ((sum, sqs, n, mx), cur) ⇒
+          (
+            sum + cur,
+            sqs + cur*cur,
+            n + 1,
+            max(mx, cur)
+          )
+      }
+
+    val μ = sum / n
+    val σ = sqrt(sqs/n - μ*μ)
+    Stats(μ, σ, n, mx)
+  }
+
+  implicit def showNormal(implicit s: Show[Double]): Show[Stats] =
+    show {
+      case Stats(μ, σ, n, max) ⇒
+        show"n $n μ $μ σ $σ max $max"
+    }
 }
 
 object Results {
-  def apply[D: Field : Doubleish : IsReal : NRoot](cases: Iterator[TestCase[D]])(
+  def apply[D: Field : Doubleish : IsReal : NRoot : Trig](cases: Iterator[TestCase[D]])(
       implicit
       ε: E,
       solve: TestCase[D] ⇒ Seq[Complex[D]]
@@ -30,40 +62,45 @@ object Results {
       cases
         .map(Result(_))
         .toVector
-        .sortBy(-_.maxErr)
+        .sortBy(r ⇒ r.maxErrRatio → r.maxAbsErr)
+        .reverse
 
     val grouped =
       results
         .runLengthPartial {
           case (cur, next)
-            if (cur.maxErr == next.maxErr) ⇒
+            if ((cur.maxErrRatio, cur.maxAbsErr) == (next.maxErrRatio, next.maxAbsErr)) ⇒
             cur
         }
         .toVector
 
-    val sumErr = results.map(_.maxErr).sum
-    val n = results.size
-    val μ = sumErr / n
-    val sumSqs = results.map(r ⇒ r.maxErr * r.maxErr).sum
-    val σ = sqrt(sumSqs/n - μ*μ)
     Results(
       grouped,
-      n,
-      μ,
-      σ
+      Stats(results.    map(_.maxAbsErr)),
+      Stats(results.flatMap(_.maxErrRatio)),
+      results.map(_.numExpectedZeros).sum,
+      results.map(_.numActualZeros).sum
     )
   }
 
-  implicit def showResults[D: Show : Field : Ordering](implicit sf: SigFigs): Show[Results[D]] =
+  implicit def showResults[D: Show : Field : Ordering](implicit s: Show[Double]): Show[Results[D]] =
     show {
       case Results(
         results,
-        n,
-        μ,
-        σ
+        absStats,
+        ratioStats,
+        numExpectedZeros,
+        numActualZeros
       ) ⇒
+        val mismatchedZeros =
+          if (numExpectedZeros > 0 || numActualZeros > 0)
+            show" ($numExpectedZeros,$numActualZeros mismatched zeros)"
+          else
+            ""
+
+        import cats.implicits.catsStdShowForString
         (
-          show"n $n μ $μ σ $σ:" ::
+          show"abs: $absStats ratios: $ratioStats$mismatchedZeros" ::
           results.take(3).map(_.show).toList
         )
         .mkString("\n", "\n\t", "\n")
