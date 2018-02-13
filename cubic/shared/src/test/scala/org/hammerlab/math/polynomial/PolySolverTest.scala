@@ -48,10 +48,18 @@ abstract class PolySolverTest[D : Ordering : Field : Doubleish : IsReal : NRoot 
    * roots (via [[randomCases]])
    */
   def random: Results
-  test("random roots") {
+  test("uniform random roots") {
     check(
-      randomCases,
+      randomCases(rnd),
       random
+    )
+  }
+
+  def logNormalRandom: Results
+  test("log-normal random roots") {
+    check(
+      randomCases(logNormal),
+      logNormalRandom
     )
   }
 
@@ -182,7 +190,7 @@ abstract class PolySolverTest[D : Ordering : Field : Doubleish : IsReal : NRoot 
 
   def logNormal(): D =
     exp(
-      nextGaussian() * 5
+      nextGaussian()
     ) *
     (
       if (nextBoolean())
@@ -231,7 +239,7 @@ abstract class PolySolverTest[D : Ordering : Field : Doubleish : IsReal : NRoot 
    * The free variables (values of real roots, and real and imaginary parts for imaginary-root-pairs, and a "scale" to
    * multiply all coefficients by) sampled from a standard normal distribution.
    */
-  def randomCases: Iterator[TestCase[D]] = {
+  def randomCases(rnd: () => D): Iterator[TestCase[D]] = {
     scala.util.Random.setSeed(123)
     printEveryN(
       for {

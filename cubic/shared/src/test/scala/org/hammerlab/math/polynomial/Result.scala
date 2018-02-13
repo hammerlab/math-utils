@@ -11,13 +11,6 @@ import spire.math.Complex
 import spire.math.{ log, max, min }
 import spire.implicits._
 
-case class Result[D](tc: TestCase[D],
-                     actual: Seq[Complex[D]],
-                     maxAbsErr: Double,
-                     maxErrRatio: Option[Double],
-                     numExpectedZeros: Int,
-                     numActualZeros: Int)
-
 sealed trait Ratio
 object Ratio {
   def apply[D: Doubleish : Field : Trig : Order : IsReal : NRoot](l: Complex[D], r: Complex[D]): Ratio =
@@ -51,6 +44,13 @@ object Ratio {
 case object LeftZero extends Ratio
 case object RightZero extends Ratio
 case class Log(v: Double) extends Ratio
+
+case class Result[D](tc: TestCase[D],
+                     actual: Seq[Complex[D]],
+                     maxAbsErr: Double,
+                     maxErrRatio: Option[Double],
+                     numExpectedZeros: Int,
+                     numActualZeros: Int)
 
 object Result {
   def apply[D: Field : Doubleish : IsReal : NRoot : Trig ](t: TestCase[D])(
@@ -153,7 +153,7 @@ object Result {
 
         import cats.implicits.catsStdShowForString
         (
-          show"max err: $maxAbsErr abs, ${maxErrRatio.fold("NaN")(_.show)} ratio ($parenthetical)" ::
+          show"max err: $maxAbsErr abs, ${maxErrRatio.fold("NaN")(_.show)} ratio, scale ${tc.scale} ($parenthetical)" ::
           tc
             .roots
             .zip(actual)
