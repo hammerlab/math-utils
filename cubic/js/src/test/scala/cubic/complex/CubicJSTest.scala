@@ -1,6 +1,6 @@
 package cubic.complex
 
-import org.hammerlab.math.polynomial.{ Results, Stats }
+import org.hammerlab.math.polynomial.Stats
 
 class CubicJSTest
   extends CubicTest {
@@ -21,7 +21,7 @@ class CubicJSTest
             σ = 8.126e-9,
           max = 4.153e-8
         ),
-      numExpectedZeros = 474
+      numExpectedZeros = 510
     )
 
   val random =

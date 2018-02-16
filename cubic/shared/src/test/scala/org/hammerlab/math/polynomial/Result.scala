@@ -1,9 +1,8 @@
 package org.hammerlab.math.polynomial
 
-import cats.Show
-import cats.Show.show
-import cats.implicits.catsStdShowForInt
-import cats.syntax.show._
+import java.math.MathContext
+
+import hammerlab.show._
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import Doubleish._
 import spire.algebra.{ Field, IsReal, NRoot, Order, Trig }
@@ -13,7 +12,7 @@ import spire.implicits._
 
 sealed trait Ratio
 object Ratio {
-  def apply[D: Doubleish : Field : Trig : Order : IsReal : NRoot](l: Complex[D], r: Complex[D]): Ratio =
+  def apply[D: Doubleish : Field : Trig : Order : IsReal : NRoot](l: Complex[D], r: Complex[D]): Ratio = {
     (l.abs, r.abs, (l - r).abs) match {
       case (0, 0, _) ⇒ Log(0)
       case (0, _, _) ⇒ LeftZero
@@ -27,6 +26,7 @@ object Ratio {
           .toDouble
         )
     }
+  }
 
   implicit val ord: Ordering[Ratio] =
     new Ordering[Ratio] {
@@ -41,9 +41,9 @@ object Ratio {
         }
     }
 }
-case object LeftZero extends Ratio
-case object RightZero extends Ratio
-case class Log(v: Double) extends Ratio
+case object       LeftZero extends Ratio
+case object      RightZero extends Ratio
+case  class Log(v: Double) extends Ratio
 
 case class Result[D](tc: TestCase[D],
                      actual: Seq[Complex[D]],
@@ -60,10 +60,18 @@ object Result {
   ): Result[D] = {
     val actual = solve(t)
 
+//    println(s"actual: $actual ${actual.map(_.asInstanceOf[Complex[BigDecimal]].real.mc)}")
+
     if (t.roots.size != actual.size)
       throw new IllegalArgumentException(
         s"Sizes differ: $actual vs ${t.roots}"
       )
+
+    def mc(d: D): MathContext = d.asInstanceOf[BigDecimal].mc
+//    def mc(d: Complex[D]): (MathContext, MathContext) = {
+//      val Complex(r, i) = d.asInstanceOf[Complex[BigDecimal]]
+//      (r.mc, i.mc)
+//    }
 
     /**
      * Find the bijection between expected and actual roots that minimizes the maximum difference between them (as
@@ -79,6 +87,7 @@ object Result {
         .permutations
         .map {
           r ⇒
+//            println(s"perm: $r")
             r →
               t
                 .roots
@@ -131,7 +140,7 @@ object Result {
   }
 
   implicit def showComplex[D: Show : Field : Ordering](implicit d: Show[Double]): Show[Complex[D]] =
-    show {
+    Show {
       case Complex(r, i) ⇒
         if (i == 0)
           show"$r"
@@ -142,7 +151,7 @@ object Result {
     }
 
   implicit def showResult[D: Show : Field : Ordering](implicit d: Show[Double]): Show[(Result[D], Int)] =
-    show {
+    Show {
       case (Result(tc, actual, maxAbsErr, maxErrRatio, numExpectedZeros, numActualZeros), num) ⇒
 
         val parenthetical =
@@ -151,7 +160,6 @@ object Result {
           else
             show"$num copies"
 
-        import cats.implicits.catsStdShowForString
         (
           show"max err: $maxAbsErr abs, ${maxErrRatio.fold("NaN")(_.show)} ratio, scale ${tc.scale} ($parenthetical)" ::
           tc

@@ -1,8 +1,6 @@
 package org.hammerlab.stats
 
-import cats.Show
-import cats.Show.show
-import cats.implicits._
+import hammerlab.show._
 import org.hammerlab.io.Delimiter
 import spire.implicits._
 import spire.math.Integral
@@ -27,7 +25,7 @@ object Samples {
   implicit def makeShow[K, V: Integral](implicit
                                         showRuns: Show[Runs[K, V]],
                                         delimiter: Delimiter): Show[Samples[K, V]] =
-    show {
+    Show {
       case Samples(n, first, last) ⇒
         val numSampled = first.num + last.num
         val numSkipped = n - numSampled

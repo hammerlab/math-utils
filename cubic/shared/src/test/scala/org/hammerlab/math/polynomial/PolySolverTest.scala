@@ -4,6 +4,7 @@ import cats.Show
 import cats.Show.show
 import cats.implicits.catsStdShowForInt
 import cats.syntax.show._
+import cubic.complex.FromDouble
 import hammerlab.iterator._
 import org.hammerlab.math.format.SigFigs.showSigFigs
 import hammerlab.iterator._
@@ -20,7 +21,7 @@ import spire.math.abs
 import scala.math.exp
 import scala.util.Random._
 
-abstract class PolySolverTest[D : Ordering : Field : Doubleish : IsReal : NRoot : Signed : Trig](N: Int)
+abstract class PolySolverTest[D : Ordering : FromDouble : Field : Doubleish : IsReal : NRoot : Signed : Trig](N: Int)
   extends Suite {
 
   /** Check all polynomials whose roots are comprised of integers in the range [-[[M]], [[M]]], via [[rootSweep]] */
@@ -100,9 +101,9 @@ abstract class PolySolverTest[D : Ordering : Field : Doubleish : IsReal : NRoot 
   implicit var sigfigs: SigFigs = 4
 
   /** Helpers for converting to [[D]] */
-  val field = Field[D]
-  implicit val fromInt    = field.fromInt _
-  implicit val fromDouble = field.fromDouble _
+  val fromD = FromDouble[D]
+  implicit val fromInt   : Int    ⇒ D = (x: Int) ⇒ fromD.apply(x)
+  implicit val fromDouble: Double ⇒ D = fromD.apply
 
   /**
    * For pretty-printing purposes, display [[D]]s as corresponding [[Double]] values
@@ -125,7 +126,7 @@ abstract class PolySolverTest[D : Ordering : Field : Doubleish : IsReal : NRoot 
   implicit val resultsCmp: Cmp[Results] = {
     // "Expected" error-distribution statistics are only specified ~3 decimal places, for convenience
     implicit val ε: E = 1e-3
-    Cmp.by(resultsGen.to(_).tail)
+    Cmp.by { resultsGen.to(_).tail }
   }
 
   /**

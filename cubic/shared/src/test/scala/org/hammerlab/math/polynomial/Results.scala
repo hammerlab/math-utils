@@ -18,36 +18,37 @@ case class Results[D](results: Seq[(Result[D], Int)],
                       numExpectedZeros: Int,
                       numActualZeros: Int)
 
-case class Stats(μ: Double, σ: Double, n: Int, max: Double)
+case class Stats(n: Int, μ: Double, σ: Double, max: Double)
+
 object Stats {
   def apply(elems: Iterable[Double]): Stats = {
-    val (sum, sqs, n, mx) =
+    val (n, sum, sqs, mx) =
       elems
         .foldLeft(
           (
+            0,    // num elements
             0.0,  // sum
             0.0,  // sum of squares
-            0,    // num elements
             0.0   // maximum
           )
         ) {
-        case ((sum, sqs, n, mx), cur) ⇒
+        case ((n, sum, sqs, mx), cur) ⇒
           (
+            n + 1,
             sum + cur,
             sqs + cur*cur,
-            n + 1,
             max(mx, cur)
           )
       }
 
     val μ = sum / n
     val σ = sqrt(sqs/n - μ*μ)
-    Stats(μ, σ, n, mx)
+    Stats(n, μ, σ, mx)
   }
 
   implicit def showNormal(implicit s: Show[Double]): Show[Stats] =
     show {
-      case Stats(μ, σ, n, max) ⇒
+      case Stats(n, μ, σ, max) ⇒
         show"n $n μ $μ σ $σ max $max"
     }
 }

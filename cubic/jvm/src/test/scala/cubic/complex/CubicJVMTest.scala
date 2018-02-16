@@ -1,5 +1,6 @@
 package cubic.complex
-import org.hammerlab.math.polynomial.{ Results, Stats }
+
+import org.hammerlab.math.polynomial.Stats
 
 class CubicJVMTest
   extends CubicTest {

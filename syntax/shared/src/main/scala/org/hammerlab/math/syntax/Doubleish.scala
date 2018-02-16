@@ -30,8 +30,13 @@ object Doubleish {
     def toDouble(implicit d: Doubleish[T]): Double = d(t)
   }
 
-  implicit def complex: Doubleish[Complex[Double]] =
-    new Doubleish[Complex[Double]] {
-      override def apply(c: Complex[Double]): Double = c.norm
+  implicit val bigDecimal: Doubleish[BigDecimal] =
+    new Doubleish[BigDecimal] {
+      override def apply(t: BigDecimal): Double = t.doubleValue()
     }
+
+//  implicit def complex: Doubleish[Complex[Double]] =
+//    new Doubleish[Complex[Double]] {
+//      override def apply(c: Complex[Double]): Double = c.norm
+//    }
 }

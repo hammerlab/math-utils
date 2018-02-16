@@ -12,7 +12,22 @@ abstract class CubicTest
   val M = 6
   override val casePrintInterval = 500
 
-  def solve(t: TestCase[D]): Seq[Complex[D]] = {
+  implicit def solve(t: TestCase[D]): Seq[Complex[D]] = {
+    val Seq(a, b, c, d) = t.coeffs
+    Cubic.doubleComplex[D].apply(a, b, c, d)
+  }
+
+}
+
+abstract class BigDecimalTest
+  extends PolySolverTest[BigDecimal](3) {
+
+  type D = BigDecimal
+
+  val M = 4
+  override val casePrintInterval = 100
+
+  implicit def solve(t: TestCase[D]): Seq[Complex[D]] = {
     val Seq(a, b, c, d) = t.coeffs
     Cubic.doubleComplex[D].apply(a, b, c, d)
   }

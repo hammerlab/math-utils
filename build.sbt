@@ -2,12 +2,16 @@
 default(
   group("org.hammerlab.math"),
   versions(
+     io_utils → "4.1.0".snapshot,
     iterators → "2.1.0".snapshot
   )
 )
 
+val spire = "org.hammerlab.typelevel" ^^ "spire" ^ "0.14.2-SNAPSHOT"
+
 lazy val cubic = crossProject.settings(
   dep(
+    io_utils tests,
     iterators,
     shapeless,
     spire
@@ -49,7 +53,9 @@ lazy val mathJVM = math.jvm.settings(
 lazy val quartic = crossProject.settings(
   dep(
     cats,
+    io_utils,
     shapeless,
+    spire,
     iterators.tests
   )
 ).dependsOn(
@@ -64,8 +70,8 @@ lazy val stats = crossProject.settings(
   v"1.3.0",
   dep(
     cats,
-     io_utils % "4.1.0".snapshot,
-    iterators % "2.1.0".snapshot,
+     io_utils,
+    iterators,
         spire
   )
 ).dependsOn(
