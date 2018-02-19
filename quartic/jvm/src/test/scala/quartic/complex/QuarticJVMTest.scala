@@ -1,7 +1,8 @@
 package quartic.complex
 
 import hammerlab.show._
-import org.hammerlab.math.polynomial.{ Real, Result, Stats, TestCase }
+import org.hammerlab.math.polynomial.result.{ Result, Stats }
+import org.hammerlab.math.polynomial.{ Real, Stats, TestCase }
 import spire.implicits._
 
 class QuarticJVMTest
@@ -19,6 +20,7 @@ class QuarticJVMTest
         )
       )
 
+    implicitly[Show[Double]]
     println(show"${result → 1}")
   }
 
@@ -39,7 +41,7 @@ class QuarticJVMTest
   }
 
   val sweep =
-    results(
+    expected(
       absStats =
         Stats(
             n = 10920,
@@ -58,7 +60,7 @@ class QuarticJVMTest
     )
 
   val random =
-    results(
+    expected(
       absStats =
         Stats(
             n = 2700,
@@ -76,7 +78,7 @@ class QuarticJVMTest
     )
 
   val logNormalRandom =
-    results(
+    expected(
       absStats =
         Stats(
             n = 2700,

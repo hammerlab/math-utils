@@ -1,56 +1,18 @@
-package org.hammerlab.math.polynomial
+package org.hammerlab.math.polynomial.result
 
-import java.math.MathContext
-
+import hammerlab.lines._
 import hammerlab.show._
+import org.hammerlab.math.polynomial.TestCase
+import org.hammerlab.math.syntax.Doubleish._
 import org.hammerlab.math.syntax.{ Doubleish, E }
-import Doubleish._
-import spire.algebra.{ Field, IsReal, NRoot, Order, Trig }
-import spire.math.Complex
-import spire.math.{ log, max, min }
-import spire.implicits._
-
-sealed trait Ratio
-object Ratio {
-  def apply[D: Doubleish : Field : Trig : Order : IsReal : NRoot](l: Complex[D], r: Complex[D]): Ratio = {
-    (l.abs, r.abs, (l - r).abs) match {
-      case (0, 0, _) ⇒ Log(0)
-      case (0, _, _) ⇒ LeftZero
-      case (_, 0, _) ⇒ RightZero
-      case (l, r, d) ⇒
-        Log(
-          max(
-            log(l + d) - log(l),
-            log(r + d) - log(r)
-          )
-          .toDouble
-        )
-    }
-  }
-
-  implicit val ord: Ordering[Ratio] =
-    new Ordering[Ratio] {
-      override def compare(x: Ratio, y: Ratio): Int =
-        (x, y) match {
-          case (            LeftZero,            RightZero) ⇒  1
-          case (           RightZero,             LeftZero) ⇒ -1
-          case (LeftZero | RightZero,               Log(_)) ⇒  1
-          case (              Log(_), LeftZero | RightZero) ⇒ -1
-          case (              Log(l),               Log(r)) ⇒  Ordering[Double].compare(l, r)
-          case _ ⇒ 0
-        }
-    }
-}
-case object       LeftZero extends Ratio
-case object      RightZero extends Ratio
-case  class Log(v: Double) extends Ratio
+import spire.algebra.{ Field, IsReal, NRoot, Trig }
+import spire.math.{ Complex, max }
 
 case class Result[D](tc: TestCase[D],
                      actual: Seq[Complex[D]],
                      maxAbsErr: Double,
                      maxErrRatio: Option[Double],
-                     numExpectedZeros: Int,
-                     numActualZeros: Int)
+                     zeros: Zeros)
 
 object Result {
   def apply[D: Field : Doubleish : IsReal : NRoot : Trig ](t: TestCase[D])(
@@ -60,18 +22,10 @@ object Result {
   ): Result[D] = {
     val actual = solve(t)
 
-//    println(s"actual: $actual ${actual.map(_.asInstanceOf[Complex[BigDecimal]].real.mc)}")
-
     if (t.roots.size != actual.size)
       throw new IllegalArgumentException(
         s"Sizes differ: $actual vs ${t.roots}"
       )
-
-    def mc(d: D): MathContext = d.asInstanceOf[BigDecimal].mc
-//    def mc(d: Complex[D]): (MathContext, MathContext) = {
-//      val Complex(r, i) = d.asInstanceOf[Complex[BigDecimal]]
-//      (r.mc, i.mc)
-//    }
 
     /**
      * Find the bijection between expected and actual roots that minimizes the maximum difference between them (as
@@ -87,7 +41,6 @@ object Result {
         .permutations
         .map {
           r ⇒
-//            println(s"perm: $r")
             r →
               t
                 .roots
@@ -134,41 +87,16 @@ object Result {
       aligned,
       maxAbsErr,
       maxErrRatio,
-      numExpectedZeros,
-      numActualZeros
+      Zeros(
+        numExpectedZeros,
+        numActualZeros
+      )
     )
   }
 
-  implicit def showComplex[D: Show : Field : Ordering](implicit d: Show[Double]): Show[Complex[D]] =
-    Show {
-      case Complex(r, i) ⇒
-        if (i == 0)
-          show"$r"
-        else if (Ordering[D].lt(i, Field[D].zero))
-          show"$r${i}i"
-        else
-          show"$r+${i}i"
-    }
-
-  implicit def showResult[D: Show : Field : Ordering](implicit d: Show[Double]): Show[(Result[D], Int)] =
-    Show {
-      case (Result(tc, actual, maxAbsErr, maxErrRatio, numExpectedZeros, numActualZeros), num) ⇒
-
-        val parenthetical =
-          if (numExpectedZeros > 0 || numActualZeros > 0)
-            show"$numExpectedZeros,$numActualZeros mismatched zeros; $num copies"
-          else
-            show"$num copies"
-
-        (
-          show"max err: $maxAbsErr abs, ${maxErrRatio.fold("NaN")(_.show)} ratio, scale ${tc.scale} ($parenthetical)" ::
-          tc
-            .roots
-            .zip(actual)
-            .map { case (e, a) ⇒ show"$e\t\t$a" }
-            .toList
-        )
-        .mkString("\n\t")
+  import ResultGroup.showResultGroupOpt
+  implicit def showResult[D: Show : Field : Ordering](implicit d: Show[Double], indent: Indent): ToLines[Result[D]] =
+    ToLines {
+      r ⇒ (r, None: Option[Int]).lines
     }
 }
-

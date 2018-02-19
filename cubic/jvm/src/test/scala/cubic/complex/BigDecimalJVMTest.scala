@@ -1,14 +1,15 @@
 package cubic.complex
 
-import org.hammerlab.math.polynomial.Stats
+import org.hammerlab.math.polynomial.result.Stats
 
 class BigDecimalJVMTest
   extends BigDecimalTest {
 
   ε = 1e-16
 
+  val M = 4
   val sweep =
-    results(
+    expected(
       absStats =
         Stats(
             n = 990,
@@ -22,13 +23,12 @@ class BigDecimalJVMTest
             μ = 3.539e-16,
             σ = 2.434e-16,
           max = 1.111e-15
-        ),
-      numExpectedZeros =
-        264
+        )
     )
 
+  val iterationsPerRootShape = 100
   val random =
-    results(
+    expected(
       absStats =
         Stats(
             n = 1200,
@@ -48,7 +48,7 @@ class BigDecimalJVMTest
 
 
   val logNormalRandom =
-    results(
+    expected(
       absStats =
         Stats(
             n = 1200,

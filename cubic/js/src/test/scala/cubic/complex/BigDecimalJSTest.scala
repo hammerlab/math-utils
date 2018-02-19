@@ -1,6 +1,6 @@
 package cubic.complex
 
-import org.hammerlab.math.polynomial.Stats
+import org.hammerlab.math.polynomial.result.Stats
 
 class BigDecimalJSTest
   extends BigDecimalTest {
@@ -8,7 +8,7 @@ class BigDecimalJSTest
   ε = 1e-16
 
   val sweep =
-    results(
+    expected(
       absStats =
         Stats(
             n = 990,
@@ -28,7 +28,7 @@ class BigDecimalJSTest
     )
 
   val random =
-    results(
+    expected(
       absStats =
         Stats(
             n = 1200,
@@ -48,7 +48,7 @@ class BigDecimalJSTest
 
 
   val logNormalRandom =
-    results(
+    expected(
       absStats =
         Stats(
             n = 1200,

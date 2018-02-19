@@ -1,6 +1,6 @@
 package org.hammerlab.math.polynomial
 
-import cats.syntax.show._
+import hammerlab.show._
 import hammerlab.iterator._
 import spire.algebra.Ring
 import spire.math.Complex
@@ -13,9 +13,6 @@ case class TestCase[T]( reals: Seq[(Real[T], Int)],
                         roots: Seq[Complex[T]],
                        coeffs: Seq[T]) {
   def scale = coeffs.head
-  import Root.showRoot
-  override def toString: String =
-    s"roots: ${(reals ++ imags).map(showRoot.show).mkString(", ")}\t coeffs: ${coeffs.mkString(" ")}"
 }
 
 object TestCase {
@@ -59,5 +56,13 @@ object TestCase {
     .map(_.real)  // coefficients will always be real because all imaginary roots come in conjugate-pairs
     .map(_ * scale)
     .toList
+
+  implicit def showTestCase[T: Show]: Show[TestCase[T]] =
+    Show {
+      case TestCase(reals, imags, _, coeffs) ⇒
+        import Root.showRoot
+        val roots: Seq[(Root[T], Int)] = reals ++ imags
+        show"roots: ${roots.map(_.show).mkString(", ")}\t coeffs: ${coeffs.map(_.show).mkString(" ")}"
+    }
 }
 

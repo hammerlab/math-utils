@@ -1,5 +1,6 @@
 package org.hammerlab.math.polynomial
 
+import hammerlab.show._
 import org.hammerlab.math.format.showSuperscript
 import org.hammerlab.math.syntax.{ Doubleish, E, FuzzyCmp }
 import spire.algebra.{ Field, Ring, Signed }
@@ -16,23 +17,28 @@ object Root {
    * Pretty-print an [[ImaginaryRootPair imaginary-conjugate root-pair]] or [[Real real root]], in each case possibly
    * repeated as a multiple root (denoted by a superscript)
    */
-  implicit def showRoot[T]: Show[(Root[T], Int)] =
+  implicit def showRoot[T: Show]: Show[(Root[T], Int)] =
     show {
-      case (root, 1) ⇒ root.toString
-      case (root: ImaginaryRootPair[T], degree) ⇒ s"($root)${showSuperscript.show(degree)}"
-      case (real, degree) ⇒ s"$real${showSuperscript.show(degree)}"
+      case (root, 1) ⇒
+        root match {
+          case (r: ImaginaryRootPair[T]) ⇒ r.show
+          case (r: Real[T]) ⇒ r.show
+        }
+      case (root: ImaginaryRootPair[T], degree) ⇒ show"($root)${showSuperscript.show(degree)}"
+      case (real: Real[T], degree) ⇒ show"$real${showSuperscript.show(degree)}"
     }
 }
 
-case class Real[T](t: T)
-  extends Root[T] {
-  override def toString: String = s"$t"
-}
+case class Real[T](t: T) extends Root[T]
 
 object Real {
   def doubleish[T](implicit d: Doubleish[T]): Doubleish[Real[T]] =
     new Doubleish[Real[T]] {
       override def apply(t: Real[T]): Double = d(t.t)
+    }
+  implicit def show[T: Show]: Show[Real[T]] =
+    Show {
+      case Real(t) => t.show
     }
 }
 
@@ -43,21 +49,24 @@ object Real {
  *
  * [[b]] must be greater than zero; real roots are not modeled with this data structure
  */
-case class ImaginaryRootPair[T](a: T, b: T)
-  extends Root[T] {
-  override def toString: String =
-    (if (a == 0) "" else s"$a") +
-      "±" +
-      (if (b == 1) "" else s"$b") +
-      "i"
-}
+case class ImaginaryRootPair[T](a: T, b: T) extends Root[T]
 
 object ImaginaryRootPair {
+
+  implicit def showPair[T: Show]: Show[ImaginaryRootPair[T]] =
+    Show {
+      case ImaginaryRootPair(a, b) ⇒
+        (if (a == 0) "" else a.show) +
+        "±" +
+        (if (b == 1) "" else b.show) +
+        "i"
+    }
+
   implicit class ImaginaryRootPairOps[T](r: ImaginaryRootPair[T]) {
     def complex(implicit e: Ring[T]): Seq[Complex[T]] =
       Seq(
         Complex(r.a, -r.b),
-        Complex(r.a, r.b)
+        Complex(r.a,  r.b)
       )
   }
 
@@ -106,6 +115,7 @@ object ImaginaryRootPair {
             case _ ⇒
               throw new IllegalArgumentException(s"Odd number of roots to pair? $imags")
           }
-        ) :: pairs(next.result())
+        ) ::
+        pairs(next.result())
     }
 }

@@ -1,12 +1,12 @@
 package quartic.complex
 
-import org.hammerlab.math.polynomial.Stats
+import org.hammerlab.math.polynomial.result.Stats
 
 class QuarticJSTest
   extends QuarticTest {
 
   val sweep =
-    results(
+    expected(
       absStats =
         Stats(
             n = 10920,
@@ -25,7 +25,7 @@ class QuarticJSTest
     )
 
   val random =
-    results(
+    expected(
       absStats =
         Stats(
             n = 2700,
@@ -43,7 +43,7 @@ class QuarticJSTest
     )
 
   val logNormalRandom =
-    results(
+    expected(
       absStats =
         Stats(
             n = 2700,

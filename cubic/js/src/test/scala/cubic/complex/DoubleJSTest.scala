@@ -1,12 +1,12 @@
 package cubic.complex
 
-import org.hammerlab.math.polynomial.Stats
+import org.hammerlab.math.polynomial.result.Stats
 
-class CubicJSTest
-  extends CubicTest {
+class DoubleJSTest
+  extends DoubleTest {
 
   val sweep =
-    results(
+    expected(
       absStats =
         Stats(
             n = 2730,
@@ -21,11 +21,12 @@ class CubicJSTest
             σ = 8.126e-9,
           max = 4.153e-8
         ),
-      numExpectedZeros = 510
+      numExpectedZeros =
+        510
     )
 
   val random =
-    results(
+    expected(
       absStats =
         Stats(
             n = 1200,
@@ -43,7 +44,7 @@ class CubicJSTest
     )
 
   val logNormalRandom =
-    results(
+    expected(
       absStats =
         Stats(
             n = 1200,
