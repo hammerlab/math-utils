@@ -1,4 +1,4 @@
-package cubic.complex
+package org.hammerlab.math
 
 import java.math.MathContext.DECIMAL128
 
@@ -21,4 +21,9 @@ object FromDouble {
         DECIMAL128
       )
     )
+}
+
+trait HasFromDouble {
+  type FromDouble[T] = org.hammerlab.math.FromDouble[T]
+   val FromDouble = org.hammerlab.math.FromDouble
 }

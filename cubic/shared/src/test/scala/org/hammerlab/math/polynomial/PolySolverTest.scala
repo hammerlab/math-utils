@@ -1,19 +1,19 @@
 package org.hammerlab.math.polynomial
 
-import cubic.complex.FromDouble
-import org.hammerlab.math.polynomial.result.{ Expected, ResultGroup, Results, Stats, Zeros }
+import hammerlab.indent.implicits.spaces4
 import hammerlab.iterator._
 import hammerlab.lines._
+import hammerlab.math.FromDouble
 import hammerlab.show._
 import org.hammerlab.Suite
 import org.hammerlab.io.print.Limit
 import org.hammerlab.math.format.SigFigs
 import org.hammerlab.math.polynomial
+import org.hammerlab.math.polynomial.result.{ Expected, ResultGroup, Results, Stats }
 import org.hammerlab.math.syntax.{ Doubleish, E }
-import shapeless.Generic
+import org.scalatest.exceptions.TestFailedException
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
-import spire.math.Complex
-import spire.math.abs
+import spire.math.{ Complex, abs }
 
 import scala.math.exp
 import scala.util.Random._
@@ -103,14 +103,6 @@ abstract class PolySolverTest[T : Ordering : FromDouble : Field : IsReal : NRoot
   type ResultGroup = result.ResultGroup[D]
   type Expected = result.Expected[D]
 
-/*
-  implicit def optionLines[T](implicit l: ToLines[T]): ToLines[Option[T]] =
-    ToLines {
-      case Some(t) ⇒ l(t)
-      case None ⇒ Lines()
-    }
-*/
-
   /**
    * Run a polynomial-solver on some [[TestCase]]s, compute [[Results]] statistics about the solver's error relative to
    * the true roots, and verify them against provided/expected values
@@ -119,24 +111,55 @@ abstract class PolySolverTest[T : Ordering : FromDouble : Field : IsReal : NRoot
    */
   def check(cases: Iterator[TestCase[D]],
             expected: Expected): Unit = {
-    val actual: Expected = Results(cases)
+    val results = Results(cases)
+    val actual: Expected = results //Results(cases)
 
-    import org.hammerlab.io.lines.generic._
-    import hammerlab.lines._
-    import hammerlab.indent.implicits.spaces2
+    if (results.zeros.nonEmpty) {
+      results.results.foreach {
+        case rg @ ResultGroup(r, n) if r.zeros.nonEmpty ⇒
+          println(rg.showLines)
+        case _ ⇒
+      }
+    }
 
-    println(actual.showLines)
-    //println(actual.show)
+    println(
+      Lines(
+        show" Absolute-error statistics: ${actual.abs}",
+        show"Log-ratio-error statistics: ${actual.ratio}",
+        s"Worst cases:",
+        indent(
+          actual.worst
+        )
+      )
+      .showLines
+    )
 
     {
+      /** check (and output) error-statistics to 3-4 digits' accuracy */
       implicit val ε: E = 1e-3
-      ===(actual.abs, expected.abs)
-      ===(actual.ratio, expected.ratio)
-      ===(actual.zeros, expected.zeros)
-//      ===(
-//        actual,
-//        expected
-//      )
+
+      /**
+       * skip comparing the [[result.Expected.worst]] entries, since tests aren't populating "expected" values for
+       * them atm
+       */
+      try {
+        ===(actual.abs, expected.abs)
+        ===(actual.ratio, expected.ratio)
+        ===(actual.zeros, expected.zeros)
+      } catch {
+        case e: TestFailedException ⇒
+          import generic._
+          import Lines.LineJoinOps
+          println(
+            Seq(
+              actual.abs,
+              actual.ratio
+            )
+            .join(",")
+            .show
+          )
+          throw e
+      }
     }
   }
 

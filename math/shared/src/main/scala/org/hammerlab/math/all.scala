@@ -5,6 +5,7 @@ import org.hammerlab.{ math ⇒ ohm }
 trait all
   extends HasBinomial
      with Div
+     with HasFromDouble
      with Interpolate
      with Min
      with Steps {

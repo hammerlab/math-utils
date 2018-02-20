@@ -2,66 +2,64 @@ package cubic.complex
 
 import org.hammerlab.math.polynomial.result.Stats
 
+/**
+ * [[Cubic.doubleComplex]] is quite slow using [[BigDecimal]]s in JS, so most of hte property-checks are way scaled down
+ * here vs the [[Double]] and JVM-based counterparts.
+ */
 class BigDecimalJSTest
   extends BigDecimalTest {
 
-  ε = 1e-16
+  ε = 1e-15
 
+  override val casePrintInterval: Int = 10
+
+  val M = 3
   val sweep =
     expected(
-      absStats =
-        Stats(
-            n = 990,
-            μ = 7.235e-16,
-            σ = 4.066e-16,
-          max = 1.778e-15
-        ),
-      ratioStats =
-        Stats(
-            n = 990,
-            μ = 3.539e-16,
-            σ = 2.434e-16,
-          max = 1.111e-15
-        ),
-      numExpectedZeros =
-        264
+      Stats(
+        231,
+        5.547e-16,
+        4.139e-16,
+        1.49e-15
+      ),
+      Stats(
+        231,
+        2.853e-16,
+        2.162e-16,
+        8.882e-16
+      )
     )
 
+  val iterationsPerRootShape = 50
   val random =
     expected(
-      absStats =
-        Stats(
-            n = 1200,
-            μ = 2.229e-16,
-            σ = 2.003e-16,
-          max = 1.002e-15
-        ),
-      ratioStats =
-        Stats(
-            n = 1200,
-            μ = 7.182e-16,
-            σ = 2.580e-15,
-          max = 4.010e-14
-        )
+      Stats(
+        200,
+        2.057e-16,
+        1.9e-16,
+        1.001e-15
+      ),
+      Stats(
+        200,
+        9.544e-16,
+        3.265e-15,
+        3.038e-14
+      )
     )
-
-
 
   val logNormalRandom =
     expected(
-      absStats =
-        Stats(
-            n = 1200,
-            μ = 4.806e-16,
-            σ = 6.326e-16,
-          max = 4.885e-15
-        ),
-      ratioStats =
-        Stats(
-            n = 1200,
-            μ = 7.500e-16,
-            σ = 1.491e-15,
-          max = 1.442e-14
-        )
+      Stats(
+        200,
+        4.779e-16,
+        6.149e-16,
+        3.715e-15
+      ),
+      Stats(
+        200,
+        5.717e-16,
+        1.188e-15,
+        1.287e-14
+      )
     )
 }

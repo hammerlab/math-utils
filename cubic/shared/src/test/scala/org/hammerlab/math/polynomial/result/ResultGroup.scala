@@ -19,11 +19,21 @@ object ResultGroup {
         val lt = Ordering[D].lt _
         val negativeOne = -one
 
+        val rs =
+          if (r == zero)
+            ""
+          else
+            r.show
+
              if ( i ==  zero) r.show
-        else if ( i ==   one) show"$r+i"
-        else if (-i ==   one) show"$r-i"
-        else if (lt(i, zero)) show"$r${i}i"
-        else                  show"$r+${i}i"
+        else if ( i ==   one)
+               if (r == zero)
+                 "i"
+               else
+                 s"$rs+i"
+        else if (-i ==   one) s"$rs-i"
+        else if (lt(i, zero)) show"$rs${i}i"
+        else                  show"$rs+${i}i"
     }
 
   implicit def showResultGroup[D: Show : Field : Ordering](implicit d: Show[Double]): ToLines[ResultGroup[D]] =
@@ -58,13 +68,30 @@ object ResultGroup {
           .map { s ⇒ s" ($s)"}
           .getOrElse("")
 
+        val scaleStr =
+          if (tc.scale == 1)
+            ""
+          else
+           show", scale ${tc.scale}"
+
         Lines(
-          show"max err: $maxAbsErr abs, ${maxErrRatio.fold("NaN")(_.show)} ratio, scale ${tc.scale}$parenthetical",
+          show"max errs: abs: $maxAbsErr, ratio: ${maxErrRatio.fold("NaN")(_.show)}$scaleStr$parenthetical",
           indent(
-            tc
-              .roots
-              .zip(actual)
-              .map { case (e, a) ⇒ show"$e\t\t$a" }
+            {
+              val strs =
+                tc
+                  .roots
+                  .zip(actual)
+                  .map { case (e, a) ⇒ (e.show, a.show) }
+
+              val maxE = strs.map(_._1.length).max
+              val maxA = strs.map(_._2.length).max
+              strs
+                .map {
+                case (e, a) ⇒
+                  s"%${maxE}s    %${maxA}s".format(e, a)
+              }
+            }
           )
         )
     }

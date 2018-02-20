@@ -1,5 +1,6 @@
 package cubic.complex
 
+import hammerlab.math.FromDouble
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import spire.algebra._
 import spire.math._
@@ -98,15 +99,21 @@ object Cubic {
         }
       }
 
-      def quadratic(b: D, c: D): (Complex[D], Complex[D]) = {
-        val b2 = -b/2
-        val sq = Complex(b2*b2 - c).nroot(2)
-        val b2c = Complex(b2)
-        (
-          b2c - sq,
-          b2c + sq
-        )
-      }
+      def quadratic(b: D, c: D): (Complex[D], Complex[D]) =
+        if (c.isZero)
+          (
+            Complex(c),
+            Complex(-b)
+          )
+        else {
+          val b2 = -b/2
+          val sq = Complex(b2*b2 - c).nroot(2)
+          val b2c = Complex(b2)
+          (
+            b2c - sq,
+            b2c + sq
+          )
+        }
 
       override def depressed(p: D, q: D): Seq[Complex[D]] = {
 //        println(s"cub depressed: $p $q, ε $ε")
