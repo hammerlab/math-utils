@@ -1,7 +1,7 @@
 package cubic.complex
 
 import hammerlab.math.FromDouble
-import org.hammerlab.math.syntax.{ Doubleish, E }
+import org.hammerlab.math.syntax.Doubleish
 import spire.algebra._
 import spire.math._
 
@@ -26,24 +26,10 @@ abstract class Cubic[Real: Field, Complex] {
 
 object Cubic {
 
-  trait FromEpsilon[D] {
-    def apply(implicit ε: E): HasCubic[D]
-  }
-
-  object FromEpsilon {
-    implicit def makeCubic[D](implicit ε: E, c: FromEpsilon[D]): HasCubic[D] = c.apply
-
-    implicit def standard[D: Ordering: FromDouble : Field: NRoot: Trig : IsReal : Doubleish : Signed]: FromEpsilon[D] =
-      new FromEpsilon[D] {
-        override def apply(implicit ε: E): HasCubic[D] =
-          doubleComplex[D]
-      }
-  }
-
-  type HasCubic[D] = Cubic[D, Complex[D]]
+  type RealToComplex[D] = Cubic[D, Complex[D]]
 
   import spire.implicits._
-  implicit def doubleComplex[D: Ordering: FromDouble : Field: NRoot: Trig : IsReal : Doubleish : Signed](implicit ε: E): HasCubic[D] =
+  implicit def doubleComplex[D: Ordering: FromDouble : Field: NRoot: Trig : IsReal : Doubleish : Signed] =
     new Cubic[D, Complex[D]] {
 
       override def monic(b: D, c: D, d: D): Seq[Complex[D]] = {
@@ -55,47 +41,15 @@ object Cubic {
           val b3   = b / 3
           val b32  = b3 * b3
 
+          val p = c - 3*b32
           val q = b3*b32*2 - b3*c + d
 
-          import org.hammerlab.math.syntax.FuzzyCmp._
-
-          (
-            if (c === 3*b32) {
-              if (2*b3*b32 - b3*c === -d) {
-  //              println("getting z")
-                val z = Complex(FromDouble(0))
-//                println(s"triple: $z")
-                Seq(
-                  // TODO: express these in terms of the coefficients, for more numerical stability, gradient propagation,
-                  // etc.
-                  z, z, z
-                )
-              } else {
-                val sqp32 = Complex(-q).nroot(3)
-                val t0 = Complex(c - 3 * b32)
-                val t1 = t0 - pi23
-                val t2 = t1 - pi23
-
-                def root(t: Complex[D]): Complex[D] = sqp32 * t.cos
-
-                Seq(
-                  root(t2),
-                  root(t1),
-                  root(t0)
-                )
-              }
-
-            } else {
-              val p = c - 3*b32
-
-              depressed(p, q)
+          depressed(p, q)
+            .map {
+              r ⇒
+  //              println(s"cub root: $r - $b3 = ${r - b3}")
+                r - b3
             }
-          )
-          .map {
-            r ⇒
-//              println(s"cub root: $r - $b3 = ${r - b3}")
-              r - b3
-          }
         }
       }
 

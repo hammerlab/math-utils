@@ -35,7 +35,7 @@ abstract class PolySolverTest[T : Ordering : FromDouble : Field : IsReal : NRoot
     with ShowD[T] {
 
   /** Pretty-printing level */
-  implicit var sigfigs: SigFigs = 4
+  implicit var sigfigs: SigFigs = 3
 
   implicit def showDouble: Show[Double] = org.hammerlab.math.format.SigFigs.showSigFigs
 
@@ -135,8 +135,8 @@ abstract class PolySolverTest[T : Ordering : FromDouble : Field : IsReal : NRoot
     )
 
     {
-      /** check (and output) error-statistics to 3-4 digits' accuracy */
-      implicit val ε: E = 1e-3
+      /** check (and output) error-statistics to 2-3 digits' accuracy */
+      implicit val ε: E = 1e-2
 
       /**
        * skip comparing the [[result.Expected.worst]] entries, since tests aren't populating "expected" values for
