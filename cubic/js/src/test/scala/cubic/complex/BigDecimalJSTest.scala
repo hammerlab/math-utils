@@ -11,53 +11,53 @@ class BigDecimalJSTest
 
   override val casePrintInterval: Int = 10
 
-  val M = 3
+  val M = 2
   val sweep =
     expected(
       Stats(
-        231,
-        5.55e-16,
-        4.14e-16,
-        1.49e-15
+        85,
+        3.58e-16,
+        3.11e-16,
+        9.93e-16
       ),
       Stats(
-        231,
-        2.85e-16,
-        2.16e-16,
-        8.88e-16
+        85,
+        2.33e-16,
+        1.95e-16,
+        6.66e-16
       )
     )
 
-  val iterationsPerRootShape = 50
+  val iterationsPerRootShape = 15
   val random =
     expected(
       Stats(
-        200,
-        1.41e-12,
-        3.37e-12,
+        60,
+        1.77e-12,
+        4e-12,
         1.71e-11
       ),
       Stats(
-        200,
-        1.93e-12,
-        3.75e-12,
-        1.26e-11
+        60,
+        2.01e-12,
+        3.69e-12,
+        1.05e-11
       )
     )
 
   val logNormalRandom =
     expected(
       Stats(
-        200,
-        2.59e-12,
-        7.33e-12,
+        60,
+        3.37e-12,
+        9.06e-12,
         4.64e-11
       ),
       Stats(
-        200,
-        1.78e-12,
-        3.55e-12,
-        1.19e-11
+        60,
+        1.92e-12,
+        3.61e-12,
+        1.16e-11
       )
     )
 }
