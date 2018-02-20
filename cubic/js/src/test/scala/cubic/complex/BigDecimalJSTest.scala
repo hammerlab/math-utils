@@ -9,8 +9,6 @@ import org.hammerlab.math.polynomial.result.Stats
 class BigDecimalJSTest
   extends BigDecimalTest {
 
-  ε = 1e-15
-
   override val casePrintInterval: Int = 10
 
   val M = 3

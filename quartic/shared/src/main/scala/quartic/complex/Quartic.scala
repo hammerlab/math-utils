@@ -23,6 +23,19 @@ abstract class Quartic[CoeffT: Field, ResultT](implicit ε: E) {
 }
 
 object Quartic {
+
+  trait HasQuartic[D] {
+    def apply(implicit ε: E): RealComplex[D]
+  }
+  object HasQuartic {
+    implicit def forType[D: Doubleish : FromDouble : Field : NRoot : Signed : Trig : Ordering : IsReal]: HasQuartic[D] =
+      new HasQuartic[D] {
+        override def apply(implicit ε: E): RealComplex[D] = doubleComplex[D]
+      }
+  }
+
+  type RealComplex[D] = Quartic[D, Complex[D]]
+
   implicit def doubleComplex[D: Doubleish : FromDouble : Field : NRoot : Signed : Trig : Ordering : IsReal](implicit ε: E) =
     new Quartic[D, Complex[D]] {
 
@@ -44,7 +57,7 @@ object Quartic {
           val dd = b28*b + b2*c + d
           val de = e + b4*d + b28*c/2 - b28*b28*3/4
 
-          println(s"monic: $b $c $d $e, $dc $dd $de")
+//          println(s"monic: $b $c $d $e, $dc $dd $de")
 
           val scale =
             Seq(
@@ -66,7 +79,7 @@ object Quartic {
                 // etc.
                 Seq(z, z, z, z)
               } else if (!zero(dc) && !zero(de)) {
-                println("biquad")
+//                println("biquad")
                 biquad(dc, de)
               } else
                 depressed(dc, dd, de)
@@ -79,13 +92,14 @@ object Quartic {
 
       private def biquad(c: D, e: D): Seq[Complex[D]] = {
         val (r1, r2) = Cubic.doubleComplex[D].quadratic(c, e)
+        val (s1, s2) = (r1.sqrt, r2.sqrt)
         Seq(
-          -r1, r1, -r2, r2
+          -s1, s1, -s2, s2
         )
       }
 
       override def depressed(c: D, d: D, e: D): Seq[Complex[D]] = {
-        println(s"depressed: $c $d $e")
+//        println(s"depressed: $c $d $e")
         if (d == 0)
           biquad(c, e)
         else {
@@ -98,7 +112,7 @@ object Quartic {
 
           val u = cubics.find(_ != 0).get
 
-          println(s"cubics:\n\t${cubics.mkString("\n\t")}")
+//          println(s"cubics:\n\t${cubics.mkString("\n\t")}")
 
           val two = FromDouble(2)
           val squ2 = u.nroot(2) / two
@@ -114,7 +128,7 @@ object Quartic {
           val s1 = (u2c - du).nroot(2) / two
           val s2 = (u2c + du).nroot(2) / two
 
-          println(s"squ2 $squ2 u2c $u2c du $du two $two s1 $s1 s2 $s2")
+//          println(s"squ2 $squ2 u2c $u2c du $du two $two s1 $s1 s2 $s2")
 
           Seq(
              squ2 - s1,

@@ -19,7 +19,8 @@ lazy val cubic = crossProject.settings(
 ).dependsOn(
   format % "test->test",
   math,
-  syntax
+  syntax,
+  types % "test"
 )
 lazy val cubicJS  = cubic.js
 lazy val cubicJVM = cubic.jvm
@@ -63,7 +64,8 @@ lazy val quartic = crossProject.settings(
   cubic % "compile->compile;test->test",
   format,
   math,
-  syntax
+  syntax,
+  types % "test"
 )
 lazy val quarticJS  = quartic.js
 lazy val quarticJVM = quartic.jvm

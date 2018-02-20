@@ -5,58 +5,56 @@ import org.hammerlab.math.polynomial.result.Stats
 class BigDecimalJVMTest
   extends BigDecimalTest {
 
+  override val casePrintInterval: Int = 50
+
+  val M = 2
   val sweep =
     expected(
-      absStats =
-        Stats(
-            n = 10920,
-            μ = 4.457e-9,
-            σ = 1.149e-8,
-          max = 7.807e-8
-        ),
-      ratioStats =
-        Stats(
-            n = 10920,
-            μ = 1.715e-9,
-            σ = 5.299e-9,
-          max = 7.097e-8
-        ),
-      numExpectedZeros = 1956
+      Stats(
+        275,
+        3.66e-16,
+        4.17e-16,
+        2.66e-15
+      ),
+      Stats(
+        275,
+        2.65e-16,
+        3.04e-16,
+        1.52e-15
+      )
     )
 
+
+  val iterationsPerRootShape = 20
   val random =
     expected(
-      absStats =
-        Stats(
-            n = 2700,
-            μ = 8.062e-8,
-            σ = 1.382e-6,
-          max = 3.899e-5
-        ),
-      ratioStats =
-        Stats(
-            n = 2700,
-            μ = 1.129e-7,
-            σ = 1.695e-6,
-          max = 4.688e-5
-        )
+      Stats(
+        180,
+        8.29e-13,
+        2.72e-12,
+        1.83e-11
+      ),
+      Stats(
+        180,
+        1.18e-12,
+        3.85e-12,
+        2.54e-11
+      )
     )
 
   val logNormalRandom =
     expected(
-      absStats =
-        Stats(
-            n = 2700,
-            μ = 4.005e-8,
-            σ = 2.919e-7,
-          max = 7.549e-6
-        ),
-      ratioStats =
-        Stats(
-            n = 2700,
-            μ = 2.331e-8,
-            σ = 4.625e-8,
-          max = 6.75e-7
-        )
+      Stats(
+        180,
+        2.87e-10,
+        2.78e-9,
+        3.23e-8
+      ),
+      Stats(
+        180,
+        6.99e-11,
+        6.78e-10,
+        8.22e-9
+      )
     )
 }

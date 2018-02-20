@@ -5,8 +5,6 @@ import org.hammerlab.math.polynomial.result.Stats
 class BigDecimalJVMTest
   extends BigDecimalTest {
 
-  ε = 1e-15
-
   override val casePrintInterval: Int = 50
 
   val M = 5
