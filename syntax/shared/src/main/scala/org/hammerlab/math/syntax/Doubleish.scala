@@ -28,6 +28,7 @@ object Doubleish {
 
   implicit class DoubleishOps[T](val t: T) extends AnyVal {
     def toDouble(implicit d: Doubleish[T]): Double = d(t)
+    def toInt   (implicit d: Doubleish[T]): Int    = d(t).toInt
   }
 
   implicit val bigDecimal: Doubleish[BigDecimal] =

@@ -5,7 +5,8 @@ import hammerlab.indent.implicits.spaces4
 import hammerlab.lines._
 import hammerlab.show._
 import org.hammerlab.math.polynomial.result.Result
-import org.hammerlab.math.polynomial.{ ImaginaryRootPair, PolySolverTest, Real, TestCase }
+import org.hammerlab.math.polynomial.test.PolySolverTest
+import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, TestCase }
 import org.hammerlab.math.syntax.Doubleish
 import quartic.complex.Quartic.HasQuartic
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }

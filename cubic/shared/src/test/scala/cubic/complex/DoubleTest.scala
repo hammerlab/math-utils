@@ -2,6 +2,7 @@ package cubic.complex
 
 import hammerlab.scalajs._
 import org.hammerlab.math.polynomial.result.Stats
+import org.hammerlab.math.polynomial.roots.RootShapes
 import spire.implicits._
 
 class DoubleTest
@@ -10,6 +11,9 @@ class DoubleTest
   val M = 15
   val iterationsPerRootShape = 5000
 
+  sweepTests(M, expecteds)
+
+/*
   val sweep =
     expected(
       Stats(
@@ -25,6 +29,7 @@ class DoubleTest
         7.86e-8
       )
     )
+*/
 
   val random =
     expected(

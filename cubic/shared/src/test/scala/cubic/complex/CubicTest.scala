@@ -1,7 +1,8 @@
 package cubic.complex
 
 import hammerlab.math.FromDouble
-import org.hammerlab.math.polynomial.{ PolySolverTest, TestCase }
+import org.hammerlab.math.polynomial.TestCase
+import org.hammerlab.math.polynomial.test.PolySolverTest
 import org.hammerlab.math.syntax.Doubleish
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
 import spire.implicits._
