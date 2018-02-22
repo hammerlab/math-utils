@@ -1,7 +1,7 @@
 package org.hammerlab.math.polynomial.result
 
 import hammerlab.show._
-import hammerlab.lines._
+import org.hammerlab.math.polynomial.result.Result.Root
 import spire.algebra.Field
 import spire.implicits._
 import spire.math.Complex
@@ -15,7 +15,7 @@ object ResultGroup {
     Show {
       case Complex(r, i) ⇒
         val f = Field[D]
-        import f.{zero, one}
+        import f.{ one, zero }
         val lt = Ordering[D].lt _
         val negativeOne = -one
 
@@ -36,37 +36,28 @@ object ResultGroup {
         else                  show"$rs+${i}i"
     }
 
-  implicit def showResultGroup[D: Show : Field : Ordering](implicit d: Show[Double]): ToLines[ResultGroup[D]] =
-    ToLines {
-      case ResultGroup(result, num) ⇒ showResultGroupOpt[D].apply((result, Some(num)))
+  implicit def showResultGroup[D: Show : Field : Ordering](implicit d: Show[Double]): Show[ResultGroup[D]] =
+    Show {
+      case ResultGroup(result, num) ⇒
+        showResultGroupOpt[D].apply(
+          (
+            result,
+            Some(num)
+          )
+        )
     }
 
-  implicit def showResultGroupOpt[D: Show : Field : Ordering](implicit d: Show[Double]): ToLines[(Result[D], Option[Int])] =
-    ToLines {
-      case (Result(tc, actual, maxAbsErr, maxErrRatio, zeros), numOpt) ⇒
+  implicit def showResultGroupOpt[D: Show : Field : Ordering](implicit d: Show[Double]): Show[(Result[D], Option[Int])] =
+    Show {
+      case (Result(tc, actual, err), numOpt) ⇒
 
         val parenthetical =
-          (
-            (
-              if (zeros.nonEmpty)
-                zeros.show :: Nil
-              else
-                Nil
-            ) ++ (
-              numOpt
-                .map {
-                  num ⇒
-                    show"$num copies"
-                }
-                .toList
-            ) match {
-              case Nil ⇒ None
-              case e :: Nil ⇒ Some(e)
-              case es ⇒ Some(es.mkString("; "))
+          numOpt
+            .map {
+              num ⇒
+                show" ($num copies)"
             }
-          )
-          .map { s ⇒ s" ($s)"}
-          .getOrElse("")
+            .getOrElse("")
 
         val scaleStr =
           if (tc.scale == 1)
@@ -74,26 +65,15 @@ object ResultGroup {
           else
            show", scale ${tc.scale}"
 
-        Lines(
-          show"max errs: abs: $maxAbsErr, ratio: ${maxErrRatio.fold("NaN")(_.show)}$scaleStr$parenthetical",
-          indent(
-            {
-              val strs =
-                tc
-                  .roots
-                  .zip(actual)
-                  .map { case (e, a) ⇒ (e.show, a.show) }
-
-              val maxE = strs.map(_._1.length).max
-              val maxA = strs.map(_._2.length).max
-              strs
-                .map {
-                case (e, a) ⇒
-                  s"%${maxE}s    %${maxA}s".format(e, a)
-              }
+        val roots =
+          actual
+            .map {
+              case Root(e, a, err) ⇒
+                show"$e ⟶ $a ($err)"
             }
-          )
-        )
+            .mkString(", ")
+
+        show"err: $err$scaleStr$parenthetical, $roots"
     }
 }
 

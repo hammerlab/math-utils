@@ -3,29 +3,37 @@ package org.hammerlab.math.polynomial.result
 import hammerlab.lines._
 import hammerlab.show._
 import org.hammerlab.math.polynomial.TestCase
+import org.hammerlab.math.polynomial.result.Result.Root
 import org.hammerlab.math.syntax.Doubleish._
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import spire.algebra.{ Field, IsReal, NRoot, Trig }
-import spire.math.{ Complex, max }
+import spire.implicits._
+import spire.math.Complex
 
 case class Result[D](tc: TestCase[D],
-                     actual: Seq[Complex[D]],
-                     maxAbsErr: Double,
-                     maxErrRatio: Option[Double],
-                     zeros: Zeros)
+                     actual: Seq[Root[D]],
+                     maxErr: Double)
 
 object Result {
-  def apply[D: Field : Doubleish : IsReal : NRoot : Trig ](t: TestCase[D])(
-      implicit
-      ε: E,
-      solve: TestCase[D] ⇒ Seq[Complex[D]]
-  ): Result[D] = {
-    val actual = solve(t)
+
+  case class Root[D](expected: Complex[D],
+                     actual: Complex[D],
+                     err: Double)
+
+  def apply[D: Field : Doubleish : IsReal : NRoot : Trig : Solve](t: TestCase[D]): Result[D] = {
+    val actual: Seq[Complex[D]] = Solve[D].apply(t)
 
     if (t.roots.size != actual.size)
       throw new IllegalArgumentException(
         s"Sizes differ: $actual vs ${t.roots}"
       )
+
+    /* Measure computed roots' error of relative to the largest root-magnitude */
+    val rootScale =
+      t
+        .roots
+        .map(_.abs)
+        .max
 
     /**
      * Find the bijection between expected and actual roots that minimizes the maximum difference between them (as
@@ -36,61 +44,36 @@ object Result {
      * returned as having small imaginary components due to floating-point error, with some roots-configurations
      * especially exacerbating this).
      */
-    val (aligned, (maxAbsErr, maxErrRatio, numExpectedZeros, numActualZeros)) =
+    val (aligned, maxErr) =
       actual
         .permutations
         .map {
           r ⇒
-            r →
+            val errors: Seq[Root[D]] =
               t
                 .roots
                 .zip(r)
                 .map {
-                  case (l, r) ⇒
-                    (
-                      (l - r).abs,  // absolute error
-                      Ratio(l, r)   // error ratio
+                  case (expected, actual) ⇒
+                    val diff = (actual - expected).abs
+                    Root(
+                      expected,
+                      actual,
+                      if (diff.isZero)
+                        0
+                      else
+                        (diff / rootScale).toDouble
                     )
                 }
-                .foldLeft(
-                  (
-                    0.0,                   // maximum absolute error
-                    None: Option[Double],  // maximum log(error ratio); considered to be "not present" if e.g. all mappings are asymmetric zeros
-                    0,                     // number of {expected-zero, actual non-zero}s
-                    0                      // number of {expected-nonzero, actual zero}s
-                  )
-                ) {
-                  case (
-                    (maxAbsErr, maxRatio, numExpectedZeros, numActualZeros),
-                    (abs, ratio)
-                  ) ⇒
-                    val absErr =
-                      max(
-                        maxAbsErr,
-                        abs.toDouble
-                      )
 
-                    ratio match {
-                      case LeftZero ⇒
-                        (absErr, maxRatio, numExpectedZeros + 1, numActualZeros)
-                      case RightZero ⇒
-                        (absErr, maxRatio, numExpectedZeros, numActualZeros + 1)
-                      case Log(r) ⇒
-                        (absErr, maxRatio.map(max(_, r)).orElse(Some(r)), numExpectedZeros, numActualZeros)
-                    }
-                }
+            (errors, errors.map(_.err).max)
         }
         .minBy(_._2)
 
     Result(
       t,
       aligned,
-      maxAbsErr,
-      maxErrRatio,
-      Zeros(
-        numExpectedZeros,
-        numActualZeros
-      )
+      maxErr
     )
   }
 
