@@ -35,7 +35,9 @@ object RootShapes {
    *
    * Contained [[RootShape]]s are stored in descending order
    */
-  case class Shapes(s: Shapes.T)
+  case class Shapes(s: Shapes.T) {
+    val n = s.iterator.map(_.n).sum
+  }
   object Shapes {
     type T = SortedSet[RootShape]
     implicit def unwrap(s: Shapes): Shapes.T = s.s
@@ -43,21 +45,37 @@ object RootShapes {
       Shapes(
         SortedSet(
           arities
-          .runLengthEncode
-          .map {
-            case (arity, num) ⇒
-              RootShape(arity, num)
-          }
-          .toList: _*
+            .sorted
+            .runLengthEncode
+            .map {
+              case (arity, num) ⇒
+                RootShape(arity, num)
+            }
+            .toList: _*
         )
       )
-    implicit val showShapeSet: Show[Shapes] =
+    implicit val show: Show[Shapes] =
       Show {
         _
           .iterator
           .map(_.show)
           .mkString(delim)
       }
+    object dsl {
+      implicit val show: Show[Shapes] =
+        Show {
+          s ⇒
+            val strs =
+              s
+                .iterator
+                .map(_.show)
+                .toList
+            if (s.iterator.map(_.reps).sum > 1)
+              strs.mkString("(", delim, ")")
+            else
+              strs.mkString(delim)
+        }
+    }
   }
 
   /**
@@ -105,6 +123,22 @@ object RootShapes {
         )
     }
 
+  object dsl {
+    implicit val show: Show[RootShapes] =
+      Show {
+        case RootShapes(reals, imags) ⇒
+          (reals.nonEmpty, imags.nonEmpty) match {
+            case (true, true) ⇒
+              import Shapes.dsl.{show ⇒ showShapes}
+              show"($reals||$imags)"
+            case (_, true) ⇒
+              show"||($imags)"
+            case _ ⇒
+              show"($reals)"
+          }
+      }
+  }
+
   implicit val ordering: Ordering[RootShapes] = RootShapesOrdering.ordering
 }
 
@@ -112,5 +146,20 @@ object RootShapes {
 private object RootShapesOrdering {
   import hammerlab.ordering.generic, generic._
   import RootShape.descendingArity
-  val ordering: Ordering[RootShapes] = generic[RootShapes]
+  val ordering: Ordering[RootShapes] =
+    Ordering
+      .by[
+        RootShapes,
+        (
+          Int,
+          Shapes,
+          Shapes
+        )
+      ](
+        s ⇒ (
+          -s.reals.n,
+          s.reals,
+          s.imags
+        )
+      )
 }

@@ -83,7 +83,8 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
   implicit val fromInt   : Int    ⇒ D = (x: Int) ⇒ fromD(x)
   implicit val fromDouble: Double ⇒ D = fromD
 
-  implicit def showDouble: Show[Double] = org.hammerlab.math.format.SigFigs.showSigFigs
+  import org.hammerlab.math.format.SigFigs.showSigFigs
+  //implicit def showDouble: Show[Double] = org.hammerlab.math.format.SigFigs.showSigFigs
 
   def check(name: String,
             shapes: RootShapes,
@@ -101,11 +102,14 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
       val results: Results = cases.iterator
       val actual: Expected = results
 
+      implicit val sigfigs: SigFigs = 2
+
       def print(): Unit = {
         import hammerlab.lines.generic._
+        import RootShapes.dsl.show
         val lines = actual.errors.lines
         println(
-          show"($shapes) →\n" +
+          show"$shapes →\n" +
           indent(lines).show + ","
         )
       }
@@ -115,14 +119,13 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
         val lines = actual.errors.lines
         val msg = lines.show
         print()
-//        println(indent(lines).show)
         throw new Exception(msg, e)
       }
 
       try {
         expected match {
           case Some(expected) ⇒
-            implicit val ε: E = 1e-2
+            implicit val ε: E = 1e-1
             ===(
               actual.errors,
               expected

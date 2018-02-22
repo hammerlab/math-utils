@@ -15,27 +15,6 @@ import spire.math.Complex
 
 abstract class QuarticTest[D: HasQuartic : Ordering : FromDouble : Field : IsReal : NRoot : Signed : Trig : Doubleish]
   extends PolySolverTest[D](4) {
-
-  test("bad") {
-    val result: Result =
-      Result(
-        TestCase[D](
-          Seq(
-            Real[D](1.43) → 2,
-            Real[D](.431) → 2
-          ),
-          Nil,
-//          Seq(Real[D](3) → 2),
-//          Seq(ImaginaryRootPair[D](-3, 1) → 1),
-          1
-        )
-      )
-
-    import Result.showResult
-
-    println(result.showLines)
-  }
-
   implicit def solve(t: TestCase[D]): Seq[Complex[D]] = {
     val Seq(a, b, c, d, e) = t.coeffs
     implicitly[HasQuartic[D]].apply.apply(a, b, c, d, e)
@@ -52,5 +31,4 @@ abstract class BigDecimalTest
    * the constant term of the depressed quartic is O(ε⁴), and comes from subtracting terms that are O(r).
    */
   ε = 1e-14
-
 }

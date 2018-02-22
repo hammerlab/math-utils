@@ -13,6 +13,13 @@ object IsRootShapes {
         RootShapes(s(t), Shapes(Nil))
     )
   trait HasOps {
+
+    def ||[T](t: T)(implicit shapes: IsShapes[T]): RootShapes =
+      RootShapes(
+        Shapes(Nil),
+        shapes(t)
+      )
+
     implicit class RootShapeOps[L](l: L) {
       def ||[R](r: R)(implicit ll: IsShapes[L], rr: IsShapes[R]): RootShapes =
         RootShapes(
