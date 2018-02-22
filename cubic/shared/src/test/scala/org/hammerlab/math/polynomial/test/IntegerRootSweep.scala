@@ -2,13 +2,10 @@ package org.hammerlab.math.polynomial.test
 
 import hammerlab.indent.implicits.spaces4
 import hammerlab.iterator._
-import hammerlab.lines._
 import hammerlab.show._
 import org.hammerlab.math.polynomial.result.Stats
 import org.hammerlab.math.polynomial.roots.RootShapes
-import org.hammerlab.math.polynomial.{ Real, TestCase }
-import org.hammerlab.math.syntax.E
-import org.scalatest.exceptions.TestFailedException
+import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, TestCase }
 
 trait IntegerRootSweep[T] {
 
@@ -26,11 +23,9 @@ trait IntegerRootSweep[T] {
    * @param elems Expected statistics about [[solve]]'s performance against ground-truth on [[TestCase]]s generated
    *              by sweeping roots over integers in the range [-[[M]], [[M]]] (via [[rootSweep]])
    */
-  def sweepTests(elems: (RootShapes, Stats)*): Unit = {
-    val expecteds = elems.toMap
-    val cases = rootSweep.toList
-    val n = cases.size
-    cases
+  def sweepTests(implicit elems: (RootShapes, Stats)*): Unit =
+    rootSweep
+      .toList
       .groupBy {
         case TestCase(reals, imags, _, _) ⇒
           RootShapes(
@@ -42,51 +37,20 @@ trait IntegerRootSweep[T] {
       .sortBy(_._1)
       .foreach {
         case (shapes, cases) ⇒
-          val expected =
-            expecteds
-              .getOrElse(
-                shapes,
-                throw new Exception(
-                  show"Missing expected stats for shapes: $shapes"
-                )
-              )
-
-          test(show"integer-roots sweep (max $M): root-shapes: ${"%-7s".format(shapes.show)} expected: $expected") {
-            val results: Results = cases.iterator
-            val actual: Expected = results
-
-            def print(): Unit = {
-              println(
-                show"$shapes:\t$actual"
-              )
-            }
-
-            def err(e: Exception): Unit = {
-              import hammerlab.lines.generic._
-              val lines = actual.errors.lines
-              val msg = lines.show
-              print()
-              println(indent(lines).show)
-              throw new Exception(msg, e)
-            }
-
-            try {
-              implicit val ε: E = 1e-2
-              ===(actual.errors, expected)
-            } catch {
-              case e: TestFailedException ⇒ err(e)
-            }
-          }
+          check(
+            show"integer-roots sweep (max $M)",
+            shapes,
+            cases
+          )
       }
-  }
 
   lazy val rootSweepSize =
     (
-    for {
-      numPairs ← 0 to N/2
-      numReals = N - 2*numPairs
-    } yield
-      numRoots(numPairs, numImagPairs) * numRoots(numReals, 2*M + 1)
+      for {
+        numPairs ← 0 to N/2
+        numReals = N - 2*numPairs
+      } yield
+        numRoots(numPairs, numImagPairs) * numRoots(numReals, 2*M + 1)
     )
     .sum
 
@@ -131,4 +95,20 @@ trait IntegerRootSweep[T] {
         imags,
         1
       )
+
+  /**
+   * All distinct imaginary-root pairs with integral coefficients in the range [-M,M]
+   */
+  lazy val allImaginaryRootPairs =
+    for {
+      a ← -M to M
+      b ←  1 to M
+    } yield
+      ImaginaryRootPair[D](a, b)
+
+  val C = hammerlab.math.binomial
+
+  def numRoots(roots: Int, options: Int) = C(options + roots - 1, roots)
+
+  lazy val numImagPairs = allImaginaryRootPairs.size
 }

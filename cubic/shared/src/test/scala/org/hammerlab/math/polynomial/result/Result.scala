@@ -4,9 +4,9 @@ import hammerlab.lines._
 import hammerlab.show._
 import org.hammerlab.math.polynomial.TestCase
 import org.hammerlab.math.polynomial.result.Result.Root
+import org.hammerlab.math.syntax.Doubleish
 import org.hammerlab.math.syntax.Doubleish._
-import org.hammerlab.math.syntax.{ Doubleish, E }
-import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
+import spire.algebra.{ Field, NRoot, Signed }
 import spire.implicits._
 import spire.math.Complex
 
