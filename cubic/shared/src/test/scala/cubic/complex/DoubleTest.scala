@@ -3,11 +3,8 @@ package cubic.complex
 import hammerlab.scalajs._
 import org.hammerlab.math.polynomial.result.Stats
 import org.hammerlab.math.polynomial.roots.RootShapes
-import org.hammerlab.math.polynomial.roots.RootShapes.Shapes
 import org.hammerlab.math.polynomial.roots.dsl.IsRootShapes
-import shapeless._
 import spire.implicits._
-import shapeless.ops.tuple.ToList
 
 class DoubleTest
   extends CubicTest[Double] {
@@ -15,41 +12,35 @@ class DoubleTest
   val M = 15
   val iterationsPerRootShape = 5000
 
-  implicit def convTuple[L, R](t: (L, R))(implicit f: IsRootShapes[L]): (RootShapes, R) = (f(t._1), t._2)
-  import IsRootShapes._
-
   sweepTests(
-    M,
-    Map[RootShapes, Stats](
-      3 →
-        Stats(
-          93,
-          0,
-          0,
-          0
-        ),
-      (2,1) →
-        Stats(
-          2790,
-          4.89e-9,
-          9.53e-9,
-          7.3e-8
-        ),
-      (1,1,1) →
-        Stats(
-          13485,
-          3.18e-16,
-          9.37e-16,
-          3.43e-14
-        ),
-      (1||1) →
-        Stats(
-          43245,
-          3.14e-16,
-          6.92e-16,
-          3.82e-14
-        )
-    )
+    3 →
+      Stats(
+        93,
+        0,
+        0,
+        0
+      ),
+    (2,1) →
+      Stats(
+        2790,
+        4.89e-9,
+        9.53e-9,
+        7.3e-8
+      ),
+    (1,1,1) →
+      Stats(
+        13485,
+        3.18e-16,
+        9.37e-16,
+        3.43e-14
+      ),
+    (1||1) →
+      Stats(
+        43245,
+        3.14e-16,
+        6.92e-16,
+        3.82e-14
+      )
   )
 
   val random =

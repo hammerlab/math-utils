@@ -6,7 +6,7 @@ import org.hammerlab.math.polynomial.TestCase
 import org.hammerlab.math.polynomial.result.Result.Root
 import org.hammerlab.math.syntax.Doubleish._
 import org.hammerlab.math.syntax.{ Doubleish, E }
-import spire.algebra.{ Field, IsReal, NRoot, Trig }
+import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
 import spire.implicits._
 import spire.math.Complex
 
@@ -20,7 +20,7 @@ object Result {
                      actual: Complex[D],
                      err: Double)
 
-  def apply[D: Field : Doubleish : IsReal : NRoot : Trig : Solve](t: TestCase[D]): Result[D] = {
+  def apply[D: Field : Doubleish : Solve : NRoot : Signed](t: TestCase[D]): Result[D] = {
     val actual: Seq[Complex[D]] = Solve[D].apply(t)
 
     if (t.roots.size != actual.size)
