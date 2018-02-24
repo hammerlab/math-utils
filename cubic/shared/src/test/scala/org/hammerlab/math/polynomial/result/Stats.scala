@@ -41,4 +41,12 @@ object Stats {
       case Stats(n, μ, σ, max) ⇒
         show"n $n μ $μ σ $σ max $max"
     }
+
+  object display {
+    implicit def showOneline(implicit s: Show[Double]): Show[Stats] =
+      Show {
+        case Stats(n, μ, σ, max) ⇒
+          show"Stats($n, $μ, $σ, $max)"
+      }
+  }
 }

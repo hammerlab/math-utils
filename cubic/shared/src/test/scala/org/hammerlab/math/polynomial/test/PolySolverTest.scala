@@ -3,24 +3,24 @@ package org.hammerlab.math.polynomial.test
 import hammerlab.indent.implicits.spaces4
 import hammerlab.iterator._
 import hammerlab.lines._
-import org.hammerlab.math.polynomial.result.Solve
 import hammerlab.math.FromDouble
 import hammerlab.show._
 import org.hammerlab.Suite
 import org.hammerlab.io.print.Limit
 import org.hammerlab.math.format.SigFigs
 import org.hammerlab.math.polynomial
-import org.hammerlab.math.polynomial.result.{ Expected, Results, Stats }
+import org.hammerlab.math.polynomial.result.Result.Root
+import org.hammerlab.math.polynomial.result.{ Result, ResultGroup, Results, Solve, Stats }
 import org.hammerlab.math.polynomial.roots.RootShapes
 import org.hammerlab.math.polynomial.roots.dsl.IsRootShapes
-import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, TestCase, result }
+import org.hammerlab.math.polynomial.{ TestCase, result }
 import org.hammerlab.math.syntax.Doubleish._
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import org.hammerlab.test.CanEq
 import org.scalatest.exceptions.TestFailedException
 import shapeless.HNil
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
-import spire.math.{ Complex, abs }
+import spire.math.Complex
 
 import scala.math.exp
 import scala.util.Random._
@@ -84,7 +84,6 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
   implicit val fromDouble: Double ⇒ D = fromD
 
   import org.hammerlab.math.format.SigFigs.showSigFigs
-  //implicit def showDouble: Show[Double] = org.hammerlab.math.format.SigFigs.showSigFigs
 
   def check(name: String,
             shapes: RootShapes,
@@ -92,26 +91,59 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
       implicit
       expecteds: Seq[(RootShapes, Stats)]
   ): Unit = {
+
     val expected =
       expecteds
         .toMap
         .get(shapes)
 
     val expectedStr = expected.map(_.show).getOrElse[String]("!!!")
+
     test(show"$name: shapes ${s"%-${2*N-1}s".format(shapes.show)} expected $expectedStr") {
       val results: Results = cases.iterator
       val actual: Expected = results
 
       implicit val sigfigs: SigFigs = 2
 
-      def print(): Unit = {
-        import hammerlab.lines.generic._
-        import RootShapes.dsl.show
-        val lines = actual.errors.lines
-        println(
-          show"$shapes →\n" +
-          indent(lines).show + ","
+      val ResultGroup(
+        Result(
+          _,
+          roots,
+          _
+        ),
+        num
+      ) =
+        actual
+          .worst
+          .head
+
+      println(
+        Lines(
+          show"$shapes: ${actual.errors}${if (num > 1) s" ($num compies}" else ""}:",
+          indent(
+            roots
+              .map {
+                case Root(expected, actual, error) ⇒
+
+                  show"$expected $actual ($error)"
+              }
+          )
         )
+        .showLines
+      )
+
+      def print(): Unit = {
+//        import hammerlab.lines.generic._
+//        import RootShapes.dsl.show
+//        import Stats.display.showOneline
+//        println(
+//          show"$shapes → ${actual.errors},"
+//        )
+//        val lines = actual.errors.lines
+//        println(
+//          show"$shapes →\n" +
+//          indent(lines).show + ","
+//        )
       }
 
       def err(e: Exception): Unit = {
