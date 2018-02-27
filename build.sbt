@@ -7,8 +7,6 @@ default(
   )
 )
 
-val spire = "org.hammerlab.typelevel" ^^ "spire" ^ "0.14.2-SNAPSHOT"
-
 lazy val cubic = crossProject.settings(
   dep(
     io_utils,

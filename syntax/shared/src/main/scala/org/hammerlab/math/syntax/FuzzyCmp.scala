@@ -1,7 +1,5 @@
 package org.hammerlab.math.syntax
 
-import math.abs
-
 /**
  * Type-class for defining "fuzzy" {<,==,>}-style comparisons
  *
