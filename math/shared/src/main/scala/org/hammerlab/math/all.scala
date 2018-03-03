@@ -13,4 +13,6 @@ trait all
   val  RoundNumbers = ohm.RoundNumbers
 
   val Steps = ohm.Steps
+
+  object sigfigs extends format.HasSigFigs
 }

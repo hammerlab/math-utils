@@ -2,7 +2,6 @@ package hammerlab
 
 import cats.implicits.catsKernelStdMonoidForString
 import hammerlab.monoid._
-import org.hammerlab.Suite
 
 case class A(n: Int, s: String)
 

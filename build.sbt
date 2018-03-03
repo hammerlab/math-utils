@@ -2,12 +2,13 @@
 default(
   group("org.hammerlab.math"),
   versions(
-     io_utils → "4.1.0".snapshot,
-    iterators → "2.1.0".snapshot
+     io_utils → "5.0.0".snapshot,
+    iterators → "2.1.0"
   )
 )
 
 lazy val cubic = crossProject.settings(
+  v"1.0.0",
   dep(
     io_utils,
     iterators,
@@ -24,7 +25,7 @@ lazy val cubicJS  = cubic.js
 lazy val cubicJVM = cubic.jvm
 
 lazy val format = crossProject.settings(
-  v"1.0.0",
+  r"1.0.0",
   dep(cats),
   testDeps := Seq(scalatest)
 )
@@ -33,13 +34,15 @@ lazy val formatJVM = format.jvm
 
 lazy val math = crossProject.settings(
   group("org.hammerlab"),
-  v"2.1.3",
+  r"2.2.0",
   dep(
     cats,
     shapeless,
     spire
   ),
   consolePkg("hammerlab.math")
+).dependsOn(
+  format
 )
 lazy val mathJS  = math.js
 lazy val mathJVM = math.jvm.settings(
@@ -51,6 +54,7 @@ lazy val mathJVM = math.jvm.settings(
 )
 
 lazy val quartic = crossProject.settings(
+  v"1.0.0",
   dep(
     cats,
     io_utils,
@@ -86,7 +90,7 @@ lazy val statsJS  = stats.js
 lazy val statsJVM = stats.jvm
 
 lazy val syntax = crossProject.settings(
-  v"1.0.0",
+  r"1.0.0",
   dep(
     cats,
     spire
@@ -102,7 +106,7 @@ lazy val syntaxJVM = syntax.jvm
 
 lazy val types = crossProject.settings(
   group("org.hammerlab"),
-  v"1.0.2",
+  r"1.1.0",
   dep(
     cats,
     shapeless,

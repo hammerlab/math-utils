@@ -1,12 +1,12 @@
 package org.hammerlab.stats
 
 import hammerlab.bool._
+import hammerlab.delimiter._
 import hammerlab.iterator._
 import hammerlab.lines._
-import hammerlab.math.interpolate
+import hammerlab.math.{ interpolate, sigfigs }
+import hammerlab.math.sigfigs.SigFigs
 import hammerlab.show._
-import org.hammerlab.io.Delimiter
-import org.hammerlab.io.Delimiter.{ space, tab }
 import org.hammerlab.stats.Stats.{ PercentileValue, Percentiles }
 import spire.math.{ Integral, Numeric, Rational }
 import spire.syntax.all._
@@ -457,6 +457,8 @@ object Stats {
     runs → sum
   }
 
+  private implicit val defaultSigFigs: SigFigs = 2
+
   /**
    * Default [[Show]] implementation, utilizing [[Show]]s for key- and value-types as well as [[Rational]] percentiles
    * and a [[Double]] percentile values and summary statistics.
@@ -478,7 +480,7 @@ object Stats {
     V: Integral : Show
   ](
     implicit
-    statShow: Show[Double],
+    statShow: Show[Double] = sigfigs.showSigFigs,
     percentileShow: Show[Percentile],
     delimiter: Delimiter = space,
     indent: Indent = hammerlab.indent.tab

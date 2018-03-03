@@ -1,6 +1,7 @@
 package org.hammerlab.math.format
 
-import cats.Show, Show.show
+import cats.Show
+import org.hammerlab.math.format
 
 import scala.math.{ floor, log10, max, pow }
 
@@ -11,9 +12,8 @@ class SigFigs(val n: Int) extends AnyVal {
   override def toString: String = n.toString
 }
 
-object SigFigs {
-
-  implicit def apply(n: Int): SigFigs = new SigFigs(n)
+trait HasSigFigs {
+  type SigFigs = format.SigFigs
 
   /**
    * Given a [[SigFigs]] and [[Exponent]]-format, render a [[Double]] to a [[String]]
@@ -63,3 +63,7 @@ object SigFigs {
     }
 }
 
+object SigFigs
+  extends HasSigFigs {
+  implicit def apply(n: Int): SigFigs = new SigFigs(n)
+}

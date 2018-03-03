@@ -1,7 +1,5 @@
 package hammerlab
 
-import org.hammerlab.Suite
-
 class OrderingTest
   extends Suite {
 

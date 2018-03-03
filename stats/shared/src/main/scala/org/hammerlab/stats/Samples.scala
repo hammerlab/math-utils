@@ -1,7 +1,7 @@
 package org.hammerlab.stats
 
+import hammerlab.delimiter._
 import hammerlab.show._
-import org.hammerlab.io.Delimiter
 import spire.implicits._
 import spire.math.Integral
 

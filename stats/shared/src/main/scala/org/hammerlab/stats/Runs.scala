@@ -3,7 +3,7 @@ package org.hammerlab.stats
 import cats.Show
 import cats.Show.show
 import cats.implicits._
-import org.hammerlab.io.Delimiter
+import hammerlab.delimiter._
 import spire.implicits._
 import spire.math.Integral
 

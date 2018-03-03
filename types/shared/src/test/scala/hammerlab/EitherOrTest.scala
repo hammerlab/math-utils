@@ -1,7 +1,5 @@
 package hammerlab
 
-import org.hammerlab.Suite
-
 class EitherOrTest
   extends Suite {
   test("either") {

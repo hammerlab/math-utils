@@ -2,10 +2,9 @@ package org.hammerlab.stats
 
 import hammerlab.indent.implicits.tab
 import hammerlab.lines._
+import hammerlab.math.sigfigs._
 import hammerlab.show._
 import org.hammerlab.Suite
-import org.hammerlab.math.format.SigFigs
-import org.hammerlab.math.format.SigFigs.showSigFigs
 import spire.math.Numeric
 
 import scala.util.Random.{ nextInt, setSeed, shuffle }

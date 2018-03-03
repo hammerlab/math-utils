@@ -1,6 +1,6 @@
 package org.hammerlab.math.polynomial.result
 
-import hammerlab.print.Limit
+import hammerlab.lines.limit._
 import hammerlab.show._
 import spire.algebra.Field
 
@@ -16,7 +16,12 @@ object Expected {
       ) ⇒
         Expected(
           errors,
-          results.take(limit.size.getOrElse(0))
+          results.take(
+            limit match {
+              case Max(n) ⇒ n
+              case _ ⇒ 0
+            }
+          )
         )
     }
 

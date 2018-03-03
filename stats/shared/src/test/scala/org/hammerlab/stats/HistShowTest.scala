@@ -2,11 +2,10 @@ package org.hammerlab.stats
 
 import hammerlab.indent.implicits.tab
 import hammerlab.lines._
+import hammerlab.math.sigfigs._
 import hammerlab.show._
-import org.hammerlab.stats.Stats.fromHist
 import org.hammerlab.Suite
-import org.hammerlab.math.format.SigFigs
-import org.hammerlab.math.format.SigFigs.showSigFigs
+import org.hammerlab.stats.Stats.fromHist
 import spire.math.Integral
 
 import scala.util.Random

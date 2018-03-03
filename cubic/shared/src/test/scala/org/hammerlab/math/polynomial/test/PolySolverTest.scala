@@ -4,10 +4,10 @@ import hammerlab.indent.implicits.spaces4
 import hammerlab.iterator._
 import hammerlab.lines._
 import hammerlab.math.FromDouble
+import hammerlab.math.sigfigs._
 import hammerlab.show._
 import org.hammerlab.Suite
-import org.hammerlab.io.print.Limit
-import org.hammerlab.math.format.SigFigs
+import hammerlab.lines.limit._
 import org.hammerlab.math.polynomial
 import org.hammerlab.math.polynomial.result.Result.Root
 import org.hammerlab.math.polynomial.result.{ Result, ResultGroup, Results, Solve, Stats }
@@ -16,9 +16,9 @@ import org.hammerlab.math.polynomial.roots.dsl.IsRootShapes
 import org.hammerlab.math.polynomial.{ TestCase, result }
 import org.hammerlab.math.syntax.Doubleish._
 import org.hammerlab.math.syntax.{ Doubleish, E }
-import org.hammerlab.test.CanEq
+import org.hammerlab.cmp.CanEq
+import org.hammerlab.test.Cmp
 import org.scalatest.exceptions.TestFailedException
-import shapeless.HNil
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
 import spire.math.Complex
 
@@ -70,20 +70,16 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
 
   implicit val resultsCanEqExpected: CanEq[Results, Expected] =
     new CanEq[Results, Expected] {
-      import org.hammerlab.test.CanEq.Cmp
       val cmpStats = shapeless.the[Cmp[Stats]]
       override type Error = cmpStats.Error
-      override def cmp(l: Results, r: Expected): Option[Error] = {
+      override def cmp(l: Results, r: Expected): Option[Error] =
         cmpStats(l.errors, r.errors)
-      }
     }
 
   /** Helpers for converting to [[D]] */
   val fromD = FromDouble[D] _
   implicit val fromInt   : Int    ⇒ D = (x: Int) ⇒ fromD(x)
   implicit val fromDouble: Double ⇒ D = fromD
-
-  import org.hammerlab.math.format.SigFigs.showSigFigs
 
   def check(name: String,
             shapes: RootShapes,
@@ -119,32 +115,18 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
 
       println(
         Lines(
-          show"$shapes: ${actual.errors}${if (num > 1) s" ($num compies}" else ""}:",
+          show"$shapes: ${actual.errors}${if (num > 1) s" ($num copies}" else ""}:",
           indent(
             roots
               .map {
                 case Root(expected, actual, error) ⇒
-
+                  import ResultGroup.showComplex
                   show"$expected $actual ($error)"
               }
           )
         )
         .showLines
       )
-
-      def print(): Unit = {
-//        import hammerlab.lines.generic._
-//        import RootShapes.dsl.show
-//        import Stats.display.showOneline
-//        println(
-//          show"$shapes → ${actual.errors},"
-//        )
-//        val lines = actual.errors.lines
-//        println(
-//          show"$shapes →\n" +
-//          indent(lines).show + ","
-//        )
-      }
 
       def err(e: Exception): Unit = {
         import hammerlab.lines.generic._

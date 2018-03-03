@@ -1,7 +1,6 @@
 package hammerlab
 
 import hammerlab.collection._
-import org.hammerlab.Suite
 
 class CollectionTest
   extends Suite {
