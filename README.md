@@ -4,7 +4,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/hammerlab/math-utils/badge.svg?branch=master)](https://coveralls.io/github/hammerlab/math-utils?branch=master)
 [![Maven Central](https://img.shields.io/maven-central/v/org.hammerlab/math_2.11.svg?maxAge=600)](http://search.maven.org/#search%7Cga%7C1%7Corg.hammerlab%20math)
 
-[Math]($math), [stats](#stats), and [miscellaneous type](#types) utilities
+[Math]($math), [stats](#stats), and [miscellaneous numeric](#tolerance) and [type-related](#types) utilities:
+
+- [`math`](math)
+- [`stats`](stats)
+- [`tolerance`](tolerance)
+- [`types`](types)
 
 ## [`math`](math)
 

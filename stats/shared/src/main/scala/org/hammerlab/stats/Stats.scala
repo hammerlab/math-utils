@@ -1,6 +1,6 @@
 package org.hammerlab.stats
 
-import hammerlab.bool._
+import hammerlab.option$._
 import hammerlab.delimiter._
 import hammerlab.iterator._
 import hammerlab.lines._
