@@ -1,10 +1,10 @@
-package org.hammerlab.math.syntax
+package org.hammerlab.math.tolerance
 
 import org.scalatest.{ FunSuite, Matchers }
 
-import FuzzyCmp._
+import hammerlab.math.tolerance._
 
-class ToleranceTest
+class GeometricTest
   extends FunSuite
     with Matchers {
 
@@ -19,12 +19,12 @@ class ToleranceTest
 
     import cmp._
 
-    assert(Cmp.lt(l, r) ==  LT      , s"($l <  $r)")
-    assert(Cmp.le(l, r) ==  LT || EQ, s"($l <= $r)")
-    assert(Cmp.gt(l, r) ==  GT      , s"($l >  $r)")
-    assert(Cmp.ge(l, r) ==  GT || EQ, s"($l >= $r)")
-    assert(Cmp.eq(l, r) ==  EQ      , s"($l == $r)")
-    assert(Cmp.ne(l, r) == !EQ      , s"($l != $r)")
+    assert((l <<< r) ==  LT      , s"($l <  $r)")
+    assert((l <<= r) ==  LT || EQ, s"($l <= $r)")
+    assert((l >>> r) ==  GT      , s"($l >  $r)")
+    assert((l >>= r) ==  GT || EQ, s"($l >= $r)")
+    assert((l === r) ==  EQ      , s"($l == $r)")
+    assert((l !== r) == !EQ      , s"($l != $r)")
 
     if (includeReverse) {
       check( l,  r, cmp   , includeReverse = false)
@@ -125,13 +125,14 @@ object Cmp {
   case object EQ extends Cmp(EQ = true)
   case object GT extends Cmp(GT = true)
 
+  type D = Double
   /**
-   * Define these outside of [[ToleranceTest]] because otherwise [[FuzzyCmpOps.=== ===]] conflicts with [[FunSuite.===]]
+   * Define these outside of [[GeometricTest]] because otherwise [[Geometric.Ops.===]] conflicts with [[FunSuite.===]]
    */
-  def gt[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  >  r
-  def ge[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  >= r
-  def eq[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l === r
-  def ne[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l !== r
-  def lt[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  <  r
-  def le[T: Doubleish](l: T, r: T)(implicit ε: E): Boolean = l  <= r
+  def gt(l: D, r: D)(implicit ε: E): Boolean = l >>> r
+  def ge(l: D, r: D)(implicit ε: E): Boolean = l >>= r
+  def eq(l: D, r: D)(implicit ε: E): Boolean = l === r
+  def ne(l: D, r: D)(implicit ε: E): Boolean = l !== r
+  def lt(l: D, r: D)(implicit ε: E): Boolean = l <<< r
+  def le(l: D, r: D)(implicit ε: E): Boolean = l <<= r
 }

@@ -1,5 +1,7 @@
 package org.hammerlab.math.syntax
 
+import hammerlab.math.tolerance._
+
 /**
  * Type-class for defining "fuzzy" {<,==,>}-style comparisons
  *

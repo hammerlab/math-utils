@@ -1,5 +1,6 @@
 package org.hammerlab.math.syntax
 
+import hammerlab.math.tolerance._
 import spire.math.Complex
 import spire.implicits._
 
