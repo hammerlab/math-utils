@@ -15,7 +15,7 @@ lazy val formatJS  = format.js
 lazy val formatJVM = format.jvm
 
 lazy val stats = crossProject.settings(
-  r"1.3.0",
+  v"1.3.0",
   dep(
     cats,
     io_utils,
@@ -32,7 +32,7 @@ lazy val statsJS  = stats.js
 lazy val statsJVM = stats.jvm
 
 lazy val tolerance = crossProject.settings(
-  r"1.0.0",
+  v"1.0.0",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
