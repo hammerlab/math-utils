@@ -1,10 +1,11 @@
 package org.hammerlab.stats
 
-import hammerlab.option$._
 import hammerlab.delimiter._
 import hammerlab.iterator._
 import hammerlab.lines._
-import hammerlab.math.{ interpolate, sigfigs }
+import hammerlab.option._
+import hammerlab.math.sigfigs
+import hammerlab.math.utils.interpolate
 import hammerlab.math.sigfigs.SigFigs
 import hammerlab.show._
 import org.hammerlab.stats.Stats.{ PercentileValue, Percentiles }
@@ -118,11 +119,11 @@ object Stats {
       )
 
     val samplesOpt =
-      (alreadySorted || !onlySampleSorted) |
+      (alreadySorted || !onlySampleSorted) ?
         samples(values)
 
     val sortedSamplesOpt =
-      !alreadySorted |
+      !alreadySorted ?
         samples(sorted)
 
     NonEmpty(
@@ -217,11 +218,11 @@ object Stats {
     }
 
     val samplesOpt =
-      (alreadySorted || !onlySampleSorted) |
+      (alreadySorted || !onlySampleSorted) ?
         samples(values)
 
     val sortedSamplesOpt =
-      !alreadySorted |
+      !alreadySorted ?
         samples(sorted)
 
     NonEmpty(

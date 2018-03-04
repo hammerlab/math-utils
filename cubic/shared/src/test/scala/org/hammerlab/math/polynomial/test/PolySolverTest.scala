@@ -3,11 +3,11 @@ package org.hammerlab.math.polynomial.test
 import hammerlab.indent.implicits.spaces4
 import hammerlab.iterator._
 import hammerlab.lines._
-import hammerlab.math.FromDouble
+import hammerlab.lines.limit._
 import hammerlab.math.sigfigs._
 import hammerlab.show._
-import org.hammerlab.Suite
-import hammerlab.lines.limit._
+import hammerlab.Suite
+import org.hammerlab.math.FromDouble
 import org.hammerlab.math.polynomial
 import org.hammerlab.math.polynomial.result.Result.Root
 import org.hammerlab.math.polynomial.result.{ Result, ResultGroup, Results, Solve, Stats }

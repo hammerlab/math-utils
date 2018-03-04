@@ -2,6 +2,9 @@ package org.hammerlab.stats
 
 import hammerlab.show._
 
+/**
+ * Percentiles inferred from collections and displayed vis [[Stats]]
+ */
 sealed trait Percentile
 object Percentile {
   /**
@@ -37,6 +40,18 @@ object Percentile {
         }
     }
 }
+
+/**
+ * Negative-power-of-ten [[Percentile]]s (≤ 1e-4)
+ */
 case class  Lo(  exp: Int) extends Percentile
+
+/**
+ * Mid-range [[Percentile]]s at round-numbers (e.g. .10, .25, .50, .75, .90)
+ */
 case class Mid(value: Int) extends Percentile
+
+/**
+ * Hi-end [[Percentile]]s representing "N nines", e.g. .99. ,999, etc.
+ */
 case class  Hi(  exp: Int) extends Percentile

@@ -106,7 +106,7 @@ trait IntegerRootSweep[T] {
     } yield
       ImaginaryRootPair[D](a, b)
 
-  val C = hammerlab.math.binomial
+  val C = hammerlab.math.utils.binomial
 
   def numRoots(roots: Int, options: Int) = C(options + roots - 1, roots)
 

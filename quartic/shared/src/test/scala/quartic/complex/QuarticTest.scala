@@ -1,12 +1,9 @@
 package quartic.complex
 
-import hammerlab.math.FromDouble
-import hammerlab.indent.implicits.spaces4
-import hammerlab.lines._
 import hammerlab.show._
-import org.hammerlab.math.polynomial.result.Result
+import org.hammerlab.math.FromDouble
+import org.hammerlab.math.polynomial.TestCase
 import org.hammerlab.math.polynomial.test.PolySolverTest
-import org.hammerlab.math.polynomial.{ ImaginaryRootPair, Real, TestCase }
 import org.hammerlab.math.syntax.Doubleish
 import quartic.complex.Quartic.HasQuartic
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
@@ -27,8 +24,9 @@ abstract class BigDecimalTest
   /**
    * This controls the sensitivity of marking depressed-quartic coefficients as "zero"
    *
-   * The [[TestCase]]s with the worst numerical-imprecision artifacts tend to be polynomials of the form (x-r)(x-r-ε);
-   * the constant term of the depressed quartic is O(ε⁴), and comes from subtracting terms that are O(r).
+   * The [[TestCase]]s with the worst numerical-imprecision artifacts tend to be polynomials of the form (x-r)³(x-r-ε);
+   * the constant term of the depressed quartic is O(ε⁴), comes from subtracting terms that are O(r), and means that the
+   * downstream precision is reduced to ¼ the number of digits that were maintained upstream.
    */
   ε = 1e-14
 }

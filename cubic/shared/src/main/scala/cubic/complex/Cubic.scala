@@ -1,6 +1,6 @@
 package cubic.complex
 
-import hammerlab.math.FromDouble
+import org.hammerlab.math.FromDouble
 import org.hammerlab.math.syntax.Doubleish
 import spire.algebra._
 import spire.math._

@@ -1,7 +1,7 @@
 package quartic.complex
 
-import hammerlab.math.FromDouble
 import cubic.complex.Cubic
+import org.hammerlab.math.FromDouble
 import org.hammerlab.math.syntax.FuzzyCmp._
 import org.hammerlab.math.syntax.{ Doubleish, E }
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
