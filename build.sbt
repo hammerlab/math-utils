@@ -2,10 +2,9 @@
 default(
   group("org.hammerlab.math"),
   versions(
-     io_utils → "5.0.0".snapshot,
-    iterators → "2.1.0".snapshot
-  ),
-  testUtilsVersion := "1.0.0".snapshot
+     io_utils → "5.0.0",
+    iterators → "2.1.0"
+  )
 )
 
 lazy val format = crossProject.settings(
@@ -16,7 +15,7 @@ lazy val formatJS  = format.js
 lazy val formatJVM = format.jvm
 
 lazy val stats = crossProject.settings(
-  v"1.3.0",
+  r"1.3.0",
   dep(
     cats,
     io_utils,
@@ -33,7 +32,7 @@ lazy val statsJS  = stats.js
 lazy val statsJVM = stats.jvm
 
 lazy val tolerance = crossProject.settings(
-  v"1.0.0",
+  r"1.0.0",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
@@ -75,8 +74,8 @@ lazy val utilsJVM = utils.jvm.settings(
 lazy val math_utils = rootProject(
   "math-utils",
      formatJS,    formatJVM,
-       utilsJS,      utilsJVM,
       statsJS,     statsJVM,
   toleranceJS, toleranceJVM,
-      typesJS,     typesJVM
+      typesJS,     typesJVM,
+      utilsJS,     utilsJVM
 )
