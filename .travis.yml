@@ -9,7 +9,8 @@ scala:
 
 env: SBT_OPTS="-Xmx3g"
 
-script: sbt ++$TRAVIS_SCALA_VERSION clean coverageTest
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverageTest
 
 cache:
   directories:

@@ -8,48 +8,12 @@ default(
   testUtilsVersion := "1.0.0".snapshot
 )
 
-lazy val cubic = crossProject.settings(
-  v"1.0.0",
-  dep(
-    io_utils,
-    iterators,
-    shapeless,
-    spire
-  )
-).dependsOn(
-  tolerance,
-      utils,
-     format,
-      types test
-)
-lazy val cubicJS  = cubic.js
-lazy val cubicJVM = cubic.jvm
-
 lazy val format = crossProject.settings(
   v"1.0.0",
   dep(cats)
 )
 lazy val formatJS  = format.js
 lazy val formatJVM = format.jvm
-
-lazy val quartic = crossProject.settings(
-  v"1.0.0",
-  dep(
-    cats,
-    io_utils,
-    shapeless,
-    spire,
-    iterators.tests
-  )
-).dependsOn(
-     format,
-  tolerance,
-      utils,
-      cubic andTest,
-      types test
-)
-lazy val quarticJS  = quartic.js
-lazy val quarticJVM = quartic.jvm
 
 lazy val stats = crossProject.settings(
   v"1.3.0",
@@ -110,10 +74,8 @@ lazy val utilsJVM = utils.jvm.settings(
 
 lazy val math_utils = rootProject(
   "math-utils",
-      cubicJS,     cubicJVM,
      formatJS,    formatJVM,
        utilsJS,      utilsJVM,
-    quarticJS,   quarticJVM,
       statsJS,     statsJVM,
   toleranceJS, toleranceJVM,
       typesJS,     typesJVM
