@@ -2,7 +2,6 @@ package org.hammerlab.math
 
 import hammerlab.math.utils._
 import hammerlab.Suite
-import org.hammerlab.test.matchers.seqs.SeqMatcher.seqMatch
 
 class StepsTest
   extends Suite {

@@ -4,7 +4,8 @@ default(
   versions(
      io_utils → "5.0.0".snapshot,
     iterators → "2.1.0".snapshot
-  )
+  ),
+  testUtilsVersion := "1.0.0".snapshot
 )
 
 lazy val cubic = crossProject.settings(

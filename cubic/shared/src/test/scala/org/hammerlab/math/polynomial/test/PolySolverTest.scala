@@ -5,6 +5,7 @@ import hammerlab.iterator._
 import hammerlab.lines._
 import hammerlab.lines.limit._
 import hammerlab.math.sigfigs._
+import hammerlab.math.tolerance._
 import hammerlab.show._
 import hammerlab.Suite
 import org.hammerlab.math.FromDouble
@@ -15,7 +16,7 @@ import org.hammerlab.math.polynomial.roots.RootShapes
 import org.hammerlab.math.polynomial.roots.dsl.IsRootShapes
 import org.hammerlab.math.polynomial.{ TestCase, result }
 import org.hammerlab.math.syntax.Doubleish._
-import org.hammerlab.math.syntax.{ Doubleish, E }
+import org.hammerlab.math.syntax.Doubleish
 import org.hammerlab.cmp.CanEq
 import org.hammerlab.test.Cmp
 import org.scalatest.exceptions.TestFailedException

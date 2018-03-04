@@ -6,10 +6,13 @@
 
 [Math]($math), [stats](#stats), and [miscellaneous numeric](#tolerance) and [type-related](#types) utilities:
 
-- [`math`](math)
-- [`stats`](stats)
-- [`tolerance`](tolerance)
-- [`types`](types)
+- [`format`](format): format numbers to a given number of significant figures
+- [`stats`](stats): sketch statistics about collections of elements
+- [`tolerance`](tolerance): simple "fuzzy-equality" for `Double`s
+- [`types`](types): misc type- and type-class-utilities (auto-derived `Ordering`s and `Monoid`s, scala-js runtime-predicate)
+- [`utils`](utils): misc numeric utilities (binomial coefficients, interpolation, etc.)
+- [`cubic`](cubic)
+- [`quartic`](quartic)
 
 ## [`math`](math)
 

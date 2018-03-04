@@ -1,8 +1,9 @@
 package org.hammerlab.math.polynomial
 
+import hammerlab.math.tolerance._
 import hammerlab.show._
 import org.hammerlab.math.format.showSuperscript
-import org.hammerlab.math.syntax.{ Doubleish, E, FuzzyCmp }
+import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp }
 import spire.algebra.{ Field, Ring, Signed }
 import spire.implicits._
 import spire.math.{ Complex, abs }

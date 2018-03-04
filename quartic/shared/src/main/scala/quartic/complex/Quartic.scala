@@ -1,9 +1,10 @@
 package quartic.complex
 
 import cubic.complex.Cubic
+import hammerlab.math.tolerance._
 import org.hammerlab.math.FromDouble
+import org.hammerlab.math.syntax.Doubleish
 import org.hammerlab.math.syntax.FuzzyCmp._
-import org.hammerlab.math.syntax.{ Doubleish, E }
 import spire.algebra.{ Field, IsReal, NRoot, Signed, Trig }
 import spire.implicits._
 import spire.math.{ Complex, abs, sqrt }
