@@ -2,10 +2,9 @@
 default(
   group("org.hammerlab.math"),
   versions(
-     io_utils → "5.0.0".snapshot,
-    iterators → "2.1.0".snapshot
-  ),
-  testUtilsVersion := "1.0.0".snapshot
+     io_utils → "5.0.0",
+    iterators → "2.1.0"
+  )
 )
 
 lazy val format = crossProject.settings(
@@ -75,8 +74,8 @@ lazy val utilsJVM = utils.jvm.settings(
 lazy val math_utils = rootProject(
   "math-utils",
      formatJS,    formatJVM,
-       utilsJS,      utilsJVM,
       statsJS,     statsJVM,
   toleranceJS, toleranceJVM,
-      typesJS,     typesJVM
+      typesJS,     typesJVM,
+      utilsJS,     utilsJVM
 )
