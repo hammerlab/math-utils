@@ -80,9 +80,9 @@ class BigDecimalJSTest
     (3) →
       Stats(
         45,
-        6.28e-12,
-        2.82e-12,
-        1.22e-11
+        5.7e-12,
+        3.1e-12,
+        1.2e-11
       ),
     (2,1) →
       Stats(

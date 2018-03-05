@@ -133,7 +133,6 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
         import hammerlab.lines.generic._
         val lines = actual.errors.lines
         val msg = lines.show
-        print()
         throw new Exception(msg, e)
       }
 
@@ -146,7 +145,6 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
               expected
             )
           case None ⇒
-            print()
             throw new Exception(
               show"Missing expected stats for shapes: $shapes"
             )
