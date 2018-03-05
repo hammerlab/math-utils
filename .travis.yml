@@ -17,7 +17,7 @@ cache:
   - $HOME/.sbt/boot/
   - $HOME/.zinc
 
-# after_success: bash <(curl -s https://codecov.io/bash)
+after_success: bash <(curl -s https://codecov.io/bash)
 
 before_cache:
   # Tricks to avoid unnecessary cache updates
