@@ -7,12 +7,48 @@ default(
   )
 )
 
+lazy val cubic = crossProject.settings(
+  v"1.0.0",
+  dep(
+    io_utils,
+    iterators,
+    shapeless,
+    spire
+  )
+).dependsOn(
+  tolerance,
+      utils,
+     format,
+      types test
+)
+lazy val cubicJS  = cubic.js
+lazy val cubicJVM = cubic.jvm
+
 lazy val format = crossProject.settings(
   v"1.0.0",
   dep(cats)
 )
 lazy val formatJS  = format.js
 lazy val formatJVM = format.jvm
+
+lazy val quartic = crossProject.settings(
+  v"1.0.0",
+  dep(
+    cats,
+    io_utils,
+    shapeless,
+    spire,
+    iterators.tests
+  )
+).dependsOn(
+     format,
+  tolerance,
+      utils,
+      cubic andTest,
+      types test
+)
+lazy val quarticJS  = quartic.js
+lazy val quarticJVM = quartic.jvm
 
 lazy val stats = crossProject.settings(
   v"1.3.0",
@@ -36,7 +72,8 @@ lazy val tolerance = crossProject.settings(
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
-  testDeps := Seq(scalatest)
+  testDeps := Seq(scalatest),
+  publishTestJar
 )
 lazy val toleranceJS  = tolerance.js
 lazy val toleranceJVM = tolerance.jvm
@@ -73,7 +110,9 @@ lazy val utilsJVM = utils.jvm.settings(
 
 lazy val math_utils = rootProject(
   "math-utils",
+      cubicJS,     cubicJVM,
      formatJS,    formatJVM,
+    quarticJS,   quarticJVM,
       statsJS,     statsJVM,
   toleranceJS, toleranceJVM,
       typesJS,     typesJVM,

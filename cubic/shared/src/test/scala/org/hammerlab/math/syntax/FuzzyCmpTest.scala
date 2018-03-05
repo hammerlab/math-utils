@@ -1,29 +1,40 @@
-package org.hammerlab.math.tolerance
+package org.hammerlab.math.syntax
 
-import org.scalatest.{ FunSuite, Matchers }
-
+import hammerlab.Suite
 import hammerlab.math.tolerance._
+import org.hammerlab.math.tolerance.Geometric
+import spire.algebra.Field
+import spire.implicits._
 
-class GeometricTest
-  extends FunSuite
-    with Matchers {
+/**
+ * Copied from [[org.hammerlab.math.tolerance.GeometricTest]], adapted for [[Doubleish]]/[[FuzzyCmp]]
+ */
+class FuzzyCmpTest
+  extends Suite {
 
-  implicit val ε: E = 1e-6
+  ε = 1e-6
 
-  def check(
-      l: Double,
-      r: Double,
+  def check[
+      L: Doubleish : Field,
+      R: Doubleish : Field
+  ](
+      l: L,
+      r: R,
       cmp: Cmp,
       includeReverse: Boolean = true
   ): Unit = {
 
+    import FuzzyCmp._
     import cmp._
 
-    assert((l <<< r) ==  LT      , s"($l <  $r)")
-    assert((l <<= r) ==  LT || EQ, s"($l <= $r)")
+    /* Block [[FunSuite.convertToEqualizer]] which provides triple-equals syntax */
+    implicit val convertToEqualizer = 0
+
+    assert((l  <  r) ==  LT      , s"($l <  $r)")
+    assert((l  <= r) ==  LT || EQ, s"($l <= $r)")
     assert((l  ≤  r) ==  LT || EQ, s"($l ≤  $r)")
-    assert((l >>> r) ==  GT      , s"($l >  $r)")
-    assert((l >>= r) ==  GT || EQ, s"($l >= $r)")
+    assert((l  >  r) ==  GT      , s"($l >  $r)")
+    assert((l  >= r) ==  GT || EQ, s"($l >= $r)")
     assert((l  ≥  r) ==  GT || EQ, s"($l >  $r)")
     assert((l === r) ==  EQ      , s"($l == $r)")
     assert((l !== r) == !EQ      , s"($l != $r)")
@@ -44,6 +55,8 @@ class GeometricTest
       )
     }
   }
+
+  def check(l: Double, r: Double, cmp: Cmp): Unit = check[Double, Double](l, r, cmp)
 
   import Cmp._
   test("barely fuzzy eq") {
@@ -118,10 +131,10 @@ class GeometricTest
 }
 
 sealed abstract class Cmp(
-    val LT: Boolean = false,
-    val EQ: Boolean = false,
-    val GT: Boolean = false
-)
+                             val LT: Boolean = false,
+                             val EQ: Boolean = false,
+                             val GT: Boolean = false
+                         )
 object Cmp {
 
   case object LT extends Cmp(LT = true)
@@ -130,7 +143,8 @@ object Cmp {
 
   type D = Double
   /**
-   * Define these outside of [[GeometricTest]] because otherwise [[Geometric.Ops.===]] conflicts with [[FunSuite.===]]
+   * Define these outside of [[GeometricTest]] because otherwise [[Geometric.Ops.===]] conflicts with
+   * [[org.scalatest.FunSuite.===]]
    */
   def gt(l: D, r: D)(implicit ε: E): Boolean = l >>> r
   def ge(l: D, r: D)(implicit ε: E): Boolean = l >>= r

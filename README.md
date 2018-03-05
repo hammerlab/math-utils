@@ -11,6 +11,8 @@
 - [`tolerance`](tolerance): simple "fuzzy-equality" for `Double`s
 - [`types`](types): misc type- and type-class-utilities (auto-derived `Ordering`s and `Monoid`s, scala-js runtime-predicate)
 - [`utils`](utils): misc numeric utilities (binomial coefficients, interpolation, etc.)
+- [`cubic`](cubic)
+- [`quartic`](quartic)
 
 ## [`math`](math)
 
