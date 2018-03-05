@@ -14,7 +14,8 @@ lazy val cubic = crossProject.settings(
     iterators,
     shapeless,
     spire
-  )
+  ),
+  publishTestJar
 ).dependsOn(
   tolerance,
       utils,
@@ -39,7 +40,8 @@ lazy val quartic = crossProject.settings(
     shapeless,
     spire,
     iterators.tests
-  )
+  ),
+  publishTestJar
 ).dependsOn(
      format,
   tolerance,
