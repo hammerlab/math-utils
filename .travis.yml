@@ -7,9 +7,11 @@ scala:
   - 2.11.12
   - 2.12.4
 
-env: SBT_OPTS="-Xmx3g"
+env: SBT_OPTS="-Xmx4g"
 
-script: sbt ++$TRAVIS_SCALA_VERSION clean coverageTest
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION clean cubicJVM/coverageTest formatJVM/coverageTest quarticJVM/coverageTest statsJVM/coverageTest toleranceJVM/coverageTest typesJVM/coverageTest utilsJVM/coverageTest
+  - sbt ++$TRAVIS_SCALA_VERSION       cubicJS/coverageTest  formatJS/coverageTest  quarticJS/coverageTest  statsJS/coverageTest  toleranceJS/coverageTest  typesJS/coverageTest  utilsJS/coverageTest
 
 cache:
   directories:

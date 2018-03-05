@@ -1,8 +1,8 @@
 package org.hammerlab.math.syntax
 
-import spire.math.Complex
-import spire.implicits._
-
+/**
+ * Type-class for types that can be converted to a [[Double]], e.g. for [[FuzzyCmp]] purposes
+ */
 trait Doubleish[-T] {
   def apply(t: T): Double
 }
@@ -35,9 +35,4 @@ object Doubleish {
     new Doubleish[BigDecimal] {
       override def apply(t: BigDecimal): Double = t.doubleValue()
     }
-
-//  implicit def complex: Doubleish[Complex[Double]] =
-//    new Doubleish[Complex[Double]] {
-//      override def apply(c: Complex[Double]): Double = c.norm
-//    }
 }

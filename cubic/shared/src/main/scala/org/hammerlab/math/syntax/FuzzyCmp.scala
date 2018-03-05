@@ -18,41 +18,30 @@ trait FuzzyCmp[L, R] {
   @inline def !==(l: L, r: R)(implicit ε: E): Boolean =   >(l, r) ||   <(l, r)
   @inline def  <>(l: L, r: R)(implicit ε: E): Boolean =   >(l, r) ||   <(l, r)
 
-  @inline def >= (l: L, r: R)(implicit ε: E): Boolean = ! <(l, r)
-  @inline def ≥  (l: L, r: R)(implicit ε: E): Boolean = ! <(l, r)
+  @inline def  >=(l: L, r: R)(implicit ε: E): Boolean = ! <(l, r)
+  @inline def   ≥(l: L, r: R)(implicit ε: E): Boolean = ! <(l, r)
 
-  @inline def <= (l: L, r: R)(implicit ε: E): Boolean = ! >(l, r)
-  @inline def ≤  (l: L, r: R)(implicit ε: E): Boolean = ! >(l, r)
+  @inline def  <=(l: L, r: R)(implicit ε: E): Boolean = ! >(l, r)
+  @inline def   ≤(l: L, r: R)(implicit ε: E): Boolean = ! >(l, r)
 }
 
 object FuzzyCmp {
-  implicit def forDoubleishes[L, R](implicit ldi: Doubleish[L], rdi: Doubleish[R]): FuzzyCmp[L, R] =
+  import Doubleish._
+  implicit def forDoubleishes[L: Doubleish, R: Doubleish]: FuzzyCmp[L, R] =
     new FuzzyCmp[L, R] {
-      @inline def <(l: L, r: R)(implicit ε: E): Boolean = {
-        val (ld, rd) = (ldi(l), rdi(r))
-        if (ld < 0 && rd < 0)
-          ld < rd * ε
-        else
-          ld * ε < rd
-      }
-      @inline def >(l: L, r: R)(implicit ε: E): Boolean = {
-        val (ld, rd) = (ldi(l), rdi(r))
-        if (ld < 0 && rd < 0)
-          ld * ε > rd
-        else
-          ld > rd * ε
-      }
+      @inline def <(l: L, r: R)(implicit ε: E): Boolean = ε.<(l.toDouble, r.toDouble)
+      @inline def >(l: L, r: R)(implicit ε: E): Boolean = ε.>(l.toDouble, r.toDouble)
     }
 
   implicit class FuzzyCmpOps[L](l: L) {
-    @inline def >= [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.>= (l, r)
-    @inline def ≥  [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.≥  (l, r)
-    @inline def >  [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.>  (l, r)
-    @inline def <= [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.<= (l, r)
-    @inline def ≤  [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.≤  (l, r)
-    @inline def <  [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.<  (l, r)
+    @inline def  >=[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp .>=(l, r)
+    @inline def   ≥[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.  ≥(l, r)
+    @inline def   >[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.  >(l, r)
+    @inline def  <=[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp. <=(l, r)
+    @inline def   ≤[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.  ≤(l, r)
+    @inline def   <[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.  <(l, r)
     @inline def ===[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.===(l, r)
     @inline def !==[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.!==(l, r)
-    @inline def <> [R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp.<> (l, r)
+    @inline def  <>[R](r: R)(implicit cmp: FuzzyCmp[L, R], ε: E): Boolean = cmp. <>(l, r)
   }
 }

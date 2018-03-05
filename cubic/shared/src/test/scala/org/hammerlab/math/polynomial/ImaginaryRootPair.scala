@@ -11,15 +11,12 @@ import spire.math.{ Complex, abs }
 sealed trait Root[T]
 
 object Root {
-  import cats.Show
-  import Show.show
-
   /**
    * Pretty-print an [[ImaginaryRootPair imaginary-conjugate root-pair]] or [[Real real root]], in each case possibly
    * repeated as a multiple root (denoted by a superscript)
    */
   implicit def showRoot[T: Show]: Show[(Root[T], Int)] =
-    show {
+    Show {
       case (root, 1) ⇒
         root match {
           case (r: ImaginaryRootPair[T]) ⇒ r.show

@@ -72,7 +72,8 @@ lazy val tolerance = crossProject.settings(
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
-  testDeps := Seq(scalatest)
+  testDeps := Seq(scalatest),
+  publishTestJar
 )
 lazy val toleranceJS  = tolerance.js
 lazy val toleranceJVM = tolerance.jvm
@@ -111,9 +112,9 @@ lazy val math_utils = rootProject(
   "math-utils",
       cubicJS,     cubicJVM,
      formatJS,    formatJVM,
-       utilsJS,      utilsJVM,
     quarticJS,   quarticJVM,
       statsJS,     statsJVM,
   toleranceJS, toleranceJVM,
-      typesJS,     typesJVM
+      typesJS,     typesJVM,
+      utilsJS,     utilsJVM
 )
