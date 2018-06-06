@@ -8,10 +8,10 @@ class EitherOrTest
     val r = R("a")
 
     val L(n) = l
-    n should be(4)
+    ===(n, 4)
 
     val R(a) = r
-    a should be("a")
+    ===(a, "a")
   }
 
   test("or") {
@@ -21,17 +21,17 @@ class EitherOrTest
     val b = Both(4, "a")
 
     val L(n) = l
-    n should be(4)
+    ===(n, 4)
 
     val R(a) = r
-    a should be("a")
+    ===(a, "a")
 
     val Both(m, s) = b
-    m should be(4)
-    s should be("a")
+    ===(m, 4)
+    ===(s, "a")
 
     val B(m2, s2) = b
-    m2 should be(4)
-    s2 should be("a")
+    ===(m2, 4)
+    ===(s2, "a")
   }
 }

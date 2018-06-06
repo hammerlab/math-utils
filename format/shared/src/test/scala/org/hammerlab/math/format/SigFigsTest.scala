@@ -12,10 +12,10 @@ abstract class SigFigsTest(implicit val ttz: TrimTrailingZeros)
       .zipWithIndex
       .foreach {
         case (expected, idx) ⇒
-          implicit val sigfigs: SigFigs = (idx + 1)
+          implicit val sigfigs: SigFigs = idx + 1
           withClue(s"$sigfigs digits: ") {
-            d.show should be(expected)
-            (-d).show should be('-' + expected)
+            ==(  d .show,     expected )
+            ==((-d).show, s"-$expected")
           }
       }
   }

@@ -1,7 +1,6 @@
 package org.hammerlab
 
 object option {
-
   /**
    * [[?]] syntax for wrapping a value in an option iff a boolean is true
    */

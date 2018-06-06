@@ -124,10 +124,10 @@ class VarNumTest extends Suite {
     op.close()
 
     val bytes = baos.toByteArray
-    bytes should be(expected.toArray.map(_.toByte))
+    ==(bytes, expected.toArray.map(_.toByte))
 
     val ip = new Input(bytes)
-    VarNum.read(ip) should be(l)
+    ==(VarNum.read(ip), l)
     ip.close()
   }
 }

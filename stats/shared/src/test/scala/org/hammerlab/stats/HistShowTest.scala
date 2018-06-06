@@ -1,6 +1,6 @@
 package org.hammerlab.stats
 
-import hammerlab.indent.implicits.tab
+import hammerlab.indent.tab
 import hammerlab.lines._
 import hammerlab.math.sigfigs._
 import hammerlab.show._
@@ -23,16 +23,17 @@ class HistShowTest extends Suite {
 
   def check[V: Integral : Show](input: Seq[(Int, V)],
                                 expected: String): Unit =
-    fromHist(input).showLines should be(expected.stripMargin)
+    ==(fromHist(input).showLines, expected.stripMargin)
 
   def check[V: Integral : Show](input: Seq[(Int, V)],
                                 numToSample: Int,
                                 expected: String): Unit =
-    fromHist(
-      input,
-      numToSample
-    )
-    .showLines should be(
+    ==(
+      fromHist(
+        input,
+        numToSample
+      )
+      .showLines,
       expected.stripMargin
     )
 
@@ -40,12 +41,13 @@ class HistShowTest extends Suite {
                                 numToSample: Int,
                                 onlySampleSorted: Boolean,
                                 expected: String): Unit =
-    fromHist(
-      input,
-      numToSample,
-      onlySampleSorted
-    )
-    .showLines should be(
+    ==(
+      fromHist(
+        input,
+        numToSample,
+        onlySampleSorted
+      )
+      .showLines,
       expected.stripMargin
     )
 

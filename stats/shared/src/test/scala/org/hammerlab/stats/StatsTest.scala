@@ -11,15 +11,16 @@ class StatsTest
 
   def check[K : Numeric : Ordering](input: Seq[K],
                                     expected: Stats[K, Int]): Unit =
-    Stats(input) should be(expected)
+    ==(Stats(input), expected)
 
   def check[K : Numeric : Ordering](input: Seq[K],
                                     numToSample: Int,
                                     expected: Stats[K, Int]): Unit =
-    Stats(
-      input,
-      numToSample
-    ) should be(
+    ==(
+      Stats(
+        input,
+        numToSample
+      ),
       expected
     )
 
@@ -27,11 +28,12 @@ class StatsTest
                                     numToSample: Int,
                                     onlySampleSorted: Boolean,
                                     expected: Stats[K, Int]): Unit =
-    Stats(
-      input,
-      numToSample,
-      onlySampleSorted
-    ) should be(
+    ==(
+      Stats(
+        input,
+        numToSample,
+        onlySampleSorted
+      ),
       expected
     )
 
