@@ -16,4 +16,28 @@ object option {
 
 trait HasOption {
   @inline implicit def OptionBoolOps(b: Boolean) = option.BoolOps(b)
+
+  /**
+   * Wrapper around [[Option]] that implicitly lifts unwrapped values into a [[Som]] (analogous to [[Some]])
+   *
+   * Useful for allowing
+   */
+  sealed trait Opt[+T]
+  case class Som[+T](t: T) extends Opt[T]
+  case object Non extends Opt[Nothing]
+  object Opt {
+    implicit def toOpt[T](o: Opt[T]): Option[T] =
+      o match {
+        case Som(t) ⇒ Some(t)
+        case Non    ⇒ None
+      }
+
+    implicit def fromOpt[T](o: Option[T]): Opt[T] =
+      o match {
+        case Some(t) ⇒ Som(t)
+        case None    ⇒ Non
+      }
+
+    implicit def lift[T](t: T): Opt[T] = Som(t)
+  }
 }
