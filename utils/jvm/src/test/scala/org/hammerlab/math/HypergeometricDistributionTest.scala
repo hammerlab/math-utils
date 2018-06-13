@@ -35,11 +35,13 @@ class HypergeometricDistributionTest
 
     val apache = new ApacheHyperGeometricDistribution(N, K, n)
 
-    hgd.pdf should ===(
+    ==(
+      hgd.pdf,
       Array((0 to n).map(apache.probability): _*)
     )
 
-    hgd.cdf should ===(
+    ==(
+      hgd.cdf,
       Array((0 to n).map(apache.cumulativeProbability): _*)
     )
   }
@@ -47,7 +49,8 @@ class HypergeometricDistributionTest
   test("10-4-2") {
     val hgd = HypergeometricDistribution(10, 4, 2)
 
-    hgd.pdf should ===(
+    ==(
+      hgd.pdf,
       Array(
         1.0 / 3,
         8.0 / 15,
@@ -55,7 +58,8 @@ class HypergeometricDistributionTest
       )
     )
 
-    hgd.cdf should ===(
+    ==(
+      hgd.cdf,
       Array(
         1.0 / 3,
         13.0 / 15,
@@ -63,16 +67,17 @@ class HypergeometricDistributionTest
       )
     )
 
-    List[Double](
-      0,
-      1.0 / 3 - epsilon,
-      1.0 / 3,
-      13.0 / 15 - epsilon,
-      13.0 / 15,
-      1 - epsilon,
-      1
-    )
-    .map(hgd.invCDF(_)) should be(
+    ==(
+      List[Double](
+        0,
+        1.0 / 3 - epsilon,
+        1.0 / 3,
+        13.0 / 15 - epsilon,
+        13.0 / 15,
+        1 - epsilon,
+        1
+      )
+      .map(hgd.invCDF(_)),
       List(
         0, 0, 1, 1, 2, 2, 2
       )
@@ -89,32 +94,33 @@ class HypergeometricDistributionTest
 
   test("4-0-4") {
     val hgd = HypergeometricDistribution(4, 0, 4)
-    hgd.cdf should ===(Array(1.0))
-    hgd.pdf should ===(Array(1.0))
+    ==(hgd.cdf, Array(1.0))
+    ==(hgd.pdf, Array(1.0))
   }
 
   test("4-3-4") {
     val hgd = HypergeometricDistribution(4, 3, 4)
-    hgd.pdf should ===(Array(0, 0, 0, 1.0))
-    hgd.cdf should ===(Array(0, 0, 0, 1.0))
+    ==(hgd.pdf, Array(0, 0, 0, 1.0))
+    ==(hgd.cdf, Array(0, 0, 0, 1.0))
   }
 
   test("4-4-4") {
     val hgd = HypergeometricDistribution(4, 4, 4)
-    hgd.pdf should ===(Array(0, 0, 0, 0, 1.0))
-    hgd.cdf should ===(Array(0, 0, 0, 0, 1.0))
+    ==(hgd.pdf, Array(0, 0, 0, 0, 1.0))
+    ==(hgd.cdf, Array(0, 0, 0, 0, 1.0))
   }
 
   test("5-4-4") {
     val hgd = HypergeometricDistribution(5, 4, 4)
-    hgd.pdf should ===(Array(0, 0, 0, 0.8, 0.2))
-    hgd.cdf should ===(Array(0, 0, 0, 0.8, 1.0))
+    ==(hgd.pdf, Array(0, 0, 0, 0.8, 0.2))
+    ==(hgd.cdf, Array(0, 0, 0, 0.8, 1.0))
   }
 
   test("5000000000-4000000000-10") {
     val hgd = HypergeometricDistribution(5000000000L, 4000000000L, 10)
 
-    hgd.pdf should be(
+    ==(
+      hgd.pdf,
       Array(
         1.0239999631360417E-7,  //  0
         4.0959998894081015E-6,  //  1

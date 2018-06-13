@@ -1,6 +1,6 @@
 package org.hammerlab.math.polynomial.test
 
-import hammerlab.indent.implicits.spaces4
+import hammerlab.indent.spaces4
 import hammerlab.iterator._
 import hammerlab.lines._
 import hammerlab.lines.limit._
@@ -72,8 +72,8 @@ abstract class PolySolverTest[T : FromDouble : IsReal : NRoot : Trig](degree: In
   implicit val resultsCanEqExpected: CanEq[Results, Expected] =
     new CanEq[Results, Expected] {
       val cmpStats = shapeless.the[Cmp[Stats]]
-      override type Error = cmpStats.Error
-      override def cmp(l: Results, r: Expected): Option[Error] =
+      type Diff = cmpStats.Diff
+      def cmp(l: Results, r: Expected): Option[Diff] =
         cmpStats(l.errors, r.errors)
     }
 

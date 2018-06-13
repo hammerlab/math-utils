@@ -11,8 +11,8 @@ class OrderingTest
       (e2, i2) ← elems.zipWithIndex
       expected = (i1 - i2).signum
     } withClue(s"$e1 $e2 $expected: ") {
-      ord.compare(e1, e2).signum should be( expected)
-      ord.compare(e2, e1).signum should be(-expected)
+      ==(ord.compare(e1, e2).signum,  expected)
+      ==(ord.compare(e2, e1).signum, -expected)
     }
   }
 
@@ -21,7 +21,7 @@ class OrderingTest
       for {
         size ← 0 to 10
       } yield
-        (1 to size)
+        1 to size
 
     check(seqs.map(_.toList))
     check(seqs.map(_.toArray))

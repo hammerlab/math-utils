@@ -2,13 +2,13 @@
 default(
   group("org.hammerlab.math"),
   versions(
-     io_utils → "5.0.0",
+     io_utils → "5.1.0",
     iterators → "2.1.0"
   )
 )
 
 lazy val cubic = crossProject.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(
     io_utils,
     iterators,
@@ -24,16 +24,18 @@ lazy val cubic = crossProject.settings(
 )
 lazy val cubicJS  = cubic.js
 lazy val cubicJVM = cubic.jvm
+lazy val cubicX   = parent(cubicJS, cubicJVM)
 
 lazy val format = crossProject.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(cats)
 )
 lazy val formatJS  = format.js
 lazy val formatJVM = format.jvm
+lazy val formatX   = parent(formatJS, formatJVM)
 
 lazy val quartic = crossProject.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(
     cats,
     io_utils,
@@ -51,9 +53,10 @@ lazy val quartic = crossProject.settings(
 )
 lazy val quarticJS  = quartic.js
 lazy val quarticJVM = quartic.jvm
+lazy val quarticX   = parent(quarticJS, quarticJVM)
 
 lazy val stats = crossProject.settings(
-  v"1.3.0",
+  v"1.3.1",
   dep(
     cats,
     io_utils,
@@ -68,9 +71,10 @@ lazy val stats = crossProject.settings(
 )
 lazy val statsJS  = stats.js
 lazy val statsJVM = stats.jvm
+lazy val statsX   = parent(statsJS, statsJVM)
 
 lazy val tolerance = crossProject.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
@@ -79,10 +83,11 @@ lazy val tolerance = crossProject.settings(
 )
 lazy val toleranceJS  = tolerance.js
 lazy val toleranceJVM = tolerance.jvm
+lazy val toleranceX   = parent(toleranceJS, toleranceJVM)
 
 lazy val types = crossProject.settings(
   group("org.hammerlab"),
-  v"1.1.0",
+  v"1.2.0",
   dep(
     cats,
     shapeless,
@@ -91,9 +96,10 @@ lazy val types = crossProject.settings(
 )
 lazy val typesJS  = types.js
 lazy val typesJVM = types.jvm
+lazy val typesX   = parent(typesJS, typesJVM)
 
 lazy val utils = crossProject.settings(
-  v"2.2.0",
+  v"2.2.1",
   dep(
     cats,
     shapeless,
@@ -105,18 +111,19 @@ lazy val utilsJS  = utils.js
 lazy val utilsJVM = utils.jvm.settings(
   // a couple components depend on Java-only libraries and are only included in the JVM module
   dep(
-    commons_math,
+    commons.math,
     kryo tests
   )
 )
+lazy val utilsX = parent(utilsJS, utilsJVM)
 
-lazy val math_utils = rootProject(
-  "math-utils",
-      cubicJS,     cubicJVM,
-     formatJS,    formatJVM,
-    quarticJS,   quarticJVM,
-      statsJS,     statsJVM,
-  toleranceJS, toleranceJVM,
-      typesJS,     typesJVM,
-      utilsJS,     utilsJVM
-)
+lazy val `math-utils` =
+  root(
+        cubicX,
+       formatX,
+      quarticX,
+        statsX,
+    toleranceX,
+        typesX,
+        utilsX
+  )

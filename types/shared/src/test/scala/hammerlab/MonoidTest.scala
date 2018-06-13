@@ -12,7 +12,7 @@ class MonoidTest
     val a2 = A(222, "bbb")
     val a3 = A(333, "aaabbb")
 
-    Seq(a1, a2).foldLeft(zero[A])(_ |+| _) should be(a3)
+    ==(Seq(a1, a2).foldLeft(zero[A])(_ |+| _), a3)
   }
 }
 

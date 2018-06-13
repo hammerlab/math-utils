@@ -1,6 +1,6 @@
 package org.hammerlab.stats
 
-import hammerlab.indent.implicits.tab
+import hammerlab.indent.tab
 import hammerlab.lines._
 import hammerlab.math.sigfigs._
 import hammerlab.show._
@@ -20,18 +20,20 @@ class ShowTest
 
   def check[K : Numeric : Ordering : Show](input: Seq[K],
                                            expected: String): Unit =
-    Stats(input).showLines should be(
+    ==(
+      Stats(input).showLines,
       expected.stripMargin
     )
 
   def check[K : Numeric : Ordering : Show](input: Seq[K],
                                            numToSample: Int,
                                            expected: String): Unit =
-    Stats(
-      input,
-      numToSample
-    )
-    .showLines should be(
+    ==(
+      Stats(
+        input,
+        numToSample
+      )
+      .showLines,
       expected.stripMargin
     )
 
@@ -39,12 +41,13 @@ class ShowTest
                                            numToSample: Int,
                                            onlySampleSorted: Boolean,
                                            expected: String): Unit =
-    Stats(
-      input,
-      numToSample,
-      onlySampleSorted
-    )
-    .showLines should be(
+    ==(
+      Stats(
+        input,
+        numToSample,
+        onlySampleSorted
+      )
+      .showLines,
       expected.stripMargin
     )
 

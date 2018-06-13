@@ -1,6 +1,6 @@
 package org.hammerlab.math.polynomial.test
 
-import hammerlab.indent.implicits.spaces4
+import hammerlab.indent.spaces4
 import hammerlab.iterator._
 import hammerlab.show._
 import org.hammerlab.math.polynomial.result.Stats
