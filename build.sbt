@@ -56,7 +56,7 @@ lazy val quarticJVM = quartic.jvm
 lazy val quarticX   = parent(quarticJS, quarticJVM)
 
 lazy val stats = crossProject.settings(
-  r"1.3.0",
+  v"1.3.1",
   dep(
     cats,
     io_utils,
@@ -87,7 +87,7 @@ lazy val toleranceX   = parent(toleranceJS, toleranceJVM)
 
 lazy val types = crossProject.settings(
   group("org.hammerlab"),
-  v"1.2.0",
+  r"1.2.0",
   dep(
     cats,
     shapeless,
