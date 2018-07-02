@@ -95,7 +95,14 @@ lazy val types = crossProject.settings(
   )
 )
 lazy val typesJS  = types.js
-lazy val typesJVM = types.jvm
+lazy val typesJVM = types.jvm.settings(
+  http4s.version := "0.18.13",
+  dep(
+    // UrlTest runs a dummy server
+    http4s.dsl tests,
+    http4s.`blaze-server` tests
+  )
+)
 lazy val typesX   = parent(typesJS, typesJVM)
 
 lazy val utils = crossProject.settings(

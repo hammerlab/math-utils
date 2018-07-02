@@ -16,7 +16,6 @@ package org.hammerlab.implicits
 case class `with`[T](implicit t: T) {
   def     &[U](fn: T ⇒ U): U = fn(t)
   def     →[U](fn: T ⇒ U): U = fn(t)
-  def apply[U](fn: T ⇒ U): U = fn(t)
 }
 
 object wth {

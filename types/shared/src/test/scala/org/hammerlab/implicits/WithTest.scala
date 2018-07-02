@@ -31,12 +31,18 @@ class WithTest
 
     numDerivations should be(1)
 
-    `with`[cats.Show[Int]] → {
+    `with`[cats.Show[Int]] & {
       implicit showInt ⇒
         123.show should be("123123")
         456.show should be("456456")
     }
 
     numDerivations should be(2)
+
+    // each of these re-derives the `Show`
+    123.show should be("123123")
+    456.show should be("456456")
+
+    numDerivations should be(4)
   }
 }
