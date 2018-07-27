@@ -2,7 +2,7 @@ package org.hammerlab.math.polynomial
 
 import hammerlab.math.tolerance._
 import hammerlab.show._
-import org.hammerlab.math.format.showSuperscript
+import hammerlab.math.exponent._
 import org.hammerlab.math.syntax.{ Doubleish, FuzzyCmp }
 import spire.algebra.{ Field, Ring, Signed }
 import spire.implicits._
@@ -19,8 +19,8 @@ object Root {
     Show {
       case (root, 1) ⇒
         root match {
-          case (r: ImaginaryRootPair[T]) ⇒ r.show
-          case (r: Real[T]) ⇒ r.show
+          case r: ImaginaryRootPair[T] ⇒ r.show
+          case r: Real[T] ⇒ r.show
         }
       case (root: ImaginaryRootPair[T], degree) ⇒ show"($root)${showSuperscript.show(degree)}"
       case (real: Real[T], degree) ⇒ show"$real${showSuperscript.show(degree)}"

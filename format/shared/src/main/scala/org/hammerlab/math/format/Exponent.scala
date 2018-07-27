@@ -1,5 +1,8 @@
 package org.hammerlab.math.format
 
+import cats.Show
+import cats.Show.show
+
 /**
  * Configurable strategy for rendering the exponent-portion of a number in scientific-notation
  */
@@ -15,7 +18,7 @@ object Exponent {
   /**
    * "Default": "e" plus a signed integer
    */
-  val default = apply('e' + _.toString)
+  implicit val default = apply('e' + _.toString)
 
   /**
    * "Cased": use the case of the "e" to represent a positive ("E") or negative ("e") exponent (a small optimization for
@@ -30,8 +33,29 @@ object Exponent {
           s"e$exp"
     )
 
-  object instances {
-    implicit val default = Exponent.default
-    implicit val cased = Exponent.cased
+  trait instances {
+    implicit val   cased = Exponent.  cased
+  }
+
+  trait format {
+    /**
+     * Simple printer for small exponents/superscripts
+     */
+    implicit val showSuperscript: Show[Int] =
+      show {
+        case 1 ⇒ ""
+        case 2 ⇒ "²"
+        case 3 ⇒ "³"
+        case 4 ⇒ "⁴"
+        case 5 ⇒ "⁵"
+        case 6 ⇒ "⁶"
+        case 7 ⇒ "⁷"
+        case 8 ⇒ "⁸"
+        case 9 ⇒ "⁹"
+        case n ⇒
+          throw new IllegalArgumentException(
+            s"Unexpected superscript: $n"
+          )
+      }
   }
 }
