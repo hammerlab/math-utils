@@ -1,6 +1,7 @@
 package org.hammerlab.str
 
 import cats.implicits._
+import hammerlab.str._
 
 class NameTest
   extends hammerlab.Suite {
@@ -15,7 +16,7 @@ class NameTest
     )
 
     ==(
-      Seq[Name](
+      Seq[Str](
         'abc,
         "def"
       )
