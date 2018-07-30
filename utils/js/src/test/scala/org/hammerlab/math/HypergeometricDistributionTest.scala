@@ -1,0 +1,4 @@
+package org.hammerlab.math
+
+class HypergeometricDistributionTest
+  extends HypergeometricDistributionTestBase

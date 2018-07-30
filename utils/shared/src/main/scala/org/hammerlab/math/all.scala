@@ -11,5 +11,8 @@ trait all
   type RoundNumbers[I] = ohm.RoundNumbers[I]
   val  RoundNumbers = ohm.RoundNumbers
 
+  type HypergeometricDistribution = ohm.HypergeometricDistribution
+  val  HypergeometricDistribution = ohm.HypergeometricDistribution
+
   val Steps = ohm.Steps
 }
