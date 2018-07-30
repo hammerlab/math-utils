@@ -41,7 +41,7 @@ import cats.syntax.show._
 
 ## [`stats`](stats)
 
-[![Maven Central: org.hammerlab.math:::stats:1.3.1](https://img.shields.io/badge/org.hammerlab.math:::stats-1.3.1-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20stats)
+[![Maven Central: org.hammerlab.math:::stats:1.3.2](https://img.shields.io/badge/org.hammerlab.math:::stats-1.3.2-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20stats)
 
 [`org.hammerlab.stats.Stats`](stats/shared/src/main/scala/org/hammerlab/stats/Stats.scala) has APIs for ingesting numeric elements and outputting nicely formatted statistics about them; modeled after [Apache commons-math `DescriptiveStatistics`](https://github.com/apache/commons-math/blob/MATH_3_6_1/src/main/java/org/apache/commons/math3/stat/descriptive/DescriptiveStatistics.java):
 
@@ -208,7 +208,7 @@ val b: Str = 'def
 
 ## [`utils`](math)
 
-[![Maven Central: org.hammerlab.math:::utils:2.2.0](https://img.shields.io/badge/org.hammerlab.math:::utils-2.2.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20utils)
+[![Maven Central: org.hammerlab.math:::utils:2.2.1](https://img.shields.io/badge/org.hammerlab.math:::utils-2.2.1-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20utils)
 
 Miscellaneous numeric utilities
 

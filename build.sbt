@@ -56,7 +56,7 @@ lazy val quarticJVM = quartic.jvm
 lazy val quarticX   = parent(quarticJS, quarticJVM)
 
 lazy val stats = crossProject.settings(
-  v"1.3.1",
+  v"1.3.2",
   dep(
     cats,
     io_utils,
@@ -106,7 +106,7 @@ lazy val typesJVM = types.jvm.settings(
 lazy val typesX   = parent(typesJS, typesJVM)
 
 lazy val utils = crossProject.settings(
-  v"2.2.0",
+  v"2.2.1",
   dep(
     cats,
     shapeless,
