@@ -10,10 +10,10 @@
 - [`tolerance`](#tolerance): "fuzzy-equality" for `Double`s
 - [`types`](#types): misc type- and type-class-utilities (auto-derived `Ordering`s and `Monoid`s, a scala-js runtime-predicate, etc.)
 - [`utils`](#utils): misc numeric utilities (binomial coefficients, interpolation, etc.)
-- [`cubic`](#cubic)/[`quartic`](#quartic): solve cubic/quartic equations in terms of Spire type-classes
+- [`cubic`/`quartic`](##cubic-quartic): solve cubic/quartic equations in terms of Spire type-classes
 
 ## [`format`](format)
-[![Maven Central: org.hammerlab.math:::format:1.1.0](https://img.shields.io/badge/org.hammerlab.math:::format-1.1.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20format)
+&nbsp; [![Maven Central: org.hammerlab.math:::format:1.1.0](https://img.shields.io/badge/org.hammerlab.math:::format-1.1.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20format)
 
 Format numbers to a given number of significant figures:
 
@@ -41,7 +41,7 @@ import cats.syntax.show._
 
 ## [`stats`](stats)
 
-[![Maven Central: org.hammerlab.math:::stats:1.3.2](https://img.shields.io/badge/org.hammerlab.math:::stats-1.3.2-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20stats)
+&nbsp; [![Maven Central: org.hammerlab.math:::stats:1.3.2](https://img.shields.io/badge/org.hammerlab.math:::stats-1.3.2-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20stats)
 
 [`org.hammerlab.stats.Stats`](stats/shared/src/main/scala/org/hammerlab/stats/Stats.scala) has APIs for ingesting numeric elements and outputting nicely formatted statistics about them; modeled after [Apache commons-math `DescriptiveStatistics`](https://github.com/apache/commons-math/blob/MATH_3_6_1/src/main/java/org/apache/commons/math3/stat/descriptive/DescriptiveStatistics.java):
 
@@ -102,7 +102,7 @@ Stats.fromHist(
 
 ## [`tolerance`](tolerance)
 
-[![Maven Central: org.hammerlab.math:::tolerance:1.0.0](https://img.shields.io/badge/org.hammerlab.math:::tolerance-1.0.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20tolerance)
+&nbsp; [![Maven Central: org.hammerlab.math:::tolerance:1.0.0](https://img.shields.io/badge/org.hammerlab.math:::tolerance-1.0.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20tolerance)
 
 Fuzzy-equality for `Double`s:
 
@@ -120,7 +120,7 @@ implicit val ε: E = 1e-2
 
 ## [`types`](types)
 
-[![Maven Central: org.hammerlab:::types:1.3.1](https://img.shields.io/badge/org.hammerlab:::types-1.3.1-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab%22%20types)
+&nbsp; [![Maven Central: org.hammerlab:::types:1.3.1](https://img.shields.io/badge/org.hammerlab:::types-1.3.1-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab%22%20types)
 
 ### `either`/`or`
 Shorthands for `Either` and "or" ([`cats.Ior`](https://typelevel.org/cats/datatypes/ior.html)) subclasses:
@@ -208,7 +208,7 @@ val b: Str = 'def
 
 ## [`utils`](math)
 
-[![Maven Central: org.hammerlab.math:::utils:2.2.1](https://img.shields.io/badge/org.hammerlab.math:::utils-2.2.1-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20utils)
+&nbsp; [![Maven Central: org.hammerlab.math:::utils:2.2.1](https://img.shields.io/badge/org.hammerlab.math:::utils-2.2.1-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20utils)
 
 Miscellaneous numeric utilities
 
@@ -243,7 +243,7 @@ roundNumbers(100)
 
 ## [`cubic`](cubic), [`quartic`](quartic)
 
-[![Maven Central: org.hammerlab.math:::cubic:1.0.0](https://img.shields.io/badge/org.hammerlab.math:::cubic-1.0.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20cubic) &nbsp; [![Maven Central: org.hammerlab.math:::quartic:1.0.0](https://img.shields.io/badge/org.hammerlab.math:::quartic-1.0.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20quartic)
+&nbsp; [![Maven Central: org.hammerlab.math:::cubic:1.0.0](https://img.shields.io/badge/org.hammerlab.math:::cubic-1.0.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20cubic) &nbsp; [![Maven Central: org.hammerlab.math:::quartic:1.0.0](https://img.shields.io/badge/org.hammerlab.math:::quartic-1.0.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20quartic)
 
 Solve cubics with `Double` coefficients (and `Complex[Double]` roots):
 
