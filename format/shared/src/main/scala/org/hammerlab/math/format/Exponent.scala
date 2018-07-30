@@ -34,7 +34,7 @@ object Exponent {
     )
 
   trait instances {
-    implicit val   cased = Exponent.  cased
+    implicit val cased = Exponent.cased
   }
 
   trait format {
