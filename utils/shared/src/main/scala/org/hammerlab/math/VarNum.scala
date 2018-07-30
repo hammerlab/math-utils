@@ -1,6 +1,6 @@
 package org.hammerlab.math
 
-import java.io.{OutputStream, InputStream}
+import java.io.{ InputStream, OutputStream }
 
 /**
  * Serialization wrapper for [[Long]]s which burns one bit per byte indicating whether any more bytes follow.

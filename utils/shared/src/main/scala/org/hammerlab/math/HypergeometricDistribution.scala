@@ -1,7 +1,8 @@
 package org.hammerlab.math
 
+import java.lang.Math.{ exp, log }
+
 import hammerlab.math.utils.min
-import org.apache.commons.math3.util.FastMath.{ exp, log }
 
 import scala.Array.fill
 
@@ -60,7 +61,7 @@ case class HypergeometricDistribution(N: Long, K: Long, n: Int) {
       if (k == start)
         cdf(k) = v
       else
-        cdf(k) = (v + cdf(k - 1))
+        cdf(k) = v + cdf(k - 1)
   }
 
   // Given a double x in [0, 1], binary-search the CDF to find the greatest integer k such that CDF(k) ≤ x.

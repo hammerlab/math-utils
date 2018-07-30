@@ -34,7 +34,7 @@ import cats.syntax.show._
  * implicit val ε: E = 1e-2
  * 2.0  === 2.02  //  true
  * 2.02 === 2.04  //  true
- * 2.0  === 2.04  // false!
+ * 2.0  === 2.03  // false!
  * }}}
  *
  * Note also that [[0]] can only [[===]] [[0]]; whether a [[Double]] shoould be considered fuzzily-equal to [[0]] is a

@@ -11,29 +11,9 @@ class StatsTest
 
   def check[K : Numeric : Ordering](input: Seq[K],
                                     expected: Stats[K, Int]): Unit =
-    ==(Stats(input), expected)
-
-  def check[K : Numeric : Ordering](input: Seq[K],
-                                    numToSample: Int,
-                                    expected: Stats[K, Int]): Unit =
     ==(
-      Stats(
-        input,
-        numToSample
-      ),
-      expected
-    )
-
-  def check[K : Numeric : Ordering](input: Seq[K],
-                                    numToSample: Int,
-                                    onlySampleSorted: Boolean,
-                                    expected: Stats[K, Int]): Unit =
-    ==(
-      Stats(
-        input,
-        numToSample,
-        onlySampleSorted
-      ),
+      // use exported alias for some more test coverage
+      hammerlab.stats.Stats(input),
       expected
     )
 
