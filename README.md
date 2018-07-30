@@ -10,7 +10,7 @@
 - [`tolerance`](#tolerance): "fuzzy-equality" for `Double`s
 - [`types`](#types): misc type- and type-class-utilities (auto-derived `Ordering`s and `Monoid`s, a scala-js runtime-predicate, etc.)
 - [`utils`](#utils): misc numeric utilities (binomial coefficients, interpolation, etc.)
-- [`cubic`/`quartic`](##cubic-quartic): solve cubic/quartic equations in terms of Spire type-classes
+- [`cubic`/`quartic`](#cubic-quartic): solve cubic/quartic equations in terms of Spire type-classes
 
 ## [`format`](format)
 &nbsp; [![Maven Central: org.hammerlab.math:::format:1.1.0](https://img.shields.io/badge/org.hammerlab.math:::format-1.1.0-green.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.hammerlab.math%22%20format)
