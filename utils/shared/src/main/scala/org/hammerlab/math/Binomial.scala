@@ -1,6 +1,6 @@
 package org.hammerlab.math
 
-trait HasBinomial
+trait Binomial
   extends Serializable {
   object binomial {
     def apply(n: Int, k: Int): Long =
@@ -22,4 +22,4 @@ trait HasBinomial
   }
 }
 
-object HasBinomial extends HasBinomial
+object Binomial extends Binomial

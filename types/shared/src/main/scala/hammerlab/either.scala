@@ -4,6 +4,8 @@ package hammerlab
  * Shorthands for [[Left]]/[[Right]]
  */
 trait either {
+  type |[+L, +R] = Either[L, R]
+
   object L {
     def apply[A](a: A) = Left(a)
     def unapply[A](l: Left[A, _]): Option[A] = Some(l.a)
