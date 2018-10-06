@@ -29,5 +29,10 @@ class NameTest
       Name('abc): String,
       "abc"
     )
+
+    ==(
+      'abc: String,
+      "abc"
+    )
   }
 }

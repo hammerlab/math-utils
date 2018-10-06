@@ -8,7 +8,7 @@ default(
 )
 
 lazy val cubic = cross.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(
     io_utils,
     iterators,
@@ -25,13 +25,13 @@ lazy val cubic = cross.settings(
 lazy val cubicX = cubic.x
 
 lazy val format = cross.settings(
-  v"1.0.0",
+  v"1.1.1",
   dep(cats)
 )
 lazy val formatX = format.x
 
 lazy val quartic = cross.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(
     cats,
     io_utils,
@@ -50,7 +50,7 @@ lazy val quartic = cross.settings(
 lazy val quarticX = quartic.x
 
 lazy val stats = cross.settings(
-  v"1.3.2",
+  v"1.3.3",
   dep(
     cats,
     io_utils,
@@ -66,7 +66,7 @@ lazy val stats = cross.settings(
 lazy val statsX = stats.x
 
 lazy val tolerance = cross.settings(
-  v"1.0.0",
+  v"1.0.1",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
@@ -75,44 +75,46 @@ lazy val tolerance = cross.settings(
 )
 lazy val toleranceX = tolerance.x
 
-lazy val types = cross.settings(
-  group("org.hammerlab"),
-  v"1.4.0",
-  dep(
-    cats,
-    shapeless,
-    spire
-  )
-)
-lazy val typesJS  = types.js
-lazy val typesJVM = types.jvm.settings(
-  http4s.version := "0.18.13",
-  dep(
-    // UrlTest runs a dummy server
-    http4s.dsl tests,
-    http4s.`blaze-server` tests
-  )
-)
-lazy val typesX = parent(typesJS, typesJVM)
+lazy val types =
+  cross
+    .settings(
+      group("org.hammerlab"),
+      v"1.4.0",
+      dep(
+        cats,
+        shapeless,
+        spire
+      )
+    )
+    .jvmSettings(
+      http4s.version := "0.18.13",
+      dep(
+        // UrlTest runs a dummy server
+        http4s.dsl tests,
+        http4s.`blaze-server` tests
+      )
+    )
+lazy val typesX = types.x
 
-lazy val utils = cross.settings(
-  v"2.3.0",
-  dep(
-    cats,
-    shapeless,
-    spire
-  ),
-  consolePkg("hammerlab.math")
-)
-lazy val utilsJS  = utils.js
-lazy val utilsJVM = utils.jvm.settings(
-  // a couple components depend on Java-only libraries and are only included in the JVM module
-  dep(
-    commons.math,
-    kryo tests
-  )
-)
-lazy val utilsX = parent(utilsJS, utilsJVM)
+lazy val utils =
+  cross
+    .settings(
+      v"2.3.0",
+      dep(
+        cats,
+        shapeless,
+        spire
+      ),
+      consolePkg("hammerlab.math")
+    )
+    .jvmSettings(
+      // a couple components depend on Java-only libraries and are only included in the JVM module
+      dep(
+        commons.math,
+        kryo tests
+      )
+    )
+lazy val utilsX = utils.x
 
 lazy val `math-utils` =
   root(
