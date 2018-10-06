@@ -7,7 +7,7 @@ default(
   )
 )
 
-lazy val cubic = crossProject.settings(
+lazy val cubic = cross.settings(
   v"1.0.0",
   dep(
     io_utils,
@@ -22,19 +22,15 @@ lazy val cubic = crossProject.settings(
      format,
       types test
 )
-lazy val cubicJS  = cubic.js
-lazy val cubicJVM = cubic.jvm
-lazy val cubicX   = parent(cubicJS, cubicJVM)
+lazy val cubicX = cubic.x
 
-lazy val format = crossProject.settings(
+lazy val format = cross.settings(
   v"1.0.0",
   dep(cats)
 )
-lazy val formatJS  = format.js
-lazy val formatJVM = format.jvm
-lazy val formatX   = parent(formatJS, formatJVM)
+lazy val formatX = format.x
 
-lazy val quartic = crossProject.settings(
+lazy val quartic = cross.settings(
   v"1.0.0",
   dep(
     cats,
@@ -51,11 +47,9 @@ lazy val quartic = crossProject.settings(
       cubic andTest,
       types test
 )
-lazy val quarticJS  = quartic.js
-lazy val quarticJVM = quartic.jvm
-lazy val quarticX   = parent(quarticJS, quarticJVM)
+lazy val quarticX = quartic.x
 
-lazy val stats = crossProject.settings(
+lazy val stats = cross.settings(
   v"1.3.2",
   dep(
     cats,
@@ -69,11 +63,9 @@ lazy val stats = crossProject.settings(
   types,
   utils
 )
-lazy val statsJS  = stats.js
-lazy val statsJVM = stats.jvm
-lazy val statsX   = parent(statsJS, statsJVM)
+lazy val statsX = stats.x
 
-lazy val tolerance = crossProject.settings(
+lazy val tolerance = cross.settings(
   v"1.0.0",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
@@ -81,13 +73,11 @@ lazy val tolerance = crossProject.settings(
   testDeps := Seq(scalatest),
   publishTestJar
 )
-lazy val toleranceJS  = tolerance.js
-lazy val toleranceJVM = tolerance.jvm
-lazy val toleranceX   = parent(toleranceJS, toleranceJVM)
+lazy val toleranceX = tolerance.x
 
-lazy val types = crossProject.settings(
+lazy val types = cross.settings(
   group("org.hammerlab"),
-  v"1.3.1",
+  v"1.4.0",
   dep(
     cats,
     shapeless,
@@ -103,10 +93,10 @@ lazy val typesJVM = types.jvm.settings(
     http4s.`blaze-server` tests
   )
 )
-lazy val typesX   = parent(typesJS, typesJVM)
+lazy val typesX = parent(typesJS, typesJVM)
 
-lazy val utils = crossProject.settings(
-  v"2.2.1",
+lazy val utils = cross.settings(
+  v"2.3.0",
   dep(
     cats,
     shapeless,

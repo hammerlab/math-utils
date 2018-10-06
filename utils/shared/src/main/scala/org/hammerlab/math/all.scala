@@ -3,7 +3,7 @@ package org.hammerlab.math
 import org.hammerlab.{ math ⇒ ohm }
 
 trait all
-  extends HasBinomial
+  extends Binomial
      with Div
      with Interpolate
      with Min
