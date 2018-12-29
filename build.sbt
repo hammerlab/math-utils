@@ -90,7 +90,7 @@ lazy val types =
       http4s.version := "0.18.13",
       dep(
         // UrlTest runs a dummy server
-        http4s.dsl tests,
+        http4s. dsl           tests,
         http4s.`blaze-server` tests
       )
     )
