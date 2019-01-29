@@ -16,13 +16,24 @@ object option {
 
 trait HasOption {
   @inline implicit def OptionBoolOps(b: Boolean) = option.BoolOps(b)
+  // this can lead to e.g. redundant e.g. `.map` operations being granted to arbitrary values, when the [[cats.Functor]]
+  // operation was intended
+  //@inline implicit def liftOption[T](t: T): Option[T] = Some(t)
+
+  type ?[+T] = Option[T]
 
   /**
    * Wrapper around [[Option]] that implicitly lifts unwrapped values into a [[Som]] (analogous to [[Some]])
    *
    * Useful for allowing
    */
-  sealed trait Opt[+T]
+  sealed trait Opt[+T] {
+    def getOrElse[U >: T](implicit t: U): U =
+      this match {
+        case Som(t) ⇒ t
+        case Non ⇒ t
+      }
+  }
   case class Som[+T](t: T) extends Opt[T]
   case object Non extends Opt[Nothing]
   object Opt {

@@ -79,7 +79,7 @@ lazy val types =
   cross
     .settings(
       group("org.hammerlab"),
-      v"1.4.0",
+      v"1.5.0",
       dep(
         cats,
         shapeless,
@@ -99,7 +99,7 @@ lazy val typesX = types.x
 lazy val utils =
   cross
     .settings(
-      v"2.3.0",
+      v"2.4.0",
       dep(
         cats,
         shapeless,

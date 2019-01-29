@@ -11,20 +11,20 @@ import scala.reflect.ClassTag
 trait collection {
   implicit def canBuildArray[From, T: ClassTag] =
     new CanBuildFrom[From, T, Array[T]] {
-      override def apply(from: From): mutable.Builder[T, Array[T]] =
-        mutable.ArrayBuilder.make[T]
-
-      override def apply(): mutable.Builder[T, Array[T]] =
-        mutable.ArrayBuilder.make[T]
+      def apply(from: From): mutable.Builder[T, Array[T]] = mutable.ArrayBuilder.make[T]
+      def apply(          ): mutable.Builder[T, Array[T]] = mutable.ArrayBuilder.make[T]
     }
 
   implicit def canBuildVector[From, T] =
     new CanBuildFrom[From, T, Vector[T]] {
-      override def apply(from: From): mutable.Builder[T, Vector[T]] =
-        Vector.newBuilder[T]
+      def apply(from: From): mutable.Builder[T, Vector[T]] = Vector.newBuilder[T]
+      def apply(          ): mutable.Builder[T, Vector[T]] = Vector.newBuilder[T]
+    }
 
-      override def apply(): mutable.Builder[T, Vector[T]] =
-        Vector.newBuilder[T]
+  implicit def canBuildList[From, To]: CanBuildFrom[From, To, List[To]] =
+    new CanBuildFrom[From, To, List[To]] {
+      def apply(from: From): mutable.Builder[To, List[To]] = List.newBuilder
+      def apply(          ): mutable.Builder[To, List[To]] = List.newBuilder
     }
 }
 

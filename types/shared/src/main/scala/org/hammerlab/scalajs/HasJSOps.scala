@@ -15,7 +15,7 @@ object HasJSOps
    * }}}
    */
   implicit class JSOps[T](val l: T) extends AnyVal {
-    def js_? (r: T): T = HasJSOps.jvm(l)(r)
-    def jvm_?(r: T): T = HasJSOps.jvm(r)(l)
+    def js_? [R >: T](r: R): R = HasJSOps.jvm[R](l)(r)
+    def jvm_?[R >: T](r: R): R = HasJSOps.jvm   (r)(l)
   }
 }
