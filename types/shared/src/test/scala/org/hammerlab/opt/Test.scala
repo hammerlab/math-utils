@@ -1,14 +1,7 @@
-package org.hammerlab
+package org.hammerlab.opt
 
-import hammerlab.option._
-
-class OptionTest
-  extends Suite {
-  test("ops") {
-    ==(true ? 4, Some(4))
-    ==(false ? 4, None)
-  }
-
+class Test
+  extends hammerlab.Suite {
   def check(default: Opt[Int] = Non): Option[Int] = default
   test("opt") {
     ==(check(100), Some(100))

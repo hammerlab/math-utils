@@ -5,6 +5,7 @@ import cats.data.Ior
 /** Syntactic sugars around [[cats.data.Ior]]s */
 trait or {
   type Or[+A, +B] = Ior[A, B]
+  type ||[+A, +B] = Ior[A, B]
 
   object L {
     def apply[A](a: A) = Ior.Left(a)

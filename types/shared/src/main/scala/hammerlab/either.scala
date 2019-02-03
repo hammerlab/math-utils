@@ -8,6 +8,7 @@ import org.hammerlab.either.syntax
 trait either
   extends syntax {
   type |[+L, +R] = Either[L, R]
+  type ^[+L, +R] = Either[L, R]
 
   object L {
     def apply[A](a: A) = Left(a)
