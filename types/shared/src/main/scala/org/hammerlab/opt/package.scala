@@ -14,6 +14,9 @@ package object opt {
       }
   }
   case class Som[+T](t: T) extends Opt[T]
+  object Som {
+    implicit def lift[T](t: T): Som[T] = Som(t)
+  }
   case object Non extends Opt[Nothing]
   object Opt {
     def apply[T](t: T): Opt[T] = Som(t)
@@ -45,13 +48,8 @@ package object opt {
     object std extends std
 
     trait dsl {
-      // Symbolic shorthands
       type ?[+T] = Opt[T]
        val ?     = Opt
-      type ![+T] = Som[T]
-       val !     = Som
-      type -     = Non.type
-       val -     = Non
     }
     object dsl extends dsl
 

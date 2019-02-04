@@ -2,28 +2,35 @@ package org.hammerlab.math
 
 import cats.implicits._
 
+import scala.util.Try
+
 object SafeInt {
   implicit class Ops(val n: Long) extends AnyVal {
-    def safeInt: Either[CastException, Int] =
-      if (n > Integer.MAX_VALUE)
+    @inline def safeInt: Either[CastException, Int] = safeInt()
+    def safeInt(msg: String = ""): Either[CastException, Int] =
+      if (n > Integer.MAX_VALUE || n < Integer.MIN_VALUE)
         Left(
-          CastException(n)
+          CastException(n, msg)
         )
       else
         Right(
           n.toInt
         )
 
-    def safeInt(msg: String): Either[IllegalArgumentException, Int] = safeInt(new IllegalArgumentException(msg, _))
-    def safeInt[E <: Exception](wrap: CastException ⇒ E): Either[E, Int] = safeInt.leftMap(wrap)
+    @inline def int_! : Int = int_!()
+    def int_!(msg: String = ""): Int = safeInt(msg).fold(throw _, x ⇒ x)
   }
 
   trait syntax {
     @inline implicit def makeSafeIntOps(n: Long): Ops = Ops(n)
+    type CastException = org.hammerlab.math.CastException
   }
 }
 
-case class CastException(value: Long)
+case class CastException(value: Long, msg: String = "")
   extends RuntimeException(
-    s"Attempting to cast $value to an integer"
+    if (msg.nonEmpty)
+      s"$msg: attempting to cast $value to an integer"
+    else
+      s"Attempting to cast $value to an integer"
   )

@@ -116,7 +116,7 @@ lazy val utils =
     )
 lazy val `utils-x` = utils.x
 
-lazy val `math-utils` =
+lazy val all =
   root(
         `cubic-x`,
        `format-x`,

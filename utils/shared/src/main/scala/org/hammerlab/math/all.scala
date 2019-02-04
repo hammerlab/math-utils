@@ -16,6 +16,4 @@ trait all
   val  HypergeometricDistribution = h.HypergeometricDistribution
 
   val Steps = h.Steps
-
-  type CastException = h.CastException
 }
