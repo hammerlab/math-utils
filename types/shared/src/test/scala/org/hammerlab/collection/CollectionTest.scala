@@ -8,10 +8,19 @@ class CollectionTest
   extends Suite {
   test("canBuildFrom") {
     import hammerlab.collection.cbf._
-    val ints = Vector(1, 2, 3)
-    val arr = ints.map[Int, Array[Int]](_ * 2)
+    val vec = Vector(1, 2, 3)
+
+    val arr = vec.map[Int, Array[Int]](_ * 2)
     ===(arr, Array(2, 4, 6))
-    ===(arr.map[Int, Vector[Int]](_ * 2), Vector(4, 8, 12))
+
+    val list = arr.map[Int, List[Int]](_ + 1)
+    ===(list, List(3, 5, 7))
+
+    val stream = list.map[Int, Stream[Int]](-_)
+    ===(stream, Stream(-3, -5, -7))
+
+    val vec2 = stream.map[String, Vector[String]](_.toString)
+    ===(vec2, Vector("-3", "-5", "-7"))
   }
 
   test("iter") {

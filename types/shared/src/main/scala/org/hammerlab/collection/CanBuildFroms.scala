@@ -9,27 +9,28 @@ import scala.reflect.ClassTag
  * reason.
  */
 trait CanBuildFroms {
+
+  trait SimpleCanBuildFrom[-From, -Elem, +To] extends CanBuildFrom[From, Elem, To] {
+    @inline override def apply(from: From): mutable.Builder[Elem, To] = apply()
+  }
+
   implicit def canBuildArray[From, T: ClassTag] =
-    new CanBuildFrom[From, T, Array[T]] {
-      def apply(from: From): mutable.Builder[T, Array[T]] = mutable.ArrayBuilder.make[T]
-      def apply(          ): mutable.Builder[T, Array[T]] = mutable.ArrayBuilder.make[T]
+    new SimpleCanBuildFrom[From, T, Array[T]] {
+      def apply(): mutable.Builder[T, Array[T]] = mutable.ArrayBuilder.make[T]
     }
 
   implicit def canBuildVector[From, T] =
-    new CanBuildFrom[From, T, Vector[T]] {
-      def apply(from: From): mutable.Builder[T, Vector[T]] = Vector.newBuilder[T]
-      def apply(          ): mutable.Builder[T, Vector[T]] = Vector.newBuilder[T]
+    new SimpleCanBuildFrom[From, T, Vector[T]] {
+      def apply(): mutable.Builder[T, Vector[T]] = Vector.newBuilder[T]
     }
 
   implicit def canBuildStream[From, T] =
-    new CanBuildFrom[From, T, Stream[T]] {
-      def apply(from: From): mutable.Builder[T, Stream[T]] = Stream.newBuilder[T]
-      def apply(          ): mutable.Builder[T, Stream[T]] = Stream.newBuilder[T]
+    new SimpleCanBuildFrom[From, T, Stream[T]] {
+      def apply(): mutable.Builder[T, Stream[T]] = Stream.newBuilder[T]
     }
 
   implicit def canBuildList[From, To]: CanBuildFrom[From, To, List[To]] =
-    new CanBuildFrom[From, To, List[To]] {
-      def apply(from: From): mutable.Builder[To, List[To]] = List.newBuilder
-      def apply(          ): mutable.Builder[To, List[To]] = List.newBuilder
+    new SimpleCanBuildFrom[From, To, List[To]] {
+      def apply(): mutable.Builder[To, List[To]] = List.newBuilder
     }
 }
