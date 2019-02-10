@@ -4,8 +4,7 @@ jdk:
   - oraclejdk8
 
 scala:
-  - 2.11.12
-  - 2.12.7
+  - 2.12.8
 
 env: SBT_OPTS="-Xmx4g"
 

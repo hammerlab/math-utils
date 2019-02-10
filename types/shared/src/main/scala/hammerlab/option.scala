@@ -1,8 +1,6 @@
 package hammerlab
 
-import org.hammerlab.HasOption
+import org.hammerlab.option.syntax
 
-trait option
-  extends HasOption
-
+ trait option extends syntax with syntax.dsl
 object option extends option

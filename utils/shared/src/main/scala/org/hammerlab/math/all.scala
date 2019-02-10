@@ -1,18 +1,19 @@
 package org.hammerlab.math
 
-import org.hammerlab.{ math ⇒ ohm }
+import org.hammerlab.{ math ⇒ h }
 
 trait all
   extends Binomial
      with Div
      with Interpolate
      with Min
+     with SafeInt.syntax
      with Steps {
-  type RoundNumbers[I] = ohm.RoundNumbers[I]
-  val  RoundNumbers = ohm.RoundNumbers
+  type RoundNumbers[I] = h.RoundNumbers[I]
+  val  RoundNumbers = h.RoundNumbers
 
-  type HypergeometricDistribution = ohm.HypergeometricDistribution
-  val  HypergeometricDistribution = ohm.HypergeometricDistribution
+  type HypergeometricDistribution = h.HypergeometricDistribution
+  val  HypergeometricDistribution = h.HypergeometricDistribution
 
-  val Steps = ohm.Steps
+  val Steps = h.Steps
 }

@@ -1,10 +1,14 @@
 package hammerlab
 
+import org.hammerlab.either.syntax
+
 /**
  * Shorthands for [[Left]]/[[Right]]
  */
-trait either {
+trait either
+  extends syntax {
   type |[+L, +R] = Either[L, R]
+  type ^[+L, +R] = Either[L, R]
 
   object L {
     def apply[A](a: A) = Left(a)

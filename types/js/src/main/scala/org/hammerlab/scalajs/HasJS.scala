@@ -6,4 +6,7 @@ trait HasJS {
 
   def js [T](js : ⇒ T)(jvm: ⇒ T): T = js
   def jvm[T](jvm: ⇒ T)(js : ⇒ T): T = js
+
+  def  js_? =  true
+  def jvm_? = false
 }

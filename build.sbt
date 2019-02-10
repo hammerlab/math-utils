@@ -2,7 +2,7 @@
 default(
   group("org.hammerlab.math"),
   versions(
-     io_utils → "5.1.1",
+     io_utils → "5.2.1",
     iterators → "2.1.0"
   )
 )
@@ -22,13 +22,13 @@ lazy val cubic = cross.settings(
      format,
       types test
 )
-lazy val cubicX = cubic.x
+lazy val `cubic-x` = cubic.x
 
 lazy val format = cross.settings(
   v"1.1.1",
   dep(cats)
 )
-lazy val formatX = format.x
+lazy val `format-x` = format.x
 
 lazy val quartic = cross.settings(
   v"1.0.1",
@@ -47,7 +47,7 @@ lazy val quartic = cross.settings(
       cubic andTest,
       types test
 )
-lazy val quarticX = quartic.x
+lazy val `quartic-x` = quartic.x
 
 lazy val stats = cross.settings(
   v"1.3.3",
@@ -63,9 +63,9 @@ lazy val stats = cross.settings(
   types,
   utils
 )
-lazy val statsX = stats.x
+lazy val `stats-x` = stats.x
 
-lazy val tolerance = cross.settings(
+lazy val  tolerance = cross.settings(
   v"1.0.1",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
@@ -73,13 +73,13 @@ lazy val tolerance = cross.settings(
   testDeps := Seq(scalatest),
   publishTestJar
 )
-lazy val toleranceX = tolerance.x
+lazy val `tolerance-x` = tolerance.x
 
 lazy val types =
   cross
     .settings(
       group("org.hammerlab"),
-      v"1.4.0",
+      v"1.5.0",
       dep(
         cats,
         shapeless,
@@ -90,16 +90,16 @@ lazy val types =
       http4s.version := "0.18.13",
       dep(
         // UrlTest runs a dummy server
-        http4s.dsl tests,
+        http4s. dsl           tests,
         http4s.`blaze-server` tests
       )
     )
-lazy val typesX = types.x
+lazy val `types-x` = types.x
 
 lazy val utils =
   cross
     .settings(
-      v"2.3.0",
+      v"2.4.0",
       dep(
         cats,
         shapeless,
@@ -114,15 +114,15 @@ lazy val utils =
         kryo tests
       )
     )
-lazy val utilsX = utils.x
+lazy val `utils-x` = utils.x
 
-lazy val `math-utils` =
+lazy val all =
   root(
-        cubicX,
-       formatX,
-      quarticX,
-        statsX,
-    toleranceX,
-        typesX,
-        utilsX
+        `cubic-x`,
+       `format-x`,
+      `quartic-x`,
+        `stats-x`,
+    `tolerance-x`,
+        `types-x`,
+        `utils-x`
   )
