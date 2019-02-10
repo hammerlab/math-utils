@@ -8,7 +8,7 @@ default(
 )
 
 lazy val cubic = cross.settings(
-  v"1.0.1",
+  r"1.0.0",
   dep(
     io_utils,
     iterators,
@@ -25,13 +25,13 @@ lazy val cubic = cross.settings(
 lazy val `cubic-x` = cubic.x
 
 lazy val format = cross.settings(
-  v"1.1.1",
+  r"1.1.1",
   dep(cats)
 )
 lazy val `format-x` = format.x
 
 lazy val quartic = cross.settings(
-  v"1.0.1",
+  r"1.0.0",
   dep(
     cats,
     io_utils,
@@ -50,7 +50,7 @@ lazy val quartic = cross.settings(
 lazy val `quartic-x` = quartic.x
 
 lazy val stats = cross.settings(
-  v"1.3.3",
+  r"1.3.3",
   dep(
     cats,
     io_utils,
@@ -66,7 +66,7 @@ lazy val stats = cross.settings(
 lazy val `stats-x` = stats.x
 
 lazy val  tolerance = cross.settings(
-  v"1.0.1",
+  r"1.0.1",
   dep(cats),
   // test-utils depends on this module for fuzzy-equality / tolerant-double comparisons, and dependency-resolvers
   // emit circular-dependency false-positives when `a` depends on `b` and `b` depends on `a`'s tests
